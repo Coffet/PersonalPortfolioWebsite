@@ -88,12 +88,9 @@ requestAnimationFrame(() => {
 
 // const token = process.env.GITHUB_TOKEN; // Access the token from environment variables
     
-const token = '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'; // Replace with your actual token
+//const token = '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'; // Replace with your actual token
 
-if (!token) {
-        console.error('GitHub token is not set');
-        return;
-    }
+
     // Fetch GitHub user data
     async function fetchGitHubUser() {
         const username = 'Coffet'; // Replace with your GitHub username
@@ -126,99 +123,80 @@ if (!token) {
 
     // Add GitHub repository fetching functionality with dynamic language colors
     async function fetchGitHubRepos() {
-        const username = 'Coffet'; // Replace with your GitHub username
-        let languageColors = {};
+    const username = 'Coffet'; // Replace with your GitHub username
+    let languageColors = {};
 
-        // Fetch language colors dynamically
-        try {
-            const colorsResponse = await fetch('https://raw.githubusercontent.com/ozh/github-colors/master/colors.json');
-            if (colorsResponse.ok) {
-                languageColors = await colorsResponse.json();
-            } else {
-                console.error('Failed to fetch language colors');
+    // Fetch language colors dynamically (unchanged)
+    try {
+        const colorsResponse = await fetch('https://raw.githubusercontent.com/ozh/github-colors/master/colors.json');
+        if (colorsResponse.ok) {
+            languageColors = await colorsResponse.json();
+        } else {
+            console.error('Failed to fetch language colors');
+        }
+    } catch (error) {
+        console.error('Error fetching language colors:', error);
+    }
+
+    try {
+        const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated`, {
+            headers: {
+                Authorization: `token ${token}`
             }
-        } catch (error) {
-            console.error('Error fetching language colors:', error);
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to fetch repositories: ${response.status}`);
+        }
+        const repos = await response.json();
+        
+        const reposContainer = document.getElementById('repos-container');
+        if (!reposContainer) {
+            console.error('Repos container not found');
+            return;
+        }
+        reposContainer.innerHTML = '';
+
+        for (const repo of repos) {
+            // Fetch languages (unchanged)
+            const languagesResponse = await fetch(repo.languages_url);
+            const languagesData = await languagesResponse.ok ? await languagesResponse.json() : {};
+            const languages = Object.keys(languagesData);
+
+            const repoCard = document.createElement('div');
+            repoCard.className = 'repo-card';
+
+            // Enhanced display with stats, icons, and links
+            repoCard.innerHTML = `
+                <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+                <p>${repo.description || 'No description available'}</p>
+                <div class="repo-stats">
+                    ${repo.stargazers_count > 0 ? `<a href="${repo.html_url}/stargazers"><span>⭐ ${repo.stargazers_count}</span></a>` : ''}
+                    ${repo.forks_count > 0 ? `<a href="${repo.html_url}/network/members"><span>🍴 ${repo.forks_count}</span></a>` : ''}
+                    ${repo.language ? `<span>${devicons[repo.language] || repo.language}</span>` : ''}
+                </div>
+                <div class="repo-links">
+                    <a class="link-btn" href="${repo.html_url}">${devicons['Github']} Code</a>
+                    ${repo.homepage ? `<a class="link-btn" href="${repo.homepage}">${devicons['Chrome']} Live</a>` : ''}
+                </div>
+            `;
+            reposContainer.appendChild(repoCard);
         }
 
-        try {
-            // Fetch repositories
-            const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated`, {
-                headers: {
-                    Authorization: `token ${token}`
-                }
-            });            if (!response.ok) {
-                throw new Error(`Failed to fetch repositories: ${response.status}`);
-            }
-            const repos = await response.json();
-            
-            const reposContainer = document.getElementById('repos-container');
-            if (!reposContainer) {
-                console.error('Repos container not found');
-                return;
-            }
-            reposContainer.innerHTML = '';
-
-            for (const repo of repos) {
-                try {
-                    // Fetch languages for each repository
-                    const languagesResponse = await fetch(repo.languages_url);
-                    if (!languagesResponse.ok) {
-                        throw new Error(`Failed to fetch languages for ${repo.name}`);
-                    }
-                    const languagesData = await languagesResponse.json();
-                    const languages = Object.keys(languagesData);
-
-                    const repoCard = document.createElement('div');
-                    repoCard.className = 'repo-card';
-                    
-                    // Create language dots with dynamic colors and fallback
-                    const languageDots = languages.length > 0 
-                        ? languages.map(lang => {
-                            const color = languageColors[lang] ? languageColors[lang].color : '#cccccc';
-                            return `<span class="language-dot" style="background-color: ${color};" title="${lang}"></span>`;
-                        }).join('')
-                        : '<span class="language-dot" style="background-color: #cccccc;" title="Not Specified"></span>';
-
-                    repoCard.innerHTML = `
-                        <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
-                        <p>${repo.description || 'No description available'}</p>
-                        <div class="repo-stats">
-                            <span>⭐ ${repo.stargazers_count}</span>
-                            <span>🍴 ${repo.forks_count}</span>
-                            <span>Updated: ${new Date(repo.updated_at).toLocaleDateString()}</span>
-                        </div>
-                        <div class="repo-languages">
-                            <span class="language-label">Languages:</span> 
-                            <div class="language-dots">
-                                ${languageDots}
-                            </div>
-                        </div>
-                    `;
-                    reposContainer.appendChild(repoCard);
-                } catch (langError) {
-                    console.error(`Error fetching languages for ${repo.name}:`, langError);
-                    // Continue with next repo if languages fetch fails
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching GitHub repos:', error);
-            const reposContainer = document.getElementById('repos-container');
-            if (reposContainer) {
-            
-                reposContainer.innerHTML = `
+        // Optional: Scroll to main content after loading
+        scrollToSection();
+    } catch (error) {
+        console.error('Error fetching GitHub repos:', error);
+        const reposContainer = document.getElementById('repos-container');
+        if (reposContainer) {
+            reposContainer.innerHTML = `
                 <div class="repo-error">
                     <p>Error loading repositories</p>
-                    <p>If this happens, it means that the site is fetching public data via unauthenticated requests of the GitHub API. </p>
-                    <p>Unauthenticated requests are associated with the originating IP address, not with the user or application that made the request. </p>
-                    <p>The primary rate limit for unauthenticated requests is <span style="color: red; font-weight: bold; font-size: 1.3em;">60</span> requests per hour.</p>
                     <p>Please try again later or contact the site owner.</p>
                 </div>
             `;
-            
-            }
         }
     }
+}
 
 
     
