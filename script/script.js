@@ -88,7 +88,7 @@ requestAnimationFrame(() => {
 
 // const token = process.env.GITHUB_TOKEN; // Access the token from environment variables
     
-const token = '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'; // Replace with your actual token
+const token = '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'; // Replace with your actual token
 
 if (!token) {
         console.error('GitHub token is not set');
