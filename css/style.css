@@ -470,7 +470,7 @@ h1 {
 
 /* Footer Styles */
 .footer {
-    background: linear-gradient(135deg, #111 0%, #222 100%);
+    background: linear-gradient(135deg, #000 0%, #000 100%);
     color: #ffffff;
     padding: 60px 20px 20px;
     margin-top: 80px;
@@ -493,7 +493,7 @@ h1 {
 
 .footer-logo-img {
     width: 100px;
-    height: 80px;
+    height: 100px;
     margin-top: 50px;
 }
 
