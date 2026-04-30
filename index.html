@@ -3,108 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Portfolio</title>
+    <title>Kenny Chow | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
     <link rel="stylesheet" href="./css/style.css">
-    <script type="importmap">
-    {
-      "imports": {
-        "octokit": "https://esm.sh/@octokit/rest"
-      }
-    }
-    </script>
 </head>
 <body>
-    <div id="intro-container">
-       <img id="animated-logo" src="./image/WTuySeQhR3qYEv7z9rTZxA.webp" alt="Logo"> 
-    
-        <div id="nav-links">
-            <a href="#about">About</a>
-            <a href="#projects">Projects</a>
-            <a href="#github">GitHub</a>
-            <a href="#contact">Contact</a>
-        </div>
-    </div>
 
-    <div id="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-greeting">Hello, welcome to my website!</h1>
-            <p class="hero-subtext">Explore my journey, projects, and passion for technology</p>
-            
-            
-        </div>
-        <div class="scroll-icon" onclick="scrollToSection()">
-            <span></span>
-        </div>
-    </div>
-
-    <div id="main-content">
-        <section id="about" class="profile-section">
-            <div class="profile-container">
-                <img src="./image/profile-pic.png" alt="Profile Picture" class="profile-pic">
-                <div class="profile-info">
-                    <h1>Kenny Chow</h1>
-                    <h2>Computer Science Student</h2>
-                    <h3>Hong Kong Metropolitan University</h3>
-                    <p class="degree">Bachelor of Science with Honours in Computer Science</p>
-                </div>
-            </div>
-            <div class="introduction">
-                <h2>About Me</h2>
-                <p>I am a passionate computer science student with a keen interest in web development and artificial intelligence. Currently in my final year, I've worked on various projects that have helped me develop strong problem-solving skills and technical expertise.</p>
-                <p>In this page, you can see the various records i have collaborated or self-developed with</p>
-            </div>
-        </section>
-
-        <section id="github" class="github-section">
-            <h2>GitHub Repositories</h2>
-            <div id="repos-container" class="repos-container">
-                <!-- Repositories will be loaded here dynamically -->
-                <div class="loading">Loading repositories...</div>
-            </div>
-        </section>
-    </div>
-
-    <footer id="contact" class="footer">
-        <div class="footer-content">
-            <div class="footer-logo">
-                <img src="./image/WTuySeQhR3qYEv7z9rTZxA.webp" alt="Logo" class="footer-logo-img">
-                <p>John Doe</p>
-            </div>
-            <div class="footer-links">
-                <h3>Quick Links</h3>
+    <!-- Header / Intro Animation Container -->
+    <header id="header">
+        <!-- Color panels for animation -->
+        <div class="color-panel c1"></div>
+        <div class="color-panel c2"></div>
+        <div class="color-panel c3"></div>
+        <div class="color-panel c4"></div>
+        
+        <!-- Black background panel -->
+        <div class="header-bg"></div>
+        
+        <!-- Header content -->
+        <div class="header-content">
+            <img id="logo" src="./image/WTuySeQhR3qYEv7z9rTZxA.webp" alt="Logo">
+            <nav id="nav-links">
                 <a href="#about">About</a>
                 <a href="#projects">Projects</a>
-                <a href="#github">GitHub</a>
                 <a href="#contact">Contact</a>
-            </div>
-            <div class="footer-contact">
-                <h3>Contact Me</h3>
-                <p><i class="email-icon"></i> s1350671@live.hkmu.edu.hk</p>
-                <p><i class="phone-icon"></i> +852 95878651</p>
-                <p><i class="location-icon"></i> HKSAR</p>
-            </div>
-            <div class="footer-social">
-                <h3>Connect</h3>
-                <div class="social-icons">
-                    <a href="#" class="social-icon github"></a>
-                    <a href="#" class="social-icon linkedin"></a>
-                    <a href="#" class="social-icon twitter"></a>
-                    <a href="#" class="social-icon instagram"></a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="hero" class="fade-up">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <div class="hero-badge pulse" style="display:inline-flex;align-items:center;">
+                        <!-- <span class="pulse-dot" style="display:inline-block;width:8px;height:8px;background:#4ade80;border-radius:50%;margin-right:8px;box-shadow:0 0 10px rgba(74,222,128,0.5);"></span> -->
+                        Waiting for something to happen
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        Creative<br>
+                        <span class="gradient-text">Developer.</span>
+                    </h1>
+                    
+                    <p class="hero-subtitle">
+                        I'm Kenny Chow, merging technical precision with boundary-pushing design to build unforgettable digital experiences.
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <a href="#projects" class="btn-primary">View My Work</a>
+                        <a href="#contact" class="btn-secondary">Get in Touch</a>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="code-window">
+                        <div class="window-header">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="window-body">
+<pre><code><span class="keyword">const</span> developer = {
+  <span class="property">name</span>: <span class="string">'Kenny Chow'</span>,
+  <span class="property">role</span>: <span class="string">'CS Student'</span>,
+  <span class="property">passion</span>: [<span class="string">'Web Dev'</span>, <span class="string">'AI'</span>],
+  <span class="property">location</span>: <span class="string">'HKSAR'</span>,
+  <span class="property">readyToWork</span>: <span class="boolean">true</span>
+};
+
+<span class="comment">// Let's build something amazing</span>
+developer.<span class="method">collaborate</span>();</code></pre>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Kenny Chow. All Rights Reserved.</p>
-            <p>Made with <span class="heart">❤</span> using HTML, CSS & JavaScript</p>
+            
+            <div class="scroll-indicator">
+                <div class="mouse"></div>
+            </div>
+        </section>
+
+        <!-- About Section (Bento Grid) -->
+        <section id="about" class="section-padding">
+            <h2 class="section-title fade-up">About Me</h2>
+            <div class="bento-grid fade-up">
+                <!-- Profile Pic Box -->
+                <div class="bento-item bento-profile">
+                    <img src="./image/profile-pic.png" alt="Kenny Chow" class="profile-img" onerror="this.src='https://ui-avatars.com/api/?name=Kenny+Chow&background=random&size=256'">
+                    <div class="profile-name">
+                        <h3>Kenny Chow</h3>
+                        <p>Computer Science Student</p>
+                    </div>
+                </div>
+
+                <!-- Intro Box -->
+                <div class="bento-item bento-intro">
+                    <h3>Hello World.</h3>
+                    <p>I am a passionate computer science student with a keen interest in web development and artificial intelligence. Currently in my final year, I've worked on various projects that have helped me develop strong problem-solving skills and technical expertise.</p>
+                </div>
+
+                <!-- Education Box -->
+                <div class="bento-item bento-edu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bento-icon"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <div>
+                        <h4>Hong Kong Metropolitan University</h4>
+                        <p>BSc (Hons) in Computer Science</p>
+                    </div>
+                </div>
+
+                <!-- Github Stats Box (Filled via JS) -->
+                <div class="bento-item bento-stats" id="github-stats-container">
+                    <div class="stat-spinner"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section-padding">
+            <h2 class="section-title fade-up">Featured Repositories</h2>
+            <div id="repos-container" class="repos-grid fade-up">
+                <!-- Loaded via JS -->
+                <div class="stat-spinner"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-wrapper">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <img src="./image/WTuySeQhR3qYEv7z9rTZxA.webp" alt="Logo" class="footer-logo">
+                    <p>Creating exceptional digital experiences.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Navigation</h4>
+                    <a href="#hero">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#projects">Projects</a>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact</h4>
+                    <a href="mailto:s1350671@live.hkmu.edu.hk">s1350671@live.hkmu.edu.hk</a>
+                    <p>+852 95878651</p>
+                    <p>HKSAR</p>
+                </div>
+                <div class="footer-connect">
+                    <h4 class="connect-heading">Connect</h4>
+                    <div class="social-icons">
+                        <a href="https://github.com/Coffet" target="_blank" class="social-icon"><i class="devicon-github-original"></i></a>
+                        <a href="#" class="social-icon"><i class="devicon-linkedin-plain"></i></a>
+                        <a href="#" class="social-icon"><i class="devicon-twitter-original"></i></a>
+                        <a href="#" class="social-icon"><i class="devicon-instagram-plain"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="year"></span> Kenny Chow. All rights reserved.</p>
+                <p class="made-with">Made with <span class="heart">❤</span> in HK</p>
+            </div>
         </div>
     </footer>
 
-
-
-
-
-
-    
+    <!-- GSAP for robust animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="./script/script.js"></script>
 </body>
 </html>
