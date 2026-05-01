@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make sure main content is visible for layout but opacity 0
     mainContent.style.display = 'block';
 
+    // GSAP controls transform during tweens; CSS translate(-50%,-50%) would be lost otherwise,
+    // so the intro logo drifts off-center on mobile until the header shrink.
+    gsap.set(logo, {
+        left: '50%',
+        top: '50%',
+        xPercent: -50,
+        yPercent: -50,
+    });
+
     // 2. The GSAP Timeline (The Opening Animation)
     
     // Step 1: Black screen, logo breathes
@@ -107,7 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         height: logoSize,
         top: logoTop,
         left: logoLeft,
-        transform: 'translate(0, -50%)',
+        xPercent: 0,
+        yPercent: -50,
         duration: 1.2,
         ease: "power3.inOut"
     }, "<")
