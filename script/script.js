@@ -82,10 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, "<")
     }
 
-    const headerHeight = isMobile ? '90px' : '100px';
-    const logoSize = isMobile ? '120px' : '100px';
-    const logoTop = isMobile ? '45px' : '50px';
-    const logoLeft = isMobile ? '25px' : '50px';
+    const headerHeight = isMobile ? '80px' : '100px';
+    const logoSize = isMobile ? '70px' : '100px';
+    const logoTop = isMobile ? '40px' : '50px';
+    const logoLeft = isMobile ? '40px' : '50px'; /* Give it proper left margin on mobile */
 
     // Step 5: Transition to topbar
     tl.set(colorPanels, { display: "none" }, isMobile ? "+=0.2" : "+=1.0")

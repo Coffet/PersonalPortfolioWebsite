@@ -117,6 +117,7 @@ a {
     opacity: 0; /* Starts hidden for the blink */
     pointer-events: auto;
     object-fit: contain;
+    transform-origin: center center;
 }
 
 #nav-links {
