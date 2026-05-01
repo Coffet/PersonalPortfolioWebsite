@@ -2,6 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initial Setup for GSAP Animation
     gsap.registerPlugin(ScrollTrigger);
 
+    // Mobile: 100vh is often taller than the visible viewport, so vertical centering looks
+    // too low. Pin intro height to the actual visible pixels (see --intro-screen-height in CSS).
+    if (window.innerWidth <= 768) {
+        const h = window.visualViewport?.height ?? window.innerHeight;
+        document.documentElement.style.setProperty('--intro-screen-height', `${h}px`);
+    }
+
     const tl = gsap.timeline({
         onComplete: () => {
             // Enable scrolling after intro

@@ -1,4 +1,10 @@
 :root {
+    /* Full-screen intro: classic 100vh is taller than the visible viewport on many
+       phones, so 50% vertical centering looks too low. Prefer svh/dvh with vh fallback. */
+    --intro-screen-height: 100vh;
+    --intro-screen-height: 100svh;
+    --intro-screen-height: 100dvh;
+
     /* Color Palette - OKLCH for modern, perceptually uniform colors */
     --bg-dark: oklch(0.18 0.01 250);
     --bg-surface: oklch(0.22 0.02 250);
@@ -68,7 +74,7 @@ a {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: var(--intro-screen-height);
     z-index: 9999;
     background-color: #000; /* Pure black background during animation */
 }
@@ -78,7 +84,7 @@ a {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: var(--intro-screen-height);
     background-color: #000; /* Pure black initially as requested */
     z-index: 5;
     transform-origin: left center;
@@ -89,7 +95,7 @@ a {
     position: absolute;
     top: 0;
     width: 15vw;
-    height: 100vh;
+    height: var(--intro-screen-height);
     left: 25vw; /* Hidden behind 40vw black */
 }
 .c1 { background-color: var(--c1); z-index: 4; }
