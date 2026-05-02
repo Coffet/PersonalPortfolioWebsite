@@ -390,7 +390,7 @@ a {
 
     .scroll-indicator {
         position: absolute;
-        bottom: 40px;
+        bottom: 0px;
         left: 50%;
         transform: translateX(-50%);
         opacity: 0.5;
