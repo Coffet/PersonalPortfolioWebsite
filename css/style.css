@@ -362,8 +362,9 @@ a {
     .hero-grid {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: var(--space-lg);
-        margin-top: 70px;
+        gap: var(--space-md);
+        margin-top: 0;
+        width: 100%;
     }
     
     .hero-content {
@@ -381,31 +382,41 @@ a {
         display: none;
     }
 
+    /* Stack scroll cue directly under hero text/buttons (red-circle zone), not on viewport bottom */
     #hero {
-        min-height: 100vh;
-        padding-top: 60px; /* Account for top bar */
-        padding-bottom: 170px; /* Account for scroll indicator */
+        min-height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         justify-content: flex-start;
+        padding-top: max(72px, env(safe-area-inset-top));
+        padding-bottom: max(32px, env(safe-area-inset-bottom));
+        padding-left: var(--space-lg);
+        padding-right: var(--space-lg);
     }
 
     .scroll-indicator {
-        position: absolute;
-        bottom: 0px;
-        left: 50%;
-        transform: translateX(-50%);
-        opacity: 0.5;
-        margin-bottom: 300px;
-
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        margin-top: 28px;
+        margin-bottom: 8px;
+        opacity: 0.55;
+        flex-shrink: 0;
     }
 
 }
 
-.scroll-indicator {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0.5;
+/* Desktop only: pin near viewport bottom. Mobile uses flow layout (see max-width:900px). */
+@media (min-width: 901px) {
+    .scroll-indicator {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0.5;
+    }
 }
 
 .mouse {
