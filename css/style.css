@@ -406,6 +406,11 @@ a {
         flex-shrink: 0;
     }
 
+    /* Push About Me section down a bit more on mobile so it doesn't feel cramped after the hero + scroll indicator */
+    #about {
+        margin-top: 3rem;
+    }
+
 }
 
 /* Desktop only: pin near viewport bottom. Mobile uses flow layout (see max-width:900px). */
