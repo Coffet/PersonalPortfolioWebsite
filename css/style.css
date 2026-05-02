@@ -408,7 +408,7 @@ a {
 
     /* Push About Me section down a bit more on mobile so it doesn't feel cramped after the hero + scroll indicator */
     #about {
-        margin-top: 3rem;
+        margin-top: 10rem;
     }
 
 }
