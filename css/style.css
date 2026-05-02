@@ -363,7 +363,7 @@ a {
         grid-template-columns: 1fr;
         text-align: center;
         gap: var(--space-lg);
-        margin-top: 100px;
+        margin-top: 70px;
     }
     
     .hero-content {
@@ -394,7 +394,7 @@ a {
         left: 50%;
         transform: translateX(-50%);
         opacity: 0.5;
-        margin-bottom: 115px;
+        margin-bottom: 150px;
 
     }
 
