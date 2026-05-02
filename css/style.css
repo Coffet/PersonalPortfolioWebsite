@@ -363,6 +363,7 @@ a {
         grid-template-columns: 1fr;
         text-align: center;
         gap: var(--space-lg);
+        margin-top: 150px;
     }
     
     .hero-content {
@@ -376,9 +377,8 @@ a {
         font-size: var(--text-3xl);
     }
 
-    .code-window {
-        transform: none;
-        margin-bottom: 60px; /* Space for the scroll indicator */
+    .hero-visual {
+        display: none;
     }
 
     #hero {
