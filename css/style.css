@@ -16,7 +16,8 @@
     --brand-accent: oklch(0.75 0.15 250); /* Vibrant Blue */
     --brand-accent-glow: oklch(0.75 0.15 250 / 0.2);
     
-    /* Animation Color Panels */
+    /* Animation Color Panels - "60% colors" (4×15vw panels in intro animation)
+       These are dynamically updated by JS every 15-30 minutes for a living portfolio */
     --c1: oklch(0.70 0.15 250); /* Blue */
     --c2: oklch(0.70 0.15 300); /* Purple */
     --c3: oklch(0.70 0.15 350); /* Pink */
@@ -102,6 +103,15 @@ a {
 .c2 { background-color: var(--c2); z-index: 3; }
 .c3 { background-color: var(--c3); z-index: 2; }
 .c4 { background-color: var(--c4); z-index: 1; }
+
+/* Smooth transitions for dynamic color changes (the 60% panels and accents) */
+.color-panel,
+.gradient-text,
+.heart {
+    transition: background-color 2.5s cubic-bezier(0.23, 1, 0.32, 1),
+                color 2.5s cubic-bezier(0.23, 1, 0.32, 1),
+                background-image 3s ease;
+}
 
 .header-content {
     position: absolute;
@@ -249,9 +259,10 @@ a {
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, var(--c1), var(--c3));
+    background: var(--gradient-text, linear-gradient(135deg, var(--c1), var(--c3)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     display: inline-block;
 }
 

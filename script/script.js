@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make sure main content is visible for layout but opacity 0
     mainContent.style.display = 'block';
 
+    // Color cycling will be started after all functions are declared (moved to bottom)
+
     // GSAP controls transform during tweens; CSS translate(-50%,-50%) would be lost otherwise,
     // so the intro logo drifts off-center on mobile until the header shrink.
     gsap.set(logo, {
@@ -296,4 +298,107 @@ document.addEventListener('DOMContentLoaded', () => {
             container.appendChild(card);
         });
     };
+
+    // =============================================
+    // DYNAMIC "60% COLOR" CYCLING (the 4 color panels)
+    // Changes accent colors (--c1 to --c4, brand-accent, gradients, heart)
+    // every 15-30 minutes for an evolving, "alive" portfolio experience.
+    // Uses perceptually uniform OKLCH colors to match the existing aesthetic.
+    // =============================================
+    const colorPalettes = [
+        // 1. Cyber Blue-Purple (original vibe)
+        [
+            'oklch(0.72 0.18 245)',
+            'oklch(0.70 0.19 285)',
+            'oklch(0.75 0.16 325)',
+            'oklch(0.68 0.20 35)'
+        ],
+        // 2. Emerald-Teal Pulse
+        [
+            'oklch(0.76 0.16 165)',
+            'oklch(0.71 0.19 195)',
+            'oklch(0.73 0.17 255)',
+            'oklch(0.78 0.14 310)'
+        ],
+        // 3. Magenta-Violet Fire
+        [
+            'oklch(0.69 0.21 295)',
+            'oklch(0.74 0.18 330)',
+            'oklch(0.71 0.20 15)',
+            'oklch(0.72 0.15 210)'
+        ],
+        // 4. Solar Amber-Coral
+        [
+            'oklch(0.79 0.17 28)',
+            'oklch(0.73 0.19 65)',
+            'oklch(0.67 0.18 185)',
+            'oklch(0.75 0.16 270)'
+        ]
+    ];
+
+    let currentPaletteIndex = 0;
+
+    function updateAccentColors(paletteIndex) {
+        const palette = colorPalettes[paletteIndex % colorPalettes.length];
+        const root = document.documentElement;
+        
+        root.style.setProperty('--c1', palette[0]);
+        root.style.setProperty('--c2', palette[1]);
+        root.style.setProperty('--c3', palette[2]);
+        root.style.setProperty('--c4', palette[3]);
+        root.style.setProperty('--brand-accent', palette[0]);
+        
+        // Make the "Developer." gradient more vibrant and obvious on refresh
+        root.style.setProperty('--gradient-text', `linear-gradient(135deg, ${palette[0]}, ${palette[2]})`);
+        
+        //console.log(`%c 60% colors updated to palette #${(paletteIndex % colorPalettes.length) + 1}`, 
+                   // 'color: #0a0; font-size: 12px; font-family: monospace');
+    }
+
+    function getRandomInterval() {
+        // Random delay between 15 and 30 minutes (production)
+        // Currently reduced to ~2-4 minutes for easier testing/demo
+        // Change `2 + Math.random() * 2` back to `15 + Math.random() * 15` for real use
+        return (2 + Math.random() * 2) * 60 * 1000;
+    }
+
+    function startColorCycler() {
+        const STORAGE_KEY = 'portfolioColorPaletteIndex';
+        
+        // Restore from localStorage (so colors persist across refreshes)
+        // This is the main fix for "should not reset when refresh"
+        const savedIndex = localStorage.getItem(STORAGE_KEY);
+        if (savedIndex !== null) {
+            currentPaletteIndex = parseInt(savedIndex, 10);
+           //console.log(`%c Restored palette #${(currentPaletteIndex % colorPalettes.length) + 1} from localStorage`, 
+                   //     'color: #0a0; font-size: 12px; font-family: monospace');
+        } else {
+            // First visit or cleared storage — random starting palette
+            currentPaletteIndex = Math.floor(Math.random() * colorPalettes.length);
+            //  console.log('%c First visit — picked random starting palette', 
+                       // 'color: #0aa; font-size: 12px; font-family: monospace');
+        }
+        
+        updateAccentColors(currentPaletteIndex);
+        
+        const cycleColors = () => {
+            currentPaletteIndex = (currentPaletteIndex + 1) % colorPalettes.length;
+            updateAccentColors(currentPaletteIndex);
+            
+            // Persist the new palette so refresh keeps the latest state
+            localStorage.setItem(STORAGE_KEY, currentPaletteIndex.toString());
+            
+            // console.log(`%c Advanced to palette #${(currentPaletteIndex % colorPalettes.length) + 1} — next change in ~2-4min`, 
+                       // 'color: #a50; font-size: 11px; font-family: monospace');
+            
+            // Schedule next change
+            setTimeout(cycleColors, getRandomInterval());
+        };
+        
+        // Start the recurring cycle
+        setTimeout(cycleColors, getRandomInterval());
+    }
+
+    // Start color cycling as early as possible (after all declarations)
+    startColorCycler();
 });
