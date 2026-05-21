@@ -7,9 +7,11 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <link rel="preload" href="./image/logo.webp" as="image" type="image/webp">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
 </head>
 <body>
 
@@ -26,7 +28,7 @@
         
         <!-- Header content -->
         <div class="header-content">
-            <img id="logo" src="./image/WTuySeQhR3qYEv7z9rTZxA.webp" alt="Logo">
+            <img id="logo" src="./image/logo.webp" alt="Logo" width="200" height="200" fetchpriority="high" decoding="async">
             <nav id="nav-links">
                 <a href="#about">About</a>
                 <a href="#projects">Projects</a>
@@ -94,7 +96,7 @@ developer.<span class="method">collaborate</span>();</code></pre>
             <div class="bento-grid fade-up">
                 <!-- Profile Pic Box -->
                 <div class="bento-item bento-profile">
-                    <img src="./image/profile-pic.png" alt="Kenny Chow" class="profile-img" onerror="this.src='https://ui-avatars.com/api/?name=Kenny+Chow&background=random&size=256'">
+                    <img src="./image/profile-pic.webp" alt="Kenny Chow" class="profile-img" width="280" height="280" loading="lazy" decoding="async" onerror="this.src='https://ui-avatars.com/api/?name=Kenny+Chow&background=random&size=256'">
                     <div class="profile-name">
                         <h3>Kenny Chow</h3>
                         <p>Computer Science Student</p>
@@ -138,7 +140,7 @@ developer.<span class="method">collaborate</span>();</code></pre>
         <div class="footer-wrapper">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <img src="./image/WTuySeQhR3qYEv7z9rTZxA.webp" alt="Logo" class="footer-logo">
+                    <img src="./image/logo.webp" alt="Logo" class="footer-logo" width="60" height="60" loading="lazy" decoding="async">
                     <p>Creating exceptional digital experiences.</p>
                 </div>
                 <div class="footer-links">
@@ -171,8 +173,8 @@ developer.<span class="method">collaborate</span>();</code></pre>
     </footer>
 
     <!-- GSAP for robust animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="./script/script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <script src="./script/script.js" defer></script>
 </body>
 </html>
