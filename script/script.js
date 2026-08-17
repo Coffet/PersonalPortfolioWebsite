@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.getElementById('nav-links');
     const mainContent = document.getElementById('main-content');
     const isMobile = window.innerWidth <= 768;
-    const barInset = isMobile ? '16px' : '30px';
-    const statusInset = isMobile ? '28px' : '45px';
-    const headerHeight = isMobile ? '80px' : '88px';
-    const logoSize = isMobile ? '80px' : '88px';
+    const barInset = isMobile ? '8px' : '30px';
+    const statusInset = isMobile ? '16px' : '45px';
+    const headerHeight = isMobile ? '64px' : '88px';
+    const logoSize = isMobile ? '56px' : '88px';
 
     const setIntroHeight = () => {
         if (window.innerWidth > 768) return;
