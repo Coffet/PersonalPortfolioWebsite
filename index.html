@@ -8,170 +8,178 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="./image/logo.webp" as="image" type="image/webp">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Nata+Sans:ital,wght@0,100..900&family=Saira:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
 </head>
 <body>
 
-    <!-- Header / Intro Animation Container -->
     <header id="header">
-        <!-- Color panels for animation -->
         <div class="color-panel c1"></div>
         <div class="color-panel c2"></div>
         <div class="color-panel c3"></div>
         <div class="color-panel c4"></div>
-        
-        <!-- Black background panel -->
+
         <div class="header-bg"></div>
-        
-        <!-- Header content -->
+
         <div class="header-content">
-            <img id="logo" src="./image/logo.webp" alt="Logo" width="200" height="200" fetchpriority="high" decoding="async">
-            <nav id="nav-links">
-                <a href="#about">About</a>
-                <a href="#projects">Projects</a>
-                <a href="#contact">Contact</a>
-            </nav>
+            <img id="logo" src="./image/logo.webp" alt="coft" width="200" height="200" fetchpriority="high" decoding="async">
+            <div id="nav-links">
+                <a class="status-link" href="mailto:blaze459077@gmail.com">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span class="status-text">Open to interesting conversations</span>
+                </a>
+            </div>
         </div>
     </header>
 
     <main id="main-content">
-        <!-- Hero Section -->
-        <section id="hero" class="fade-up">
-            <div class="hero-grid">
-                <div class="hero-content">
-                    <div class="hero-badge pulse" style="display:inline-flex;align-items:center;">
-                        <!-- <span class="pulse-dot" style="display:inline-block;width:8px;height:8px;background:#4ade80;border-radius:50%;margin-right:8px;box-shadow:0 0 10px rgba(74,222,128,0.5);"></span> -->
-                        Waiting for something to happen
-                    </div>
-                    
-                    <h1 class="hero-title">
-                        Creative<br>
-                        <span class="gradient-text">Developer.</span>
-                    </h1>
-                    
-                    <p class="hero-subtitle">
-                        I'm Kenny Chow, merging technical precision with boundary-pushing design to build unforgettable digital experiences.
-                    </p>
-                    
-                    <div class="hero-actions">
-                        <a href="#projects" class="btn-primary">View My Work</a>
-                        <a href="#contact" class="btn-secondary">Get in Touch</a>
-                    </div>
-                </div>
-                
-                <div class="hero-visual">
-                    <div class="code-window">
-                        <div class="window-header">
-                            <span class="dot red"></span>
-                            <span class="dot yellow"></span>
-                            <span class="dot green"></span>
-                        </div>
-                        <div class="window-body">
-<pre><code><span class="keyword">const</span> developer = {
-  <span class="property">name</span>: <span class="string">'Kenny Chow'</span>,
-  <span class="property">role</span>: <span class="string">'CS Student'</span>,
-  <span class="property">passion</span>: [<span class="string">'Web Dev'</span>, <span class="string">'AI'</span>],
-  <span class="property">location</span>: <span class="string">'HKSAR'</span>,
-  <span class="property">readyToWork</span>: <span class="boolean">true</span>
-};
-
-<span class="comment">// Let's build something amazing</span>
-developer.<span class="method">collaborate</span>();</code></pre>
-                        </div>
-                    </div>
-                </div>
+        <section id="hero">
+            <div class="hero-glows" aria-hidden="true">
+                <div class="hero-glow hero-glow--left"></div>
+                <div class="hero-glow hero-glow--center"></div>
+                <div class="hero-glow hero-glow--right"></div>
             </div>
-            
-            <div class="scroll-indicator">
-                <div class="mouse"></div>
+            <div class="wrap hero-copy fade-up">
+                <h1>Hi, I’m Kenny.<br>Nice to meet you.</h1>
+                <p class="hero-lede">
+                    I design interfaces that feel human.<br>
+                    Let’s make something good.<br>
+                    Together.
+                </p>
             </div>
         </section>
 
-        <!-- About Section (Bento Grid) -->
-        <section id="about" class="section-padding">
-            <h2 class="section-title fade-up">About Me</h2>
-            <div class="bento-grid fade-up">
-                <!-- Profile Pic Box -->
-                <div class="bento-item bento-profile">
-                    <img src="./image/profile-pic.webp" alt="Kenny Chow" class="profile-img" width="280" height="280" loading="lazy" decoding="async" onerror="this.src='https://ui-avatars.com/api/?name=Kenny+Chow&background=random&size=256'">
-                    <div class="profile-name">
-                        <h3>Kenny Chow</h3>
-                        <p>Computer Science Student</p>
+        <section id="connect" class="section-block">
+            <div class="wrap">
+                <div class="connect-panel fade-up">
+                    <h2 class="connect-title">Speaking is the best way of starting a friendship.<br>Or a path towards connection.</h2>
+                    <p class="connect-kicker">Find me around the web</p>
+
+                    <div class="social-grid">
+                        <a class="social-card" href="https://github.com/Coffet" target="_blank" rel="noopener noreferrer">
+                            <span class="social-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                            </span>
+                            <span class="social-name">Github</span>
+                            <span class="social-user">@Coffet</span>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                        </a>
+
+                        <a class="social-card" href="https://discordapp.com/users/971666916525621258" target="_blank" rel="noopener noreferrer">
+                            <span class="social-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.1.1 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.1 16.1 0 0 0-4.8 0c-.14-.34-.36-.76-.54-1.09A.1.1 0 0 0 9 4c-1.5.26-2.94.71-4.27 1.33a.09.09 0 0 0-.04.03C2.43 9.05 1.73 12.65 2.09 16.2c0 .02.01.04.03.05 1.8 1.32 3.53 2.12 5.24 2.65a.1.1 0 0 0 .11-.04c.4-.55.76-1.13 1.07-1.74a.1.1 0 0 0-.05-.13 10.7 10.7 0 0 1-1.52-.73.1.1 0 0 1-.01-.16c.1-.08.21-.16.3-.24a.1.1 0 0 1 .1-.01c3.19 1.46 6.64 1.46 9.8 0a.1.1 0 0 1 .1.01c.1.08.2.16.3.24a.1.1 0 0 1 0 .16c-.49.28-.99.52-1.53.73a.1.1 0 0 0-.05.13c.32.61.68 1.19 1.07 1.74a.1.1 0 0 0 .11.04c1.72-.53 3.45-1.33 5.25-2.65a.1.1 0 0 0 .03-.05c.42-4.11-.7-7.68-2.98-10.84a.07.07 0 0 0-.03-.03zM8.52 14.41c-.96 0-1.75-.88-1.75-1.96s.77-1.96 1.75-1.96 1.77.88 1.75 1.96c0 1.08-.77 1.96-1.75 1.96zm6.97 0c-.96 0-1.75-.88-1.75-1.96s.77-1.96 1.75-1.96 1.77.88 1.75 1.96c0 1.08-.79 1.96-1.75 1.96z"/></svg>
+                            </span>
+                            <span class="social-name">Discord</span>
+                            <span class="social-user">@thekccw</span>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                        </a>
+
+                        <a class="social-card" href="https://x.com/coftdo" target="_blank" rel="noopener noreferrer">
+                            <span class="social-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            </span>
+                            <span class="social-name">X</span>
+                            <span class="social-user">@coftdo</span>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                        </a>
+
+                        <a class="social-card" href="mailto:blaze459077@gmail.com">
+                            <span class="social-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+                            </span>
+                            <span class="social-name">Email</span>
+                            <span class="social-user">blaze459077@gmail.com</span>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                        </a>
                     </div>
-                </div>
-
-                <!-- Intro Box -->
-                <div class="bento-item bento-intro">
-                    <h3>Hello World.</h3>
-                    <p>I am a passionate computer science student with a keen interest in web development and artificial intelligence. Currently in my final year, I've worked on various projects that have helped me develop strong problem-solving skills and technical expertise.</p>
-                </div>
-
-                <!-- Education Box -->
-                <div class="bento-item bento-edu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bento-icon"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                    <div>
-                        <h4>Hong Kong Metropolitan University</h4>
-                        <p>BSc (Hons) in Computer Science</p>
-                    </div>
-                </div>
-
-                <!-- Github Stats Box (Filled via JS) -->
-                <div class="bento-item bento-stats" id="github-stats-container">
-                    <div class="stat-spinner"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Projects Section -->
-        <section id="projects" class="section-padding">
-            <h2 class="section-title fade-up">Featured Repositories</h2>
-            <div id="repos-container" class="repos-grid fade-up">
-                <!-- Loaded via JS -->
-                <div class="stat-spinner"></div>
+        <section id="about" class="section-block">
+            <div class="wrap">
+                <div class="about-copy fade-up">
+                    <p class="section-label">Who Am I?</p>
+                    <h2 class="section-heading">A bit about me</h2>
+                    <div class="about-body">
+                        <p>I’m a Computer Science graduate focused on UI and UX. I care about making interfaces that feel human. Clean, calm, and a little bit thoughtful.</p>
+                        <p>I like building things that don’t get in the way. Whether it’s a product, a small tool, or just a better way to say hello.</p>
+                        <p>I hope we can have a great partnership in near future.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="work" class="section-block">
+            <div class="wrap">
+                <div class="work-intro fade-up">
+                    <p class="section-label">Work Showcase</p>
+                    <h2 class="section-heading">My Past Work</h2>
+                    <p class="section-sub">My previous work, on personal or group.</p>
+                </div>
+
+                <div id="work-grid" class="work-grid fade-up">
+                    <article class="work-card">
+                        <div class="work-media" aria-hidden="true"></div>
+                        <div class="work-body">
+                            <h3 class="work-title">Text</h3>
+                            <p class="work-desc">Desc</p>
+                            <p class="work-date">Date</p>
+                            <span class="work-link">View Details <span aria-hidden="true">›</span></span>
+                        </div>
+                    </article>
+
+                    <article class="work-card">
+                        <div class="work-media" aria-hidden="true"></div>
+                        <div class="work-body">
+                            <h3 class="work-title">Text</h3>
+                            <p class="work-desc">Desc</p>
+                            <p class="work-date">Date</p>
+                            <span class="work-link">View Details <span aria-hidden="true">›</span></span>
+                        </div>
+                    </article>
+
+                    <article class="work-card">
+                        <div class="work-media" aria-hidden="true"></div>
+                        <div class="work-body">
+                            <h3 class="work-title">Text</h3>
+                            <p class="work-desc">Desc</p>
+                            <p class="work-date">Date</p>
+                            <span class="work-link">View Details <span aria-hidden="true">›</span></span>
+                        </div>
+                    </article>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="footer-wrapper">
-            <div class="footer-top">
-                <div class="footer-brand">
-                    <img src="./image/logo.webp" alt="Logo" class="footer-logo" width="60" height="60" loading="lazy" decoding="async">
-                    <p>Creating exceptional digital experiences.</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Navigation</h4>
-                    <a href="#hero">Home</a>
-                    <a href="#about">About</a>
-                    <a href="#projects">Projects</a>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contact</h4>
-                    <a href="mailto:s1350671@live.hkmu.edu.hk">s1350671@live.hkmu.edu.hk</a>
-                    <p>+852 95878651</p>
-                    <p>HKSAR</p>
-                </div>
-                <div class="footer-connect">
-                    <h4 class="connect-heading">Connect</h4>
-                    <div class="social-icons">
-                        <a href="https://github.com/Coffet" target="_blank" class="social-icon"><i class="devicon-github-original"></i></a>
-                        <a href="#" class="social-icon"><i class="devicon-linkedin-plain"></i></a>
-                        <a href="#" class="social-icon"><i class="devicon-twitter-original"></i></a>
-                        <a href="#" class="social-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
-                    </div>
-                </div>
+    <footer class="site-end">
+        <div class="wrap footer-cta fade-up">
+            <div class="footer-copy">
+                <p class="footer-heading">Still building, Still listening.</p>
+                <p class="footer-sub">If something resonates, say hello.</p>
+                <a class="status-link footer-status" href="mailto:blaze459077@gmail.com">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span class="status-text">Open to interesting conversations</span>
+                </a>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; <span id="year"></span> Kenny Chow. All rights reserved.</p>
-                <p class="made-with">Made with <span class="heart">❤</span> in HK</p>
+            <nav class="footer-nav" aria-label="Footer">
+                <a href="#hero">Index</a>
+                <a href="https://github.com/Coffet" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="#about">Blog</a>
+                <a href="#work">Gallery</a>
+            </nav>
+        </div>
+        <div class="footer-rule"></div>
+        <div class="wrap footer-bar">
+            <div class="footer-bar-left">
+                <span>Coft © <span id="year">2026</span></span>
+                <span>Made with care</span>
             </div>
+            <span>Version 3</span>
         </div>
     </footer>
 
-    <!-- GSAP for robust animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
     <script src="./script/script.js" defer></script>
