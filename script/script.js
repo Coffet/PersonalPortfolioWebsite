@@ -1,13 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     gsap.registerPlugin(ScrollTrigger);
 
-    // Mobile: 100vh is often taller than the visible viewport, so vertical centering looks
-    // too low. Pin intro height to the actual visible pixels (see --intro-screen-height in CSS).
-    if (window.innerWidth <= 768) {
-        const h = window.visualViewport?.height ?? window.innerHeight;
-        document.documentElement.style.setProperty('--intro-screen-height', `${h}px`);
-    }
-
     const header = document.getElementById('header');
     const headerBg = document.querySelector('.header-bg');
     const colorPanels = document.querySelectorAll('.color-panel');
@@ -20,21 +13,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const headerHeight = isMobile ? '80px' : '88px';
     const logoSize = isMobile ? '80px' : '88px';
 
-    const INTRO_KEY = 'portfolioIntroAt';
-    const INTRO_SKIP_MS = 30 * 60 * 1000;
-
-    const shouldSkipIntro = () => {
-        const last = parseInt(sessionStorage.getItem(INTRO_KEY) || localStorage.getItem(INTRO_KEY), 10);
-        return Boolean(last) && Date.now() - last < INTRO_SKIP_MS;
+    const setIntroHeight = () => {
+        if (window.innerWidth > 768) return;
+        const h = window.visualViewport?.height ?? window.innerHeight;
+        document.documentElement.style.setProperty('--intro-screen-height', `${h}px`);
     };
 
+    setIntroHeight();
+
+    const onIntroViewportChange = () => setIntroHeight();
+    window.visualViewport?.addEventListener('resize', onIntroViewportChange);
+    window.addEventListener('orientationchange', onIntroViewportChange);
+    window.addEventListener('resize', onIntroViewportChange);
+
+    const stopIntroViewportWatch = () => {
+        window.visualViewport?.removeEventListener('resize', onIntroViewportChange);
+        window.removeEventListener('orientationchange', onIntroViewportChange);
+        window.removeEventListener('resize', onIntroViewportChange);
+    };
+
+    const INTRO_KEY = 'portfolioIntroAt';
+    localStorage.removeItem(INTRO_KEY);
+
+    const shouldSkipIntro = () => Boolean(sessionStorage.getItem(INTRO_KEY));
+
     const markIntroPlayed = () => {
-        const now = String(Date.now());
-        sessionStorage.setItem(INTRO_KEY, now);
-        localStorage.setItem(INTRO_KEY, now);
+        sessionStorage.setItem(INTRO_KEY, '1');
+        localStorage.removeItem(INTRO_KEY);
     };
 
     const finishIntro = () => {
+        stopIntroViewportWatch();
         document.body.style.overflow = 'auto';
         document.body.style.overflowX = 'hidden';
         initScrollAnimations();
@@ -43,23 +52,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initScrollAnimations() {
         const fadeUpElements = document.querySelectorAll('.fade-up');
+        const revealLine = window.innerHeight * 0.85;
 
         fadeUpElements.forEach((el) => {
-            gsap.to(el, {
+            const alreadyInView = el.getBoundingClientRect().top < revealLine;
+            const tween = {
                 y: 0,
                 opacity: 1,
                 duration: 1,
                 ease: "power3.out",
-                scrollTrigger: {
+            };
+
+            if (alreadyInView) {
+                gsap.to(el, tween);
+            } else {
+                tween.scrollTrigger = {
                     trigger: el,
                     start: "top 85%",
                     toggleActions: "play none none none"
-                }
-            });
+                };
+                gsap.to(el, tween);
+            }
         });
     }
 
     const snapToTopbar = () => {
+        stopIntroViewportWatch();
         gsap.set(colorPanels, { display: 'none' });
         gsap.set(header, { height: headerHeight });
         gsap.set(headerBg, {
