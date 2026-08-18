@@ -592,6 +592,7 @@ img {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: flex-start;
 }
 
 .footer-heading {
@@ -612,11 +613,14 @@ img {
 }
 
 .footer-status {
+    display: flex;
     min-height: 0;
     font-size: 14px;
     align-self: flex-start;
     justify-content: flex-start;
     text-align: left;
+    width: fit-content;
+    margin-left: 0;
 }
 
 .footer-nav {
