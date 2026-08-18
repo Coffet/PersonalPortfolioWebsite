@@ -685,7 +685,10 @@ img {
         line-height: 28px;
     }
 
-    .connect-title,
+    .connect-title {
+        font-size: 28px;
+    }
+
     .section-heading,
     .footer-heading {
         font-size: 28px;
@@ -746,7 +749,7 @@ img {
         font-size: 12px;
         line-height: 1.35;
         min-height: 40px;
-        justify-content: flex-end;
+        /* justify-content: flex-end; */
     }
 
     .social-card {
@@ -782,12 +785,6 @@ img {
 
     .footer-bar {
         padding-bottom: env(safe-area-inset-bottom);
-    }
-}
-
-@media (max-width: 720px) {
-    .connect-title br {
-        display: none;
     }
 }
 
