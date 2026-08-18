@@ -613,7 +613,7 @@ img {
 }
 
 .footer-status {
-    display: none;
+    display: flex;
     min-height: 0;
     font-size: 14px;
     align-self: flex-start;
