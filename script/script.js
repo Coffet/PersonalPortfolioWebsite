@@ -76,6 +76,93 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function initCursorBloom() {
+        const bloomCards = document.querySelectorAll('.social-card, .work-card');
+
+        bloomCards.forEach((card) => {
+            const rect = () => card.getBoundingClientRect();
+            const workBody = card.querySelector('.work-body');
+            const center = () => {
+                const bounds = rect();
+                return { x: bounds.width / 2, y: bounds.height / 2 };
+            };
+
+            let target = center();
+            let primary = center();
+            let trail = center();
+            let frameId = null;
+            let hovering = false;
+
+            const render = () => {
+                primary.x += (target.x - primary.x) * 0.18;
+                primary.y += (target.y - primary.y) * 0.18;
+                trail.x += (primary.x - trail.x) * 0.1;
+                trail.y += (primary.y - trail.y) * 0.1;
+
+                card.style.setProperty('--cursor-x', `${primary.x}px`);
+                card.style.setProperty('--cursor-y', `${primary.y}px`);
+                card.style.setProperty('--cursor-x-2', `${trail.x}px`);
+                card.style.setProperty('--cursor-y-2', `${trail.y}px`);
+
+                if (workBody) {
+                    const cardBounds = rect();
+                    const bodyBounds = workBody.getBoundingClientRect();
+                    const offsetX = bodyBounds.left - cardBounds.left;
+                    const offsetY = bodyBounds.top - cardBounds.top;
+                    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+                    const bodyPrimaryX = clamp(primary.x - offsetX, 0, bodyBounds.width);
+                    const bodyPrimaryY = clamp(primary.y - offsetY, 0, bodyBounds.height);
+                    const bodyTrailX = clamp(trail.x - offsetX, 0, bodyBounds.width);
+                    const bodyTrailY = clamp(trail.y - offsetY, 0, bodyBounds.height);
+
+                    workBody.style.setProperty('--cursor-x', `${bodyPrimaryX}px`);
+                    workBody.style.setProperty('--cursor-y', `${bodyPrimaryY}px`);
+                    workBody.style.setProperty('--cursor-x-2', `${bodyTrailX}px`);
+                    workBody.style.setProperty('--cursor-y-2', `${bodyTrailY}px`);
+                }
+
+                const settled =
+                    Math.abs(target.x - primary.x) < 0.5 &&
+                    Math.abs(target.y - primary.y) < 0.5 &&
+                    Math.abs(primary.x - trail.x) < 0.5 &&
+                    Math.abs(primary.y - trail.y) < 0.5;
+
+                if (!hovering && settled) {
+                    frameId = null;
+                    return;
+                }
+
+                frameId = window.requestAnimationFrame(render);
+            };
+
+            const start = () => {
+                if (frameId !== null) return;
+                frameId = window.requestAnimationFrame(render);
+            };
+
+            const setCursorPosition = (event) => {
+                const rect = card.getBoundingClientRect();
+                target = {
+                    x: event.clientX - rect.left,
+                    y: event.clientY - rect.top,
+                };
+                hovering = true;
+                start();
+            };
+
+            card.addEventListener('pointerenter', (event) => {
+                hovering = true;
+                setCursorPosition(event);
+            });
+            card.addEventListener('pointermove', setCursorPosition);
+            card.addEventListener('pointerleave', () => {
+                hovering = false;
+                target = center();
+                start();
+            });
+        });
+    }
+
     const snapToTopbar = () => {
         stopIntroViewportWatch();
         gsap.set(colorPanels, { display: 'none' });
@@ -105,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     mainContent.style.display = 'block';
+    initCursorBloom();
 
     if (shouldSkipIntro()) {
         snapToTopbar();

@@ -378,13 +378,71 @@ img {
     background: #0e0e0e;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 14px;
-    transition: border-color 0.25s var(--ease-out), transform 0.25s var(--ease-out), background-color 0.25s var(--ease-out);
+    position: relative;
+    overflow: hidden;
+    transition:
+        border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.social-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        220px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+        rgba(34, 211, 166, 0.22) 0%,
+        rgba(20, 184, 166, 0.14) 22%,
+        rgba(16, 185, 129, 0.08) 42%,
+        transparent 74%
+    );
+    opacity: 0;
+    transition:
+        opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.15s linear;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.social-card::after {
+    content: "";
+    position: absolute;
+    inset: -18%;
+    background:
+        radial-gradient(
+            180px circle at calc(var(--cursor-x-2, 50%) + 26px) calc(var(--cursor-y-2, 50%) - 18px),
+            rgba(110, 231, 183, 0.14) 0%,
+            transparent 66%
+        ),
+        radial-gradient(
+            240px circle at calc(var(--cursor-x-2, 50%) - 34px) calc(var(--cursor-y-2, 50%) + 24px),
+            rgba(45, 212, 191, 0.12) 0%,
+            transparent 70%
+        );
+    opacity: 0;
+    filter: blur(18px);
+    transition:
+        opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.15s linear;
+    pointer-events: none;
+    mix-blend-mode: screen;
 }
 
 .social-card:hover {
     border-color: rgba(255, 255, 255, 0.16);
     background: #141414;
-    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+    transform: translateY(-3px);
+}
+
+.social-card:hover::before {
+    opacity: 1;
+}
+
+.social-card:hover::after {
+    opacity: 1;
 }
 
 .social-icon {
@@ -393,6 +451,9 @@ img {
     width: 22px;
     height: 22px;
     color: var(--text);
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .social-icon svg {
@@ -409,6 +470,9 @@ img {
     font-size: 16px;
     font-weight: 700;
     color: var(--text);
+    transition:
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        color 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .social-user {
@@ -419,6 +483,9 @@ img {
     font-size: 13px;
     color: var(--text-muted);
     line-height: 1.4;
+    transition:
+        transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        color 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .social-visit {
@@ -430,11 +497,28 @@ img {
     font-family: var(--font);
     font-size: 13px;
     color: #c8c8c8;
-    transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+    transition:
+        color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .social-card:hover .social-visit {
     color: var(--text);
+    transform: translateX(5px);
+}
+
+.social-card:hover .social-icon {
+    color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.social-card:hover .social-name {
+    transform: translateX(3px);
+}
+
+.social-card:hover .social-user {
+    color: #b6b6b6;
     transform: translateX(3px);
 }
 
@@ -499,17 +583,81 @@ img {
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: var(--bg-work);
     min-height: 100%;
-    transition: transform 0.28s var(--ease-out), border-color 0.28s var(--ease-out);
+    position: relative;
+    transition:
+        transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.work-body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(
+            260px circle at var(--cursor-x, 50%) var(--cursor-y, 50%),
+            rgba(34, 211, 166, 0.14) 0%,
+            rgba(20, 184, 166, 0.08) 34%,
+            transparent 74%
+        ),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 36%);
+    opacity: 0;
+    transition:
+        opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.15s linear;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 0;
+}
+
+.work-body::after {
+    content: "";
+    position: absolute;
+    inset: -14%;
+    background:
+        radial-gradient(
+            220px circle at calc(var(--cursor-x-2, 50%) + 32px) calc(var(--cursor-y-2, 50%) - 24px),
+            rgba(110, 231, 183, 0.12) 0%,
+            transparent 68%
+        ),
+        radial-gradient(
+            280px circle at calc(var(--cursor-x-2, 50%) - 38px) calc(var(--cursor-y-2, 50%) + 28px),
+            rgba(45, 212, 191, 0.1) 0%,
+            transparent 72%
+        );
+    opacity: 0;
+    filter: blur(22px);
+    transition:
+        opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.15s linear;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 0;
 }
 
 .work-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-5px);
     border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+}
+
+.work-body:hover::before {
+    opacity: 1;
+}
+
+.work-body:hover::after {
+    opacity: 1;
 }
 
 .work-media {
     aspect-ratio: 16 / 11;
     background: linear-gradient(180deg, #d0d0d0 0%, #8d8d8d 100%);
+    position: relative;
+    z-index: 2;
+    transition:
+        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .work-card:nth-child(2) .work-media {
@@ -526,6 +674,11 @@ img {
     flex: 1;
     padding: 18px 18px 16px;
     min-height: 148px;
+    background: var(--bg-work);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    z-index: 1;
 }
 
 .work-title {
@@ -533,6 +686,8 @@ img {
     font-size: 16px;
     font-weight: 700;
     color: var(--text);
+    position: relative;
+    z-index: 1;
 }
 
 .work-desc {
@@ -540,6 +695,8 @@ img {
     font-family: var(--font);
     font-size: 14px;
     color: var(--text);
+    position: relative;
+    z-index: 1;
 }
 
 .work-date {
@@ -547,6 +704,8 @@ img {
     font-family: var(--font);
     font-size: 13px;
     color: var(--text);
+    position: relative;
+    z-index: 1;
 }
 
 .work-link {
@@ -556,12 +715,21 @@ img {
     font-family: var(--font);
     font-size: 13px;
     color: var(--text);
-    transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+    position: relative;
+    z-index: 1;
+    transition:
+        color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.work-card:hover .work-media {
+    transform: scale(1.035);
+    filter: brightness(1.03);
 }
 
 .work-card:hover .work-link {
     color: var(--accent);
-    transform: translateX(3px);
+    transform: translateX(5px);
 }
 
 @container (max-width: 800px) {
@@ -639,11 +807,37 @@ img {
 }
 
 .footer-nav a {
-    transition: color 0.2s var(--ease-out);
+    position: relative;
+    transition:
+        color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.footer-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 8px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0.25);
+    transform-origin: left center;
+    opacity: 0;
+    transition:
+        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .footer-nav a:hover {
     color: var(--text);
+    transform: translateY(-1px);
+}
+
+.footer-nav a:hover::after {
+    transform: scaleX(1);
+    opacity: 1;
 }
 
 .footer-rule {
