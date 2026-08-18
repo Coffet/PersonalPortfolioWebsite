@@ -614,6 +614,9 @@ img {
 .footer-status {
     min-height: 0;
     font-size: 14px;
+    align-self: flex-start;
+    justify-content: flex-start;
+    text-align: left;
 }
 
 .footer-nav {
