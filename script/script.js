@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth <= 768;
     const barInset = isMobile ? '8px' : '30px';
     const statusInset = isMobile ? '16px' : '45px';
-    const headerHeight = isMobile ? '64px' : '88px';
-    const logoSize = isMobile ? '56px' : '88px';
+    const headerHeight = '75px';
+    const logoSize = '70px';
 
     const setIntroHeight = () => {
         if (window.innerWidth > 768) return;

@@ -152,8 +152,8 @@ img {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 250px;
-    height: 250px;
+    width: 80px;
+    height: 80px;
     transform: translate(-50%, -50%);
     opacity: 0;
     pointer-events: auto;
@@ -290,7 +290,7 @@ img {
 .hero-copy h1 {
     font-family: var(--font-display);
     font-size: 56px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1.15;
     color: var(--text);
@@ -327,6 +327,11 @@ img {
     color: var(--text);
 }
 
+#about .section-heading,
+#work .section-heading {
+    font-family: var(--font);
+}
+
 .section-sub {
     margin-top: 10px;
     font-family: var(--font-lede);
@@ -334,6 +339,10 @@ img {
     font-weight: 400;
     line-height: 30px;
     color: var(--text-soft);
+}
+
+#work .section-sub {
+    font-family: "Inter", "Segoe UI", sans-serif;
 }
 
 /* Connect / socials */
@@ -550,10 +559,11 @@ img {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    margin-right: 45px;
 }
 
 .about-body p {
-    font-family: var(--font-lede);
+    font-family: "Inter", "Segoe UI", sans-serif;
     font-size: 20px;
     font-weight: 400;
     line-height: 30px;
