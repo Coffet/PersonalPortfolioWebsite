@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const barInset = isMobile ? '8px' : '30px';
     const statusInset = isMobile ? '16px' : '45px';
     const headerHeight = '75px';
-    const logoSize = isMobile ? '88px' : '70px';
+    const logoSize = isMobile ? '88px' : '88px';
 
     const setIntroHeight = () => {
         if (window.innerWidth > 768) return;
