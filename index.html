@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="./image/logo.webp" as="image" type="image/webp">
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400&family=Nata+Sans:ital,wght@0,100..900&family=Saira:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css?v=10">
+    <link rel="stylesheet" href="./css/style.css?v=14">
 </head>
 <body>
 
@@ -119,35 +119,7 @@
                 </div>
 
                 <div id="work-grid" class="work-grid fade-up">
-                    <article class="work-card">
-                        <div class="work-media" aria-hidden="true"></div>
-                        <div class="work-body">
-                            <h3 class="work-title">Text</h3>
-                            <p class="work-desc">Desc</p>
-                            <p class="work-date">Date</p>
-                            <span class="work-link">View Details <span aria-hidden="true">›</span></span>
-                        </div>
-                    </article>
-
-                    <article class="work-card">
-                        <div class="work-media" aria-hidden="true"></div>
-                        <div class="work-body">
-                            <h3 class="work-title">Text</h3>
-                            <p class="work-desc">Desc</p>
-                            <p class="work-date">Date</p>
-                            <span class="work-link">View Details <span aria-hidden="true">›</span></span>
-                        </div>
-                    </article>
-
-                    <article class="work-card">
-                        <div class="work-media" aria-hidden="true"></div>
-                        <div class="work-body">
-                            <h3 class="work-title">Text</h3>
-                            <p class="work-desc">Desc</p>
-                            <p class="work-date">Date</p>
-                            <span class="work-link">View Details <span aria-hidden="true">›</span></span>
-                        </div>
-                    </article>
+                    <!-- Cards are rendered from script/work-projects.js -->
                 </div>
             </div>
         </section>
@@ -182,8 +154,54 @@
         </div>
     </footer>
 
+    <div class="work-modal" id="work-modal" aria-hidden="true">
+        <div class="work-modal__backdrop" data-work-modal-close></div>
+        <div class="work-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="work-modal-title">
+            <button class="work-modal__close" type="button" aria-label="Close project details" data-work-modal-close>
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M4 4L12 12M12 4L4 12" />
+                </svg>
+            </button>
+
+            <div class="work-modal__content">
+                <h3 class="work-modal__title" id="work-modal-title">Project details</h3>
+                <p class="work-modal__desc" id="work-modal-desc">Loading project description...</p>
+                <p class="work-modal__year" id="work-modal-year">--</p>
+
+                <div class="work-modal__media" id="work-modal-media" aria-hidden="true">
+                    <img
+                        class="work-modal__media-img is-hidden"
+                        id="work-modal-media-img"
+                        src=""
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                    >
+                </div>
+
+                <dl class="work-modal__meta">
+                    <div class="work-modal__meta-item">
+                        <dt>What I handled</dt>
+                        <dd id="work-modal-role">Loading role details...</dd>
+                    </div>
+                    <div class="work-modal__meta-item">
+                        <dt>Tools Used</dt>
+                        <dd id="work-modal-tools">Loading tools...</dd>
+                    </div>
+                    <div class="work-modal__meta-item">
+                        <dt>Visit Link</dt>
+                        <dd>
+                            <a class="work-modal__visit is-disabled" id="work-modal-link" aria-disabled="true">Link available on request</a>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="./script/script.js?v=9" defer></script>
+    <script src="./script/work-projects.js?v=3" defer></script>
+    <script src="./script/script.js?v=14" defer></script>
 </body>
 </html>

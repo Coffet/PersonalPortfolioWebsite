@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const WORK_PROJECTS = window.WORK_PROJECTS || {};
     gsap.registerPlugin(ScrollTrigger);
 
     const header = document.getElementById('header');
@@ -42,8 +43,19 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem(INTRO_KEY);
     };
 
+    const lockIntroScroll = () => {
+        document.documentElement.classList.add('intro-lock');
+        document.body.classList.add('intro-lock');
+    };
+
+    const unlockIntroScroll = () => {
+        document.documentElement.classList.remove('intro-lock');
+        document.body.classList.remove('intro-lock');
+    };
+
     const finishIntro = () => {
         stopIntroViewportWatch();
+        unlockIntroScroll();
         document.body.style.overflow = 'auto';
         document.body.style.overflowX = 'hidden';
         initScrollAnimations();
@@ -163,8 +175,371 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    async function fetchEncouragementFromInternet() {
+        const normalize = (value) => value?.replace(/\s+/g, ' ').trim();
+
+        const requestConfigs = [
+            {
+                url: 'https://motivational-spark-api.vercel.app/api/quotes/random',
+                parse: (data) => normalize(data?.quote),
+            },
+            {
+                url: 'https://random-quotes-freeapi.vercel.app/api/random',
+                parse: (data) => {
+                    const quote = normalize(data?.quote);
+                    const author = normalize(data?.author);
+                    if (!quote) return '';
+                    return author ? `${quote} — ${author}` : quote;
+                },
+            },
+            {
+                url: 'https://zenquotes.io/api/random',
+                parse: (data) => {
+                    const item = Array.isArray(data) ? data[0] : null;
+                    const quote = normalize(item?.q);
+                    const author = normalize(item?.a);
+                    if (!quote) return '';
+                    return author ? `${quote} — ${author}` : quote;
+                },
+            },
+        ];
+
+        for (const config of requestConfigs) {
+            const controller = new AbortController();
+            const timeout = window.setTimeout(() => controller.abort(), 4000);
+
+            try {
+                const response = await fetch(config.url, {
+                    method: 'GET',
+                    cache: 'no-store',
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) {
+                    continue;
+                }
+
+                const data = await response.json();
+                const line = config.parse(data);
+                if (line) {
+                    return line;
+                }
+            } catch (_) {
+                // Try the next internet source.
+            } finally {
+                window.clearTimeout(timeout);
+            }
+        }
+
+        return 'Keep going. Your next project is on the way.';
+    }
+
+    function hydrateWorkCardsFromMap() {
+        const workGrid = document.getElementById('work-grid');
+        if (!workGrid) return;
+
+        const defaultCardGradient = 'linear-gradient(180deg, #d0d0d0 0%, #8d8d8d 100%)';
+        const projectEntries = Object.entries(WORK_PROJECTS);
+
+        workGrid.replaceChildren();
+
+        if (projectEntries.length === 0) {
+            const emptyWrap = document.createElement('div');
+            emptyWrap.className = 'work-empty-message';
+
+            const emptyTitle = document.createElement('p');
+            emptyTitle.className = 'work-empty-title';
+            emptyTitle.textContent = 'No projects yet. I will add them soon. I promise!';
+
+            const emptySub = document.createElement('p');
+            emptySub.className = 'work-empty-encouragement';
+            emptySub.textContent = 'Fetching encouragement from the internet...';
+
+            emptyWrap.append(emptyTitle, emptySub);
+            workGrid.appendChild(emptyWrap);
+            fetchEncouragementFromInternet().then((line) => {
+                emptySub.textContent = line;
+            });
+            return;
+        }
+
+        projectEntries.forEach(([projectId, project]) => {
+            const card = document.createElement('article');
+            card.className = 'work-card';
+            card.dataset.projectId = projectId;
+
+            const mediaEl = document.createElement('div');
+            mediaEl.className = 'work-media';
+            mediaEl.setAttribute('aria-hidden', 'true');
+
+            const cardImage = (project.cardImage || project.image || '').trim();
+            const cardGradient = project.cardGradient || defaultCardGradient;
+
+            if (cardImage) {
+                const imageEl = document.createElement('img');
+                imageEl.src = cardImage;
+                imageEl.alt = `${project.title || 'Project'} preview`;
+                imageEl.loading = 'lazy';
+                imageEl.decoding = 'async';
+                mediaEl.appendChild(imageEl);
+                mediaEl.style.background = '#101010';
+            } else {
+                mediaEl.style.background = cardGradient;
+            }
+
+            const bodyEl = document.createElement('div');
+            bodyEl.className = 'work-body';
+
+            const titleEl = document.createElement('h3');
+            titleEl.className = 'work-title';
+            titleEl.textContent = project.title || 'Project Name';
+
+            const descEl = document.createElement('p');
+            descEl.className = 'work-desc';
+            descEl.textContent = project.desc || 'Project description';
+
+            const yearEl = document.createElement('p');
+            yearEl.className = 'work-date';
+            yearEl.textContent = project.year || 'Year';
+
+            const buttonEl = document.createElement('button');
+            buttonEl.className = 'work-link';
+            buttonEl.type = 'button';
+            buttonEl.setAttribute('data-work-modal-trigger', '');
+            buttonEl.innerHTML = 'View Details <span aria-hidden="true">›</span>';
+
+            bodyEl.append(titleEl, descEl, yearEl, buttonEl);
+            card.append(mediaEl, bodyEl);
+            workGrid.appendChild(card);
+        });
+
+    }
+
+    function initWorkModal() {
+        const modal = document.getElementById('work-modal');
+        if (!modal) return;
+
+        const dialog = modal.querySelector('.work-modal__dialog');
+        const backdrop = modal.querySelector('.work-modal__backdrop');
+        const closeButton = modal.querySelector('.work-modal__close');
+        const closeTargets = modal.querySelectorAll('[data-work-modal-close]');
+        const triggers = document.querySelectorAll('[data-work-modal-trigger]');
+        const titleEl = document.getElementById('work-modal-title');
+        const descEl = document.getElementById('work-modal-desc');
+        const projectYearEl = document.getElementById('work-modal-year');
+        const roleEl = document.getElementById('work-modal-role');
+        const toolsEl = document.getElementById('work-modal-tools');
+        const linkEl = document.getElementById('work-modal-link');
+        const mediaEl = document.getElementById('work-modal-media');
+        const mediaImgEl = document.getElementById('work-modal-media-img');
+        const animatedParts = modal.querySelectorAll(
+            '.work-modal__title, .work-modal__desc, .work-modal__year, .work-modal__media, .work-modal__meta-item'
+        );
+        const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        let lastFocused = null;
+        let isAnimating = false;
+
+        const setVisitLink = (href, label) => {
+            const normalizedHref = href?.trim();
+            const linkLabel = label?.trim() || 'Visit project';
+
+            if (normalizedHref && normalizedHref !== '#') {
+                linkEl.textContent = linkLabel;
+                linkEl.href = normalizedHref;
+                linkEl.target = '_blank';
+                linkEl.rel = 'noopener noreferrer';
+                linkEl.classList.remove('is-disabled');
+                linkEl.removeAttribute('aria-disabled');
+            } else {
+                linkEl.textContent = 'Link available on request';
+                linkEl.removeAttribute('href');
+                linkEl.removeAttribute('target');
+                linkEl.removeAttribute('rel');
+                linkEl.classList.add('is-disabled');
+                linkEl.setAttribute('aria-disabled', 'true');
+            }
+        };
+
+        const populateModal = (card) => {
+            const projectId = card.dataset.projectId;
+            const project = WORK_PROJECTS[projectId] || {};
+
+            titleEl.textContent = project.title || 'Project Name 1';
+            descEl.textContent = project.desc || 'Project description';
+            projectYearEl.textContent = project.year || '2026';
+            roleEl.textContent = project.role || 'Details coming soon.';
+            toolsEl.textContent = project.tools || 'Tools coming soon.';
+            setVisitLink(project.link, project.linkLabel);
+
+            const setModalImage = (src, altText) => {
+                mediaEl.style.background = 'none';
+                mediaEl.classList.add('has-image');
+                mediaImgEl.src = src;
+                mediaImgEl.alt = altText;
+                mediaImgEl.classList.remove('is-hidden');
+            };
+
+            const clearModalImage = () => {
+                mediaImgEl.classList.add('is-hidden');
+                mediaImgEl.removeAttribute('src');
+                mediaImgEl.alt = '';
+                mediaEl.classList.remove('has-image');
+            };
+
+            const normalizedImage = (project.modalImage || project.image || '').trim();
+            if (normalizedImage) {
+                setModalImage(normalizedImage, `${titleEl.textContent} preview image`);
+                return;
+            }
+
+            const sourceCardImage = card.querySelector('.work-media img');
+            if (sourceCardImage?.src) {
+                setModalImage(sourceCardImage.src, sourceCardImage.alt || `${titleEl.textContent} preview image`);
+                return;
+            }
+
+            clearModalImage();
+            const sourceMedia = card.querySelector('.work-media');
+            if (sourceMedia) {
+                mediaEl.style.background = window.getComputedStyle(sourceMedia).background;
+            }
+        };
+
+        const firstProjectCard = document.querySelector('.work-card[data-project-id]');
+        if (firstProjectCard) {
+            populateModal(firstProjectCard);
+        }
+
+        const resetAnimatedStyles = () => {
+            gsap.set([backdrop, dialog, ...animatedParts], { clearProps: 'opacity,transform' });
+        };
+
+        const completeClose = () => {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('modal-open');
+            isAnimating = false;
+
+            if (lastFocused instanceof HTMLElement) {
+                lastFocused.focus();
+            }
+        };
+
+        const closeModal = () => {
+            if (!modal.classList.contains('is-open')) return;
+
+            gsap.killTweensOf([backdrop, dialog, ...animatedParts]);
+
+            isAnimating = true;
+            gsap.timeline({
+                defaults: { ease: 'power2.inOut' },
+                onComplete: () => {
+                    resetAnimatedStyles();
+                    completeClose();
+                },
+            })
+            .to(animatedParts, {
+                opacity: 0,
+                y: 18,
+                duration: 0.24,
+                stagger: 0.028,
+            }, 0)
+            .to(dialog, {
+                opacity: 0,
+                y: 30,
+                scale: 0.965,
+                duration: 0.32,
+            }, 0.02)
+            .to(backdrop, {
+                opacity: 0,
+                duration: 0.28,
+            }, 0.04);
+        };
+
+        const trapFocus = (event) => {
+            if (!modal.classList.contains('is-open') || event.key !== 'Tab') return;
+
+            const focusables = [...dialog.querySelectorAll(focusableSelector)].filter(
+                (el) => !el.hasAttribute('disabled') && !el.classList.contains('is-disabled')
+            );
+
+            if (focusables.length === 0) return;
+
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        const openModal = (card, trigger) => {
+            populateModal(card);
+            lastFocused = trigger;
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('modal-open');
+
+            gsap.killTweensOf([backdrop, dialog, ...animatedParts]);
+
+            isAnimating = true;
+            gsap.set(backdrop, { opacity: 0 });
+            gsap.set(dialog, { opacity: 0, y: 40, scale: 0.95 });
+            gsap.set(animatedParts, { opacity: 0, y: 26 });
+
+            gsap.timeline({
+                defaults: { ease: 'power3.out' },
+                onComplete: () => {
+                    isAnimating = false;
+                    window.requestAnimationFrame(() => closeButton?.focus());
+                },
+            })
+            .to(backdrop, {
+                opacity: 1,
+                duration: 0.3,
+            }, 0)
+            .to(dialog, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.44,
+            }, 0.04)
+            .to(animatedParts, {
+                opacity: 1,
+                y: 0,
+                duration: 0.34,
+                stagger: 0.05,
+            }, 0.18);
+        };
+
+        triggers.forEach((trigger) => {
+            trigger.addEventListener('click', () => {
+                const card = trigger.closest('.work-card');
+                if (!card) return;
+                openModal(card, trigger);
+            });
+        });
+
+        closeTargets.forEach((target) => {
+            target.addEventListener('click', closeModal);
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+
+            trapFocus(event);
+        });
+    }
+
     const snapToTopbar = () => {
         stopIntroViewportWatch();
+        unlockIntroScroll();
         gsap.set(colorPanels, { display: 'none' });
         gsap.set(header, { height: headerHeight });
         gsap.set(headerBg, {
@@ -192,7 +567,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     mainContent.style.display = 'block';
+    hydrateWorkCardsFromMap();
     initCursorBloom();
+    initWorkModal();
+    lockIntroScroll();
 
     if (shouldSkipIntro()) {
         snapToTopbar();
