@@ -176,62 +176,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchEncouragementFromInternet() {
-        const normalize = (value) => value?.replace(/\s+/g, ' ').trim();
+        const controller = new AbortController();
+        const timeout = window.setTimeout(() => controller.abort(), 4000);
 
-        const requestConfigs = [
-            {
-                url: 'https://motivational-spark-api.vercel.app/api/quotes/random',
-                parse: (data) => normalize(data?.quote),
-            },
-            {
-                url: 'https://random-quotes-freeapi.vercel.app/api/random',
-                parse: (data) => {
-                    const quote = normalize(data?.quote);
-                    const author = normalize(data?.author);
-                    if (!quote) return '';
-                    return author ? `${quote} — ${author}` : quote;
+        try {
+            // Allowed by current CSP: connect-src 'self' https://api.github.com
+            const response = await fetch('https://api.github.com/zen', {
+                method: 'GET',
+                cache: 'no-store',
+                signal: controller.signal,
+                headers: {
+                    Accept: 'text/plain',
                 },
-            },
-            {
-                url: 'https://zenquotes.io/api/random',
-                parse: (data) => {
-                    const item = Array.isArray(data) ? data[0] : null;
-                    const quote = normalize(item?.q);
-                    const author = normalize(item?.a);
-                    if (!quote) return '';
-                    return author ? `${quote} — ${author}` : quote;
-                },
-            },
-        ];
+            });
 
-        for (const config of requestConfigs) {
-            const controller = new AbortController();
-            const timeout = window.setTimeout(() => controller.abort(), 4000);
-
-            try {
-                const response = await fetch(config.url, {
-                    method: 'GET',
-                    cache: 'no-store',
-                    signal: controller.signal,
-                });
-
-                if (!response.ok) {
-                    continue;
-                }
-
-                const data = await response.json();
-                const line = config.parse(data);
-                if (line) {
-                    return line;
-                }
-            } catch (_) {
-                // Try the next internet source.
-            } finally {
-                window.clearTimeout(timeout);
+            if (!response.ok) {
+                return 'Keep going. Your next project is on the way.';
             }
-        }
 
-        return 'Keep going. Your next project is on the way.';
+            const text = (await response.text()).replace(/\s+/g, ' ').trim();
+            return text || 'Keep going. Your next project is on the way.';
+        } catch (_) {
+            return 'Keep going. Your next project is on the way.';
+        } finally {
+            window.clearTimeout(timeout);
+        }
     }
 
     function hydrateWorkCardsFromMap() {
