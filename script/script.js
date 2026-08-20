@@ -185,9 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'GET',
                 cache: 'no-store',
                 signal: controller.signal,
-                headers: {
-                    Accept: 'text/plain',
-                },
             });
 
             if (!response.ok) {
