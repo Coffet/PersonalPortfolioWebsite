@@ -922,7 +922,7 @@ body.modal-open {
     overflow: hidden;
     margin-top: 20px;
     width: min(100%, 710px);
-    height: 295px;
+    height: 270px;
     background:
         linear-gradient(120deg, rgba(238, 238, 238, 0.96) 0%, rgba(144, 144, 144, 0.9) 52%, rgba(106, 106, 106, 0.92) 100%);
     box-shadow:
@@ -932,6 +932,9 @@ body.modal-open {
 
 .work-modal__media.has-image {
     background: #101010;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 16px 44px rgba(0, 0, 0, 0.28);
 }
 
 .work-modal__media-img {
@@ -939,10 +942,190 @@ body.modal-open {
     height: 100%;
     display: block;
     object-fit: cover;
+    object-position: center;
 }
 
-.work-modal__media-img.is-hidden {
-    display: none;
+.work-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10060;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.work-lightbox.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.work-lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(10px);
+}
+
+.work-lightbox__dialog {
+    position: absolute;
+    inset: clamp(18px, 3vw, 28px);
+    display: grid;
+    place-items: center;
+}
+
+.work-lightbox__img {
+    width: min(100%, 1200px);
+    height: min(100%, 820px);
+    max-width: 92vw;
+    max-height: 86vh;
+    object-fit: contain;
+    object-position: center;
+    background: #0f0f0f;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.work-lightbox__close,
+.work-lightbox__count {
+    z-index: 1;
+}
+
+.work-lightbox__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.92);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.work-lightbox__nav--prev { left: 18px; }
+.work-lightbox__nav--next { right: 18px; }
+
+.work-lightbox__nav span {
+    font-family: var(--font);
+    font-size: 26px;
+    line-height: 1;
+}
+
+.work-lightbox__count {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.work-lightbox__close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    color: rgba(255, 255, 255, 0.92);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.work-lightbox__dialog {
+    grid-template-areas: "stack";
+}
+
+.work-lightbox__img,
+.work-lightbox__nav,
+.work-lightbox__count,
+.work-lightbox__close {
+    grid-area: stack;
+}
+
+.work-lightbox__close {
+    justify-self: end;
+    align-self: start;
+    margin: 10px;
+}
+
+.work-lightbox__count {
+    justify-self: center;
+    align-self: end;
+    margin-bottom: 12px;
+}
+
+.work-modal__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.92);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition:
+        transform 0.18s ease,
+        background-color 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.work-modal__nav:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.work-modal__nav:focus-visible {
+    outline: 2px solid rgba(62, 178, 151, 0.9);
+    outline-offset: 4px;
+}
+
+.work-modal__nav span {
+    font-family: var(--font);
+    font-size: 22px;
+    line-height: 1;
+}
+
+.work-modal__nav--prev {
+    left: 14px;
+}
+
+.work-modal__nav--next {
+    right: 14px;
+}
+
+.work-modal__count {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-family: "Inter", "Segoe UI", sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.86);
 }
 
 
@@ -1170,8 +1353,28 @@ body.modal-open {
 
     .work-modal__media {
         width: 100%;
-        height: auto;
-        aspect-ratio: 4 / 3;
+        height: 220px;
+    }
+
+    .work-modal__media-img {
+        height: 100%;
+    }
+
+    .work-modal__nav {
+        width: 44px;
+        height: 44px;
+    }
+
+    .work-modal__nav--prev {
+        left: 10px;
+    }
+
+    .work-modal__nav--next {
+        right: 10px;
+    }
+
+    .work-modal__count {
+        bottom: 10px;
     }
 
     .footer-cta {
@@ -1260,6 +1463,33 @@ body.modal-open {
 
     .footer-bar-left {
         flex-wrap: wrap;
+    }
+
+    .work-lightbox__dialog {
+        inset:
+            max(14px, env(safe-area-inset-top))
+            max(14px, env(safe-area-inset-right))
+            max(14px, env(safe-area-inset-bottom))
+            max(14px, env(safe-area-inset-left));
+    }
+
+    .work-lightbox__nav {
+        width: 48px;
+        height: 48px;
+    }
+
+    .work-lightbox__nav--prev { left: 12px; }
+    .work-lightbox__nav--next { right: 12px; }
+
+    .work-lightbox__close {
+        width: 48px;
+        height: 48px;
+        top: 60px;
+        right: 12px;
+    }
+
+    .work-lightbox__count {
+        bottom: 12px;
     }
 }
 

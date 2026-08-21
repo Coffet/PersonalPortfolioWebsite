@@ -239,18 +239,41 @@ document.addEventListener('DOMContentLoaded', () => {
             mediaEl.setAttribute('aria-hidden', 'true');
 
             const cardImage = (project.cardImage || project.image || '').trim();
+            const cardImageScale =
+                typeof project.cardImageScale === 'number' && project.cardImageScale > 0
+                    ? Math.min(project.cardImageScale, 1)
+                    : 1;
             const cardGradient = project.cardGradient || defaultCardGradient;
+            const gradientIsCssImage = /gradient\(/i.test(cardGradient);
+
+            // Reset shorthand so layered backgrounds don't get wiped.
+            mediaEl.style.background = 'none';
+            mediaEl.style.backgroundColor = gradientIsCssImage ? 'transparent' : cardGradient;
 
             if (cardImage) {
-                const imageEl = document.createElement('img');
-                imageEl.src = cardImage;
-                imageEl.alt = `${project.title || 'Project'} preview`;
-                imageEl.loading = 'lazy';
-                imageEl.decoding = 'async';
-                mediaEl.appendChild(imageEl);
-                mediaEl.style.background = '#101010';
+                // Keep color/gradient under the logo (logo alone was replacing the color).
+                mediaEl.style.backgroundImage = gradientIsCssImage
+                    ? `url("${cardImage}"), ${cardGradient}`
+                    : `url("${cardImage}")`;
+
+                if (project.cardImageMode === 'contain') {
+                    const percent = Math.round(cardImageScale * 100);
+                    mediaEl.style.backgroundSize = gradientIsCssImage
+                        ? `auto ${percent}%, auto`
+                        : `auto ${percent}%`;
+                } else {
+                    mediaEl.style.backgroundSize = gradientIsCssImage ? 'cover, cover' : 'cover';
+                }
+
+                mediaEl.style.backgroundPosition = gradientIsCssImage ? 'center, center' : 'center';
+                mediaEl.style.backgroundRepeat = gradientIsCssImage ? 'no-repeat, no-repeat' : 'no-repeat';
+            } else if (gradientIsCssImage) {
+                mediaEl.style.backgroundImage = cardGradient;
+                mediaEl.style.backgroundSize = 'auto';
+                mediaEl.style.backgroundPosition = 'center';
+                mediaEl.style.backgroundRepeat = 'no-repeat';
             } else {
-                mediaEl.style.background = cardGradient;
+                mediaEl.style.backgroundImage = 'none';
             }
 
             const bodyEl = document.createElement('div');
@@ -297,13 +320,184 @@ document.addEventListener('DOMContentLoaded', () => {
         const toolsEl = document.getElementById('work-modal-tools');
         const linkEl = document.getElementById('work-modal-link');
         const mediaEl = document.getElementById('work-modal-media');
-        const mediaImgEl = document.getElementById('work-modal-media-img');
         const animatedParts = modal.querySelectorAll(
             '.work-modal__title, .work-modal__desc, .work-modal__year, .work-modal__media, .work-modal__meta-item'
         );
         const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
         let lastFocused = null;
         let isAnimating = false;
+
+        const gallery = {
+            images: [],
+            index: 0,
+            imgEl: null,
+            prevEl: null,
+            nextEl: null,
+            countEl: null,
+        };
+
+        const lightbox = {
+            root: null,
+            imgEl: null,
+            prevEl: null,
+            nextEl: null,
+            countEl: null,
+            closeEl: null,
+            isOpen: false,
+        };
+
+        const ensureLightboxShell = () => {
+            if (lightbox.root) return;
+
+            const root = document.createElement('div');
+            root.className = 'work-lightbox';
+            root.setAttribute('aria-hidden', 'true');
+
+            const backdropEl = document.createElement('div');
+            backdropEl.className = 'work-lightbox__backdrop';
+
+            const dialogEl = document.createElement('div');
+            dialogEl.className = 'work-lightbox__dialog';
+            dialogEl.setAttribute('role', 'dialog');
+            dialogEl.setAttribute('aria-modal', 'true');
+            dialogEl.setAttribute('aria-label', 'Image viewer');
+
+            const imgEl = document.createElement('img');
+            imgEl.className = 'work-lightbox__img';
+            imgEl.loading = 'eager';
+            imgEl.decoding = 'async';
+            imgEl.alt = '';
+
+            const prev = document.createElement('button');
+            prev.type = 'button';
+            prev.className = 'work-lightbox__nav work-lightbox__nav--prev';
+            prev.setAttribute('aria-label', 'Previous image');
+            prev.innerHTML = '<span aria-hidden="true">‹</span>';
+
+            const next = document.createElement('button');
+            next.type = 'button';
+            next.className = 'work-lightbox__nav work-lightbox__nav--next';
+            next.setAttribute('aria-label', 'Next image');
+            next.innerHTML = '<span aria-hidden="true">›</span>';
+
+            const count = document.createElement('div');
+            count.className = 'work-lightbox__count';
+
+            const close = document.createElement('button');
+            close.type = 'button';
+            close.className = 'work-lightbox__close';
+            close.setAttribute('aria-label', 'Close image viewer');
+            close.innerHTML = '<span aria-hidden="true">×</span>';
+
+            const closeLightbox = () => {
+                if (!lightbox.isOpen) return;
+                lightbox.isOpen = false;
+                root.classList.remove('is-open');
+                root.setAttribute('aria-hidden', 'true');
+            };
+
+            const syncLightbox = () => {
+                if (!gallery.images.length) return;
+                const length = gallery.images.length;
+                const src = gallery.images[gallery.index];
+                imgEl.src = src;
+                imgEl.alt = `${titleEl.textContent} image ${gallery.index + 1} of ${length}`;
+                count.textContent = `${gallery.index + 1} / ${length}`;
+                const showNav = length > 1;
+                prev.hidden = !showNav;
+                next.hidden = !showNav;
+            };
+
+            prev.addEventListener('click', () => {
+                setGalleryIndex(gallery.index - 1);
+                syncLightbox();
+            });
+            next.addEventListener('click', () => {
+                setGalleryIndex(gallery.index + 1);
+                syncLightbox();
+            });
+            close.addEventListener('click', closeLightbox);
+            backdropEl.addEventListener('click', closeLightbox);
+
+            dialogEl.append(imgEl, prev, next, count, close);
+            root.append(backdropEl, dialogEl);
+            document.body.appendChild(root);
+
+            lightbox.root = root;
+            lightbox.imgEl = imgEl;
+            lightbox.prevEl = prev;
+            lightbox.nextEl = next;
+            lightbox.countEl = count;
+            lightbox.closeEl = close;
+
+            lightbox.open = () => {
+                if (!gallery.images.length) return;
+                syncLightbox();
+                lightbox.isOpen = true;
+                root.classList.add('is-open');
+                root.setAttribute('aria-hidden', 'false');
+                window.requestAnimationFrame(() => close.focus());
+            };
+
+            lightbox.close = closeLightbox;
+            lightbox.sync = syncLightbox;
+        };
+
+        const ensureGalleryShell = () => {
+            if (gallery.imgEl) return;
+
+            const img = document.createElement('img');
+            img.className = 'work-modal__media-img';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.alt = '';
+            img.style.cursor = 'zoom-in';
+
+            const prev = document.createElement('button');
+            prev.type = 'button';
+            prev.className = 'work-modal__nav work-modal__nav--prev';
+            prev.setAttribute('aria-label', 'Previous image');
+            prev.innerHTML = '<span aria-hidden="true">‹</span>';
+
+            const next = document.createElement('button');
+            next.type = 'button';
+            next.className = 'work-modal__nav work-modal__nav--next';
+            next.setAttribute('aria-label', 'Next image');
+            next.innerHTML = '<span aria-hidden="true">›</span>';
+
+            const count = document.createElement('div');
+            count.className = 'work-modal__count';
+
+            prev.addEventListener('click', () => setGalleryIndex(gallery.index - 1));
+            next.addEventListener('click', () => setGalleryIndex(gallery.index + 1));
+            img.addEventListener('click', () => {
+                ensureLightboxShell();
+                lightbox.open?.();
+            });
+
+            mediaEl.replaceChildren(img, prev, next, count);
+            gallery.imgEl = img;
+            gallery.prevEl = prev;
+            gallery.nextEl = next;
+            gallery.countEl = count;
+        };
+
+        const setGalleryIndex = (nextIndex) => {
+            if (!gallery.images.length) return;
+
+            const length = gallery.images.length;
+            const wrapped = ((nextIndex % length) + length) % length;
+            gallery.index = wrapped;
+
+            const src = gallery.images[gallery.index];
+            gallery.imgEl.src = src;
+            gallery.imgEl.alt = `${titleEl.textContent} image ${gallery.index + 1} of ${length}`;
+            gallery.countEl.textContent = `${gallery.index + 1} / ${length}`;
+
+            const showNav = length > 1;
+            gallery.prevEl.hidden = !showNav;
+            gallery.nextEl.hidden = !showNav;
+        };
 
         const setVisitLink = (href, label) => {
             const normalizedHref = href?.trim();
@@ -337,34 +531,31 @@ document.addEventListener('DOMContentLoaded', () => {
             toolsEl.textContent = project.tools || 'Tools coming soon.';
             setVisitLink(project.link, project.linkLabel);
 
-            const setModalImage = (src, altText) => {
-                mediaEl.style.background = 'none';
-                mediaEl.classList.add('has-image');
-                mediaImgEl.src = src;
-                mediaImgEl.alt = altText;
-                mediaImgEl.classList.remove('is-hidden');
-            };
-
-            const clearModalImage = () => {
-                mediaImgEl.classList.add('is-hidden');
-                mediaImgEl.removeAttribute('src');
-                mediaImgEl.alt = '';
+            const clearModalMedia = () => {
+                gallery.images = [];
+                gallery.index = 0;
+                mediaEl.replaceChildren();
                 mediaEl.classList.remove('has-image');
+                mediaEl.style.background = '';
             };
 
-            const normalizedImage = (project.modalImage || project.image || '').trim();
-            if (normalizedImage) {
-                setModalImage(normalizedImage, `${titleEl.textContent} preview image`);
+            const modalImageList = Array.isArray(project.modalImages)
+                ? project.modalImages.map((src) => String(src || '').trim()).filter(Boolean)
+                : [];
+            const singleModalImage = (project.modalImage || project.image || '').trim();
+            const imagesToShow = modalImageList.length
+                ? modalImageList
+                : (singleModalImage ? [singleModalImage] : []);
+
+            if (imagesToShow.length) {
+                ensureGalleryShell();
+                mediaEl.classList.add('has-image');
+                gallery.images = imagesToShow;
+                setGalleryIndex(0);
                 return;
             }
 
-            const sourceCardImage = card.querySelector('.work-media img');
-            if (sourceCardImage?.src) {
-                setModalImage(sourceCardImage.src, sourceCardImage.alt || `${titleEl.textContent} preview image`);
-                return;
-            }
-
-            clearModalImage();
+            clearModalMedia();
             const sourceMedia = card.querySelector('.work-media');
             if (sourceMedia) {
                 mediaEl.style.background = window.getComputedStyle(sourceMedia).background;
@@ -496,7 +687,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
-                closeModal();
+                if (lightbox.isOpen) {
+                    lightbox.close?.();
+                } else {
+                    closeModal();
+                }
+            }
+
+            if (modal.classList.contains('is-open') && gallery.images.length > 1) {
+                if (event.key === 'ArrowLeft') setGalleryIndex(gallery.index - 1);
+                if (event.key === 'ArrowRight') setGalleryIndex(gallery.index + 1);
+                if (lightbox.isOpen) {
+                    lightbox.sync?.();
+                }
             }
 
             trapFocus(event);
