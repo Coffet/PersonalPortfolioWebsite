@@ -238,7 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
             mediaEl.className = 'work-media';
             mediaEl.setAttribute('aria-hidden', 'true');
 
-            const cardImage = (project.cardImage || project.image || '').trim();
+            const fallbackImage = (project.fallbackImage || project.image || '').trim();
+            const cardImage = (project.cardImage || fallbackImage).trim();
             const cardImageScale =
                 typeof project.cardImageScale === 'number' && project.cardImageScale > 0
                     ? Math.min(project.cardImageScale, 1)
@@ -542,7 +543,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const modalImageList = Array.isArray(project.modalImages)
                 ? project.modalImages.map((src) => String(src || '').trim()).filter(Boolean)
                 : [];
-            const singleModalImage = (project.modalImage || project.image || '').trim();
+            const fallbackImage = (project.fallbackImage || project.image || '').trim();
+            const singleModalImage = (project.modalImage || fallbackImage).trim();
             const imagesToShow = modalImageList.length
                 ? modalImageList
                 : (singleModalImage ? [singleModalImage] : []);

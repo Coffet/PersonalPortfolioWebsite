@@ -8,13 +8,15 @@
 // - tools: The tools used to create the project.
 // - link: The link to the project.
 // - linkLabel: The label for the link.
-// - image: The image for the project.
+// - fallbackImage: A general fallback image used when cardImage/modalImage(s) are missing.
 // - cardImage: The image for the project card.
 // - modalImage: Single image for the project modal (optional if modalImages is used).
 // - modalImages: Array of images shown in View Details (preferred).
 // - cardGradient: The gradient for the project card.
 // - cardImageMode: "cover" (default) or "contain" for wide logos.
 // - cardImageScale: Optional number (0–1). When mode is "contain", scales the logo down.
+
+
 // Format example:
 // window.WORK_PROJECTS = {
 //   someId: {
@@ -25,7 +27,7 @@
 //     tools: "Tool A, Tool B",
 //     link: "https://example.com",
 //     linkLabel: "Visit project",
-//     image: "./image/PJKT_x_img/logo.png",
+//     fallbackImage: "./image/PJKT_x_img/logo.png",
 //     cardImage: "./image/PJKT_x_img/logo.png",
 //     modalImage: "./image/PJKT_x_img/shot.png",
 //     modalImages: [
@@ -48,7 +50,7 @@ window.WORK_PROJECTS = {
         tools: "React, Node.js, SQLite3, MinIO, Figma, express.js",
         link: "https://github.com/Chung1045/singularity",
         linkLabel: "GitHub",
-        image: "./image/PJKT_1_img/PJKT_1_Logo.png",
+        fallbackImage: "./image/PJKT_1_img/PJKT_1_Logo.png",
         cardImage: "./image/PJKT_1_img/PJKT_1_Logo.png",
         modalImages: [
             "./image/PJKT_1_img/PJKT_1_Modal_01.png",
