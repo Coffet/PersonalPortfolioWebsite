@@ -47,7 +47,7 @@ window.WORK_PROJECTS = {
         desc: "AI-assisted software requirements gathering platform.",
         year: "2025–2026",
         role: "Frontend & backend development, UI/UX design.",
-        tools: "React, Node.js, SQLite3, MinIO, Figma, express.js",
+        tools: "React, Node.js, SQLite3, MinIO, Figma, express.js, Socket.IO",
         link: "https://github.com/Chung1045/singularity",
         linkLabel: "GitHub",
         fallbackImage: "./image/PJKT_1_img/PJKT_1_Logo.png",
