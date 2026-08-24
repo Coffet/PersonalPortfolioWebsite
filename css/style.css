@@ -973,7 +973,6 @@ body.modal-open {
     inset: clamp(18px, 3vw, 28px);
     display: grid;
     place-items: center;
-    padding: 56px 12px 56px;
 }
 
 .work-lightbox__img {
@@ -1018,7 +1017,7 @@ body.modal-open {
 }
 
 .work-lightbox__count {
-    position: absolute;
+    position: fixed;
     left: 50%;
     bottom: 18px;
     transform: translateX(-50%);
@@ -1066,9 +1065,9 @@ body.modal-open {
 }
 
 .work-lightbox__count {
-    justify-self: center;
-    align-self: end;
-    margin-bottom: 12px;
+    justify-self: auto;
+    align-self: auto;
+    margin-bottom: 0;
 }
 
 .work-modal__nav {
@@ -1524,12 +1523,10 @@ body.modal-open {
     }
 
     .work-lightbox__dialog {
-        inset:
-            max(14px, env(safe-area-inset-top))
-            max(14px, env(safe-area-inset-right))
-            max(14px, env(safe-area-inset-bottom))
-            max(14px, env(safe-area-inset-left));
-        padding: 54px 10px 54px;
+        top: max(14px, env(safe-area-inset-top));
+        right: max(14px, env(safe-area-inset-left), env(safe-area-inset-right));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        left: max(14px, env(safe-area-inset-left), env(safe-area-inset-right));
     }
 
     .work-lightbox__nav {
@@ -1552,7 +1549,8 @@ body.modal-open {
     }
 
     .work-lightbox__img {
-        max-width: 94vw;
+        width: 100%;
+        max-width: 100%;
         max-height: 72vh;
     }
 }
