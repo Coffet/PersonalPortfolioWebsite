@@ -6,17 +6,13 @@
 3. Confirm the main source layout is under `src/main/java`, `src/main/resources`, and `src/main/webapp`.
 
 ## Run The App
-Set CMS seed credentials in the environment first. They are not stored in `application.properties`.
-
-PowerShell:
+Local defaults live in `application.properties`. You do not need env vars on this PC.
 
 ```powershell
-$env:PORTFOLIO_SEED_OWNER_USERNAME="your-username"
-$env:PORTFOLIO_SEED_OWNER_PASSWORD="your-password"
 .\mvnw.cmd spring-boot:run
 ```
 
-Or run `PortfolioStudioApplication` from IntelliJ after adding the same two env vars in the run configuration.
+Or run `PortfolioStudioApplication` from IntelliJ.
 
 ## Local Access Links
 - Public home: `http://localhost:8080/`
@@ -26,14 +22,17 @@ Or run `PortfolioStudioApplication` from IntelliJ after adding the same two env 
 - CMS sign-in: `http://localhost:8080/cmsmgmnt/sign-in`
 
 ## CMS credentials
-Do not put a username or password in `application.properties`. Set them before the first boot (when `cms_users` is empty):
+Local first-boot defaults (from `application.properties`):
+
+- Username: `CMS_Admin`
+- Password: `PDW_CMSpwd`
+
+On Linode, override them in systemd before the first start:
 
 - `PORTFOLIO_SEED_OWNER_USERNAME`
 - `PORTFOLIO_SEED_OWNER_PASSWORD`
 
-On Linode, set the same names in the systemd unit `Environment=` lines.
-
-If `cms_users` already has a row, those env vars are ignored. Login uses the hash in SQLite:
+If `cms_users` already has a row, the file and env vars are ignored. Login uses the hash in SQLite:
 
 - Database: `storage/database/portfolio.db`
 - Table: `cms_users`
