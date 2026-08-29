@@ -1,0 +1,5 @@
+    </main>
+</div>
+<%@ include file="/WEB-INF/jsp/layout/desk-tabs.jspf" %>
+<%@ include file="/WEB-INF/jsp/layout/studio-toast.jspf" %>
+<script src="${ctx}/assets/js/cms.js?v=9" defer></script>

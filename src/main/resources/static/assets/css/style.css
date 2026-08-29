@@ -219,6 +219,56 @@ img {
     50% { opacity: 0.55; transform: scale(0.86); }
 }
 
+.header-logo-wrap {
+    display: contents;
+}
+
+.status-link.header-location {
+    margin: 0;
+    cursor: default;
+}
+
+body.has-settled-header {
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+body.has-settled-header #header,
+body.has-settled-header .header-bg {
+    height: 75px;
+}
+
+body.has-settled-header .header-bg {
+    width: 100vw;
+    background-color: #000;
+    z-index: 6;
+}
+
+body.has-settled-header #logo {
+    opacity: 1;
+    width: 70px;
+    height: 70px;
+    max-width: none;
+    top: 50%;
+    left: 30px;
+    transform: translate(0%, -50%);
+}
+
+body.has-settled-header #nav-links {
+    opacity: 1;
+    right: 45px;
+}
+
+@media (max-width: 768px) {
+    body.has-settled-header #logo {
+        left: 8px;
+    }
+
+    body.has-settled-header #nav-links {
+        right: 16px;
+    }
+}
+
 /* =========================================
    MAIN
    ========================================= */

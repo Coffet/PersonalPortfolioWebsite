@@ -1,0 +1,36 @@
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<c:set var="toastText" value="${not empty flashMessage ? flashMessage : formError}" />
+<c:choose>
+    <c:when test="${not empty flashKind}">
+        <c:set var="toastKind" value="${flashKind}" />
+    </c:when>
+    <c:when test="${not empty formError}">
+        <c:set var="toastKind" value="error" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="toastKind" value="saved" />
+    </c:otherwise>
+</c:choose>
+<c:if test="${not empty toastText}">
+    <div class="toast-region is-hidden" data-toast-region>
+        <div class="toast toast--${toastKind}" data-toast role="${toastKind eq 'error' ? 'alert' : 'status'}" aria-live="${toastKind eq 'error' ? 'assertive' : 'polite'}">
+            <span class="toast__icon" aria-hidden="true">
+                <c:choose>
+                    <c:when test="${toastKind eq 'deleted'}">
+                        <svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M8 7l.8 12h6.4L16 7" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </c:when>
+                    <c:when test="${toastKind eq 'error'}">
+                        <svg viewBox="0 0 24 24"><path d="M12 8v5M12 16.5h.01M12 4.5l8.5 14.5H3.5L12 4.5z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </c:when>
+                    <c:otherwise>
+                        <svg viewBox="0 0 24 24"><path d="M20 7L10 17l-5-5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </c:otherwise>
+                </c:choose>
+            </span>
+            <p class="toast__copy">${toastText}</p>
+            <button class="toast__close" type="button" data-toast-dismiss aria-label="Dismiss notification">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+    </div>
+</c:if>

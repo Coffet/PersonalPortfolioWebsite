@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const WORK_PROJECTS = window.WORK_PROJECTS || {};
+    const projectDataScript = document.getElementById('work-projects-data');
+    let WORK_PROJECTS = {};
+    if (projectDataScript?.textContent?.trim()) {
+        try {
+            WORK_PROJECTS = JSON.parse(projectDataScript.textContent);
+        } catch (error) {
+            console.error('Unable to parse work project data.', error);
+        }
+    }
     gsap.registerPlugin(ScrollTrigger);
 
     const header = document.getElementById('header');

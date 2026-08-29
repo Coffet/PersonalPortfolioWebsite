@@ -1,0 +1,38 @@
+<header id="header" class="${headerSettled ? 'is-settled' : ''}">
+    <c:if test="${not headerSettled}">
+        <div class="color-panel c1"></div>
+        <div class="color-panel c2"></div>
+        <div class="color-panel c3"></div>
+        <div class="color-panel c4"></div>
+    </c:if>
+
+    <div class="header-bg"></div>
+
+    <div class="header-content">
+        <c:choose>
+            <c:when test="${headerSettled}">
+                <a class="header-logo-wrap" href="${ctx}/" aria-label="Back to home">
+                    <img id="logo" src="${ctx}/assets/images/logo.webp" alt="coft" width="70" height="70" decoding="async">
+                </a>
+            </c:when>
+            <c:otherwise>
+                <img id="logo" src="${ctx}/assets/images/logo.webp" alt="coft" width="70" height="70" fetchpriority="high" decoding="async">
+            </c:otherwise>
+        </c:choose>
+        <div id="nav-links">
+            <c:choose>
+                <c:when test="${not empty headerLocation}">
+                    <span class="status-link header-location">
+                        <span class="status-text">${headerLocation}</span>
+                    </span>
+                </c:when>
+                <c:otherwise>
+                    <a class="status-link" href="mailto:blaze459077@gmail.com">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        <span class="status-text">Open to interesting conversations</span>
+                    </a>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+</header>

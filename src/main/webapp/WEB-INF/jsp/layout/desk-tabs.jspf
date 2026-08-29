@@ -1,0 +1,23 @@
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<nav class="desk-tabs" aria-label="Desk sections">
+    <a href="${ctx}/cmsmgmnt/dashboard" class="${activeNav eq 'dashboard' ? 'is-active' : ''}"${activeNav eq 'dashboard' ? ' aria-current="page"' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>
+        Home
+    </a>
+    <a href="${ctx}/cmsmgmnt/projects" class="${activeNav eq 'projects' ? 'is-active' : ''}"${activeNav eq 'projects' ? ' aria-current="page"' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M8 9h8M8 13h5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        Work
+    </a>
+    <a href="${ctx}/cmsmgmnt/gallery" class="${activeNav eq 'gallery' ? 'is-active' : ''}"${activeNav eq 'gallery' ? ' aria-current="page"' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
+        Gallery
+    </a>
+    <a href="${ctx}/cmsmgmnt/blog" class="${activeNav eq 'blog' ? 'is-active' : ''}"${activeNav eq 'blog' ? ' aria-current="page"' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h9a3 3 0 0 1 3 3v11H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M9 9h8M9 13h6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        Blog
+    </a>
+    <a href="${ctx}/cmsmgmnt/media" class="${activeNav eq 'media' ? 'is-active' : ''}"${activeNav eq 'media' ? ' aria-current="page"' : ''}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="m8 15 2.5-3 2 2.2L16 11l4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>
+        Media
+    </a>
+</nav>

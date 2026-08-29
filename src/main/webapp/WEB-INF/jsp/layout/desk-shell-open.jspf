@@ -1,0 +1,25 @@
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<a class="skip-link" href="#desk-main">Skip to content</a>
+<div class="studio-layout">
+    <%@ include file="/WEB-INF/jsp/layout/studio-sidebar.jspf" %>
+    <main id="desk-main" class="studio-main">
+        <div class="desk-top">
+            <p class="desk-place" aria-live="polite">
+                <span class="desk-place__prefix">You are now at:</span>
+                <span class="desk-place__name">${empty cmsPlace ? pageTitle : cmsPlace}</span>
+            </p>
+            <details class="desk-account">
+                <summary aria-label="Account menu">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M5.5 19.2a6.8 6.8 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+                    <span class="desk-account__label">Account</span>
+                </summary>
+                <div class="desk-account__panel">
+                    <p>Signed in as ${studioUsername}</p>
+                    <a href="${ctx}/gallery" target="_blank" rel="noopener noreferrer">View public site</a>
+                    <form action="${ctx}/cmsmgmnt/logout" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                        <button type="submit">Sign out</button>
+                    </form>
+                </div>
+            </details>
+        </div>

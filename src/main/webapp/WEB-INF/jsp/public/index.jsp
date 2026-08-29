@@ -1,36 +1,14 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Kenny Chow | Portfolio</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="./image/logo.webp" as="image" type="image/webp">
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400&family=Nata+Sans:ital,wght@0,100..900&family=Saira:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./css/style.css?v=23">
+    <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
+    <link rel="preload" href="${ctx}/assets/images/logo.webp" as="image" type="image/webp">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
 </head>
 <body>
-
-    <header id="header">
-        <div class="color-panel c1"></div>
-        <div class="color-panel c2"></div>
-        <div class="color-panel c3"></div>
-        <div class="color-panel c4"></div>
-
-        <div class="header-bg"></div>
-
-        <div class="header-content">
-            <img id="logo" src="./image/logo.webp" alt="coft" width="70" height="70" fetchpriority="high" decoding="async">
-            <div id="nav-links">
-                <a class="status-link" href="mailto:blaze459077@gmail.com">
-                    <span class="status-dot" aria-hidden="true"></span>
-                    <span class="status-text">Open to interesting conversations</span>
-                </a>
-            </div>
-        </div>
-    </header>
+    <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
 
     <main id="main-content">
         <section id="hero">
@@ -52,7 +30,7 @@
         <section id="connect" class="section-block">
             <div class="wrap">
                 <div class="connect-panel fade-up">
-                    <h2 class="connect-title">Speaking is the best way of starting a friendship.<br/>Or a path towards connection.</h2>
+                    <h2 class="connect-title">Speaking is the best way of starting a friendship.<br>Or a path towards connection.</h2>
                     <p class="connect-kicker">Find me around the web</p>
 
                     <div class="social-grid">
@@ -119,7 +97,7 @@
                 </div>
 
                 <div id="work-grid" class="work-grid fade-up">
-                    <!-- Cards are rendered from script/work-projects.js -->
+                    <!-- Cards are rendered from SQLite-backed JSON embedded below -->
                 </div>
             </div>
         </section>
@@ -136,10 +114,10 @@
                 </a>
             </div>
             <nav class="footer-nav" aria-label="Footer">
-                <a href="#hero">Index</a>
+                <a href="${ctx}/">Index</a>
                 <a href="https://github.com/Coffet" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="#about">Blog</a>
-                <a href="#work">Gallery</a>
+                <a href="${ctx}/blog">Blog</a>
+                <a href="${ctx}/gallery">Gallery</a>
             </nav>
         </div>
         <div class="footer-rule"></div>
@@ -148,9 +126,8 @@
                 <span>Coft © <span id="year">2026</span></span>
                 <span>Made with care</span>
                 <span>Designed in Figma</span>
-
             </div>
-            <span>Version 3</span>
+            <span>Version 4</span>
         </div>
     </footer>
 
@@ -190,9 +167,9 @@
         </div>
     </div>
 
+    <script id="work-projects-data" type="application/json"><c:out value="${workProjectsJson}" escapeXml="false" /></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="./script/work-projects.js?v=8" defer></script>
-    <script src="./script/script.js?v=25" defer></script>
+    <script src="${ctx}/assets/js/script.js?v=1" defer></script>
 </body>
 </html>
