@@ -41,8 +41,8 @@ public class PortfolioProperties {
         }
 
         public static class Owner {
-            private String username = "studio-owner";
-            private String password = "ChangeMe123!";
+            private String username;
+            private String password;
 
             public String getUsername() {
                 return username;

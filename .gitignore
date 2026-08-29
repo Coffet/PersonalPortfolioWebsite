@@ -33,6 +33,7 @@ build/
 .vscode/
 
 ### App Data ###
+.env
 identifier.sqlite
 storage/database/*.db
 storage/uploads/*

@@ -698,15 +698,21 @@ public class PortfolioService {
             return;
         }
 
+        String username = portfolioProperties.getSeed().getOwner().getUsername();
+        String password = portfolioProperties.getSeed().getOwner().getPassword();
+        if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
+            return;
+        }
+
         jdbcTemplate.update(
             """
                 INSERT INTO cms_users (username, password_hash, active)
                 VALUES (?, ?, 1)
                 """,
-            portfolioProperties.getSeed().getOwner().getUsername(),
-            passwordEncoder.encode(portfolioProperties.getSeed().getOwner().getPassword())
+            username,
+            passwordEncoder.encode(password)
         );
-        logAudit(getSeedUsername(), "SEED_OWNER_CREATED", "cms_user", portfolioProperties.getSeed().getOwner().getUsername(), "Seed owner account created", "system");
+        logAudit(username, "SEED_OWNER_CREATED", "cms_user", username, "Seed owner account created", "system");
     }
 
     private void ensureSeedProject() {
@@ -901,7 +907,8 @@ public class PortfolioService {
     }
 
     private String getSeedUsername() {
-        return portfolioProperties.getSeed().getOwner().getUsername();
+        String username = portfolioProperties.getSeed().getOwner().getUsername();
+        return StringUtils.hasText(username) ? username : "system";
     }
 
     private <T> Optional<T> findOne(String sql, RowMapper<T> mapper, Object... args) {
