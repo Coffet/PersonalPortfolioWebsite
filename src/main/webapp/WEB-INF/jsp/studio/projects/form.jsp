@@ -60,26 +60,30 @@
 
                     <section class="inspector">
                         <h2>Images</h2>
-                        <label class="dropzone" data-file-field data-empty-caption="Add a card image">
-                            <input id="cardImageFile" name="cardImageFile" type="file" accept="image/*">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l1.4-2h5.2L16 7h4v12H4z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
-                            <strong>Card image</strong>
-                            <span data-file-caption>Homepage card</span>
+                        <div class="upload-field" data-file-field data-empty-caption="Add a card image">
+                            <label class="dropzone" for="cardImageFile">
+                                <input id="cardImageFile" name="cardImageFile" type="file" accept="image/*">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l1.4-2h5.2L16 7h4v12H4z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
+                                <strong>Card image</strong>
+                                <span data-file-caption>Homepage card</span>
+                            </label>
                             <div class="drop-preview" data-file-preview></div>
-                        </label>
+                        </div>
                         <c:if test="${not empty project.cardImagePath}">
                             <div class="current-cover">
                                 <img src="${ctx}${project.cardImagePath}" alt="Current card image for ${project.title}">
                                 <span>Current card image</span>
                             </div>
                         </c:if>
-                        <label class="dropzone" data-file-field data-empty-caption="Add gallery images">
-                            <input id="galleryFiles" name="galleryFiles" type="file" accept="image/*" multiple>
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
-                            <strong>Project gallery</strong>
-                            <span data-file-caption>Detail page images</span>
+                        <div class="upload-field" data-file-field data-empty-caption="Add gallery images">
+                            <label class="dropzone" for="galleryFiles">
+                                <input id="galleryFiles" name="galleryFiles" type="file" accept="image/*" multiple>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
+                                <strong>Project gallery</strong>
+                                <span data-file-caption>Detail page images</span>
+                            </label>
                             <div class="drop-preview" data-file-preview></div>
-                        </label>
+                        </div>
                         <c:if test="${not empty project.media}">
                             <div class="media-strip">
                                 <c:forEach items="${project.media}" var="media">

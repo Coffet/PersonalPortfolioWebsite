@@ -52,13 +52,15 @@
 
                     <section class="inspector">
                         <h2>Cover</h2>
-                        <label class="dropzone" data-file-field data-empty-caption="Add a cover image">
-                            <input id="coverImageFile" name="coverImageFile" type="file" accept="image/*">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l1.4-2h5.2L16 7h4v12H4z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
-                            <strong>Cover image</strong>
-                            <span data-file-caption>Drop or choose a file</span>
+                        <div class="upload-field" data-file-field data-empty-caption="Add a cover image">
+                            <label class="dropzone" for="coverImageFile">
+                                <input id="coverImageFile" name="coverImageFile" type="file" accept="image/*">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h4l1.4-2h5.2L16 7h4v12H4z" fill="none" stroke="currentColor" stroke-width="1.75"/><circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
+                                <strong>Cover image</strong>
+                                <span data-file-caption>Drop or choose a file</span>
+                            </label>
                             <div class="drop-preview" data-file-preview></div>
-                        </label>
+                        </div>
                         <c:if test="${not empty post.coverImagePath}">
                             <div class="current-cover">
                                 <img src="${ctx}${post.coverImagePath}" alt="Current cover for ${post.title}">

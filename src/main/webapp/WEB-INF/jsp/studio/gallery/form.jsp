@@ -24,16 +24,19 @@
                 <input type="hidden" name="id" value="${entry.id}">
 
                 <div class="composer__stage">
-                    <label class="dropzone dropzone--hero composer__hero" data-file-field data-empty-caption="Add gallery images">
-                        <input id="mediaFiles" name="mediaFiles" type="file" accept="image/*" multiple>
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
-                        <strong>Images</strong>
-                        <span data-file-caption>Drop several images, or choose files</span>
+                    <div class="upload-field composer__hero" data-file-field data-empty-caption="Drop several images, or choose files">
+                        <label class="dropzone dropzone--hero" for="mediaFiles">
+                            <input id="mediaFiles" name="mediaFiles" type="file" accept="image/*" multiple>
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
+                            <strong>Images</strong>
+                            <span data-file-caption>Drop several images, or choose files</span>
+                        </label>
                         <div class="drop-preview" data-file-preview></div>
-                    </label>
+                    </div>
 
                     <c:if test="${not empty entry.media}">
-                        <div class="media-strip" style="margin-bottom: 18px;">
+                        <p class="upload-field__label">Already on this entry</p>
+                        <div class="media-strip">
                             <c:forEach items="${entry.media}" var="media">
                                 <article class="media-card">
                                     <img src="${ctx}${media.filePath}" alt="${empty media.altText ? entry.title : media.altText}">

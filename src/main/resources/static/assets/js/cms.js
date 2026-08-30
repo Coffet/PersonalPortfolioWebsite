@@ -1,4 +1,16 @@
 (() => {
+    const imageName = /\.(png|jpe?g|gif|webp|avif|bmp|svg)$/i;
+
+    const isImage = (file) => {
+        if (!file) {
+            return false;
+        }
+        if (file.type && file.type.startsWith("image/")) {
+            return true;
+        }
+        return imageName.test(file.name || "");
+    };
+
     document.querySelectorAll("[data-file-field]").forEach((field) => {
         const input = field.querySelector("input[type='file']");
         const preview = field.querySelector("[data-file-preview]");
@@ -14,13 +26,14 @@
         const fileKey = (file) => file.name + ":" + file.size + ":" + file.lastModified;
 
         const mergeFiles = (incoming) => {
+            const images = incoming.filter(isImage);
             if (!multiple) {
-                staged = incoming.slice(0, 1);
+                staged = images.slice(0, 1);
                 return;
             }
 
             const seen = new Set(staged.map(fileKey));
-            incoming.forEach((file) => {
+            images.forEach((file) => {
                 const key = fileKey(file);
                 if (seen.has(key)) {
                     return;
@@ -45,10 +58,12 @@
             if (caption) {
                 if (staged.length === 0) {
                     caption.textContent = field.dataset.emptyCaption || "Choose images";
-                } else if (staged.length === 1) {
-                    caption.textContent = staged[0].name;
+                } else if (multiple) {
+                    caption.textContent = staged.length === 1
+                        ? "1 image ready — click to add more"
+                        : staged.length + " images ready — click to add more";
                 } else {
-                    caption.textContent = staged.length + " images selected";
+                    caption.textContent = "Click to replace " + staged[0].name;
                 }
             }
 
@@ -59,11 +74,7 @@
             preview.querySelectorAll("img").forEach((image) => URL.revokeObjectURL(image.src));
             preview.replaceChildren();
             staged.forEach((file, index) => {
-                if (!file.type.startsWith("image/")) {
-                    return;
-                }
-
-                const item = document.createElement("div");
+                const item = document.createElement("figure");
                 item.className = "drop-preview__item";
 
                 const image = document.createElement("img");
@@ -107,12 +118,16 @@
             field.classList.add("is-dragover");
         });
 
-        field.addEventListener("dragleave", () => field.classList.remove("is-dragover"));
+        field.addEventListener("dragleave", (event) => {
+            if (!field.contains(event.relatedTarget)) {
+                field.classList.remove("is-dragover");
+            }
+        });
 
         field.addEventListener("drop", (event) => {
             event.preventDefault();
             field.classList.remove("is-dragover");
-            const dropped = Array.from(event.dataTransfer?.files || []).filter((file) => file.type.startsWith("image/"));
+            const dropped = Array.from(event.dataTransfer?.files || []);
             if (!dropped.length) {
                 return;
             }
