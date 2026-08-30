@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=9">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=10">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -84,8 +84,6 @@
                                             <div class="gallery-card__media">
                                                 <img src="${ctx}${entry.media[0].filePath}"
                                                      alt="${empty entry.media[0].altText ? entry.title : entry.media[0].altText}"
-                                                     width="640"
-                                                     height="400"
                                                      <c:if test="${status.index > 1}">loading="lazy"</c:if>
                                                      decoding="async">
                                             </div>
@@ -116,8 +114,6 @@
                                     <c:when test="${not empty featuredEntry.media}">
                                         <img src="${ctx}${featuredEntry.media[0].filePath}"
                                              alt="${empty featuredEntry.media[0].altText ? featuredEntry.title : featuredEntry.media[0].altText}"
-                                             width="720"
-                                             height="900"
                                              decoding="async">
                                     </c:when>
                                     <c:otherwise>

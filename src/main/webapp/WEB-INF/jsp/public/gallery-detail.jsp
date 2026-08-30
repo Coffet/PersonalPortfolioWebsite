@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=8">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=10">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -45,8 +45,6 @@
                         <figure class="detail-gallery__item">
                             <img src="${ctx}${media.filePath}"
                                  alt="${empty media.altText ? entry.title : media.altText}"
-                                 width="960"
-                                 height="600"
                                  <c:if test="${status.index > 0}">loading="lazy"</c:if>
                                  decoding="async">
                         </figure>
