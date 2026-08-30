@@ -147,6 +147,6 @@
         </div>
     </main>
     <script src="${ctx}/assets/js/gallery-order.js?v=3" defer></script>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=4" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=5" defer></script>
 </body>
 </html>

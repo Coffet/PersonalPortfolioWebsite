@@ -17,7 +17,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.header.writers.CacheControlHeadersWriter;
+import org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.multipart.support.MultipartFilter;
 
 @Configuration
@@ -62,7 +68,19 @@ public class SecurityConfig {
             .logoutUrl("/cmsmgmnt/logout")
             .logoutSuccessUrl("/cmsmgmnt/sign-in?logout")
         );
+        PathPatternRequestMatcher.Builder paths = PathPatternRequestMatcher.withDefaults();
+        RequestMatcher cacheableAssets = new OrRequestMatcher(
+            paths.matcher("/uploads/**"),
+            paths.matcher("/assets/**")
+        );
         http.headers(headers -> headers
+            // Keep no-store on HTML so CMS publishes show up, but do not force the
+            // browser to re-download UUID-named images and versioned static assets.
+            .cacheControl(cache -> cache.disable())
+            .addHeaderWriter(new DelegatingRequestMatcherHeaderWriter(
+                new NegatedRequestMatcher(cacheableAssets),
+                new CacheControlHeadersWriter()
+            ))
             .contentSecurityPolicy(csp -> csp.policyDirectives(
                 "default-src 'self'; " +
                     "script-src 'self' https://cdnjs.cloudflare.com; " +

@@ -1,9 +1,24 @@
 (() => {
     const collectImages = (root) =>
         Array.from(root.querySelectorAll("img")).map((image) => ({
-            src: image.getAttribute("src") || "",
+            src: image.currentSrc || image.getAttribute("src") || "",
             alt: image.getAttribute("alt") || ""
         })).filter((image) => image.src);
+
+    const warmed = new Set();
+
+    const prefetch = (src) => {
+        if (!src || warmed.has(src)) {
+            return;
+        }
+        warmed.add(src);
+        const image = new Image();
+        image.src = src;
+    };
+
+    const prefetchAll = (images) => {
+        images.forEach((image) => prefetch(image.src));
+    };
 
     const lightbox = {
         root: null,
@@ -26,13 +41,19 @@
 
         const length = lightbox.images.length;
         const current = lightbox.images[lightbox.index];
-        lightbox.imgEl.src = current.src;
+        if (lightbox.imgEl.getAttribute("src") !== current.src) {
+            lightbox.imgEl.src = current.src;
+        }
         lightbox.imgEl.alt = current.alt || `Image ${lightbox.index + 1} of ${length}`;
         lightbox.countEl.textContent = `${lightbox.index + 1} / ${length}`;
         const showNav = length > 1;
         lightbox.prevEl.hidden = !showNav;
         lightbox.nextEl.hidden = !showNav;
         lightbox.countEl.hidden = !showNav;
+        if (showNav) {
+            prefetch(lightbox.images[wrapIndex(lightbox.index + 1, length)].src);
+            prefetch(lightbox.images[wrapIndex(lightbox.index - 1, length)].src);
+        }
     };
 
     const closeLightbox = () => {
@@ -97,7 +118,7 @@
 
         const img = document.createElement("img");
         img.className = "gallery-viewer__img";
-        img.decoding = "async";
+        img.fetchPriority = "high";
         img.alt = "";
 
         const prev = makeNav("prev", "Previous image");
@@ -130,18 +151,16 @@
     };
 
     const enhanceStage = (stage) => {
+        const frames = Array.from(stage.querySelectorAll("img"));
         const images = collectImages(stage);
         if (!images.length) {
             return;
         }
 
-        stage.replaceChildren();
-
-        const img = document.createElement("img");
-        img.className = "gallery-stage__img";
-        img.decoding = "async";
-        img.alt = images[0].alt;
-        img.src = images[0].src;
+        frames.forEach((img, frameIndex) => {
+            img.classList.add("gallery-stage__img");
+            img.hidden = frameIndex !== 0;
+        });
 
         const prev = makeNav("prev", "Previous image");
         const next = makeNav("next", "Next image");
@@ -152,14 +171,17 @@
         let index = 0;
 
         const sync = () => {
-            const current = images[index];
-            img.src = current.src;
-            img.alt = current.alt || `Image ${index + 1} of ${images.length}`;
+            frames.forEach((img, frameIndex) => {
+                img.hidden = frameIndex !== index;
+            });
             count.textContent = `${index + 1} / ${images.length}`;
             const showNav = images.length > 1;
             prev.hidden = !showNav;
             next.hidden = !showNav;
             count.hidden = !showNav;
+            if (showNav) {
+                prefetch(images[wrapIndex(index + 1, images.length)].src);
+            }
         };
 
         prev.addEventListener("click", (event) => {
@@ -172,15 +194,19 @@
             index = wrapIndex(index + 1, images.length);
             sync();
         });
-        img.addEventListener("click", () => openLightbox(images, index));
+        frames.forEach((img) => {
+            img.addEventListener("click", () => openLightbox(images, index));
+        });
 
-        stage.append(img, prev, next, count);
+        stage.append(prev, next, count);
         sync();
+        prefetchAll(images);
     };
 
     document.querySelectorAll("[data-gallery-stage]").forEach(enhanceStage);
 
     document.querySelectorAll("[data-gallery-viewer]").forEach((viewer) => {
+        viewer.addEventListener("pointerenter", () => prefetchAll(collectImages(viewer)), { once: true });
         viewer.addEventListener("click", (event) => {
             event.preventDefault();
             const images = collectImages(viewer);
