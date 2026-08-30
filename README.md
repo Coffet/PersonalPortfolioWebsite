@@ -16,10 +16,10 @@ Personal site. Quiet CMS. One WAR behind nginx.
 
 </div>
 
-Visitors see work, gallery, and blog. The owner edits that at `/cmsmgmnt` — never `/admin`. Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source, not the live site.
+Visitors see work, gallery, and blog. The owner edits that at `custom /domain` — never `/admin`. Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source, not the live site.
 
 ```
-CMS  (/cmsmgmnt)     CRUD + image upload
+CMS  (custom /domain)     CRUD + image upload
         │
         ▼
  SQLite  +  storage/uploads
@@ -36,7 +36,7 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 > GitHub holds source. Visitors see whatever WAR is running on the server. After you push, you still package a WAR, copy that one file, and restart Java.
 
 > **The passwords in this repo are dummy / local-only.**  
-> `CMS_Admin` / `PDW_CMSpwd` seed a **fresh local database**. They are not the live Linode login. Production credentials live on the server (SQLite hash + systemd env). Do not reuse the git pair on the VPS.
+> `CMS_Admin` / `PDW_CMSpwd` seed a **fresh local database**. They are not the live server cms login. Production credentials live on the server (SQLite hash + systemd env). Do not reuse the git pair on the VPS.
 
 > **Do not `git pull` into a web root.**  
 > This repo is a Maven tree. Dropping it in `/var/www` publishes source, not a homepage.
@@ -112,7 +112,7 @@ CMS path is **`/cmsmgmnt`**. `/admin` and `/studio` are not management UIs. No R
 
 ```mermaid
 flowchart LR
-  Owner["Owner in /cmsmgmnt"] --> War["Java process"]
+  Owner["Owner in custom /domain"] --> War["Java process"]
   War --> Db["storage/database/portfolio.db"]
   War --> Files["storage/uploads"]
   Visitor["Visitor on / gallery / blog"] --> Nginx["nginx :443"]
@@ -237,21 +237,21 @@ The WAR lands in `target/` (`portfolio.war`, or `portfolio-studio-0.0.1-SNAPSHOT
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/cmsmgmnt/sign-in` | Login (permit all) |
-| GET | `/cmsmgmnt/dashboard` | Desk |
-| GET/POST | `/cmsmgmnt/projects…` | Project CRUD |
-| GET/POST | `/cmsmgmnt/gallery…` | Gallery CRUD |
-| GET/POST | `/cmsmgmnt/blog…` | Blog CRUD |
-| GET | `/cmsmgmnt/media` | Media |
+| GET | `/custom /domain/sign-in` | Login (permit all) |
+| GET | `/custom /domain/dashboard` | Desk |
+| GET/POST | `/custom /domain/projects…` | Project CRUD |
+| GET/POST | `/custom /domain/gallery…` | Gallery CRUD |
+| GET/POST | `/custom /domain/blog…` | Blog CRUD |
+| GET | `/custom /domain/media` | Media |
 | POST | `/cmsmgmnt/logout` | Sign out |
 
-Everything under `/cmsmgmnt/**` except sign-in requires role `OWNER`. CSRF is on. Uploads cap at 10 MB per file / 50 MB per request.
+Everything under `/custom /domain/**` except sign-in requires role `OWNER`. CSRF is on. Uploads cap at 10 MB per file / 50 MB per request.
 
 ---
 
 ## CMS
 
-1. Sign in at `/cmsmgmnt/sign-in`.
+1. Sign in at `/custom /domain/sign-in`.
 2. Create or edit projects, gallery entries, blog posts.
 3. Upload images. Project files go under `storage/uploads/projects/PJKT_<id>_img`.
 4. Refresh the public page. You should see the new row without a new deploy.
