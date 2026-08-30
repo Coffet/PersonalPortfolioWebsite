@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=13">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=14">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -75,28 +75,36 @@
                         <c:otherwise>
                             <section class="gallery-grid" aria-label="Gallery entries" data-order-grid>
                                 <c:forEach items="${galleryEntries}" var="entry" varStatus="status">
-                                    <a class="gallery-card"
-                                       href="${ctx}/gallery/${entry.id}"
-                                       data-published-at="${empty entry.publishedAt ? entry.createdAt : entry.publishedAt}"
-                                       data-category="${empty entry.category ? 'Gallery' : entry.category}"
-                                       style="--stagger: ${status.index}">
+                                    <article class="gallery-card"
+                                             data-published-at="${empty entry.publishedAt ? entry.createdAt : entry.publishedAt}"
+                                             data-category="${empty entry.category ? 'Gallery' : entry.category}"
+                                             style="--stagger: ${status.index}">
                                         <c:if test="${not empty entry.media}">
-                                            <div class="gallery-card__media">
-                                                <img src="${ctx}${entry.media[0].filePath}"
-                                                     alt="${empty entry.media[0].altText ? entry.title : entry.media[0].altText}"
-                                                     <c:if test="${status.index > 1}">loading="lazy"</c:if>
-                                                     decoding="async">
+                                            <button type="button"
+                                                    class="gallery-card__media${fn:length(entry.media) > 1 ? ' is-panorama' : ''}"
+                                                    data-gallery-viewer
+                                                    aria-label="View pictures for ${entry.title}">
+                                                <c:forEach items="${entry.media}" var="media" varStatus="mediaStatus">
+                                                    <img src="${ctx}${media.filePath}"
+                                                         alt="${empty media.altText ? entry.title : media.altText}"
+                                                         <c:if test="${status.index > 1 || mediaStatus.index > 0}">loading="lazy"</c:if>
+                                                         decoding="async">
+                                                </c:forEach>
+                                            </button>
+                                        </c:if>
+                                        <div class="gallery-card__body">
+                                            <div class="gallery-card__meta">
+                                                <span class="gallery-card__tag">${empty entry.category ? 'Gallery' : entry.category}</span>
+                                                <span>${empty entry.publishedAt ? 'Published' : fn:substring(entry.publishedAt, 0, 10)}</span>
                                             </div>
-                                        </c:if>
-                                        <div class="gallery-card__meta">
-                                            <span>${empty entry.category ? 'Gallery' : entry.category}</span>
-                                            <span>${empty entry.publishedAt ? 'Published' : fn:substring(entry.publishedAt, 0, 10)}</span>
+                                            <h2 class="gallery-card__title">
+                                                <a href="${ctx}/gallery/${entry.id}">${entry.title}</a>
+                                            </h2>
+                                            <c:if test="${not empty entry.introText}">
+                                                <p class="gallery-card__text">${entry.introText}</p>
+                                            </c:if>
                                         </div>
-                                        <h2 class="gallery-card__title">${entry.title}</h2>
-                                        <c:if test="${not empty entry.introText}">
-                                            <p class="gallery-card__text">${entry.introText}</p>
-                                        </c:if>
-                                    </a>
+                                    </article>
                                 </c:forEach>
                             </section>
                             <p class="order-empty" data-order-empty hidden>No entries match that category.</p>
@@ -107,34 +115,38 @@
                 <c:if test="${not empty featuredEntry}">
                     <aside class="gallery-split__aside featured-selection" aria-labelledby="featured-selection-title">
                         <h2 class="featured-selection__title" id="featured-selection-title">Featured Selection</h2>
-                        <a class="gallery-card gallery-card--featured"
-                           href="${ctx}/gallery/${featuredEntry.id}">
-                            <div class="gallery-card__media">
-                                <c:choose>
-                                    <c:when test="${not empty featuredEntry.media}">
-                                        <img src="${ctx}${featuredEntry.media[0].filePath}"
-                                             alt="${empty featuredEntry.media[0].altText ? featuredEntry.title : featuredEntry.media[0].altText}"
+                        <article class="gallery-card gallery-card--featured">
+                            <c:if test="${not empty featuredEntry.media}">
+                                <button type="button"
+                                        class="gallery-card__media${fn:length(featuredEntry.media) > 1 ? ' is-panorama' : ''}"
+                                        data-gallery-viewer
+                                        aria-label="View pictures for ${featuredEntry.title}">
+                                    <c:forEach items="${featuredEntry.media}" var="media">
+                                        <img src="${ctx}${media.filePath}"
+                                             alt="${empty media.altText ? featuredEntry.title : media.altText}"
                                              decoding="async">
-                                    </c:when>
-                                    <c:otherwise>
-                                        <div class="featured-selection__fallback" aria-hidden="true"></div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                            <div class="gallery-card__meta">
-                                <span>${empty featuredEntry.category ? 'Gallery' : featuredEntry.category}</span>
-                                <span>${empty featuredEntry.publishedAt ? 'Published' : fn:substring(featuredEntry.publishedAt, 0, 10)}</span>
-                            </div>
-                            <h3 class="gallery-card__title">${featuredEntry.title}</h3>
-                            <c:if test="${not empty featuredEntry.introText}">
-                                <p class="gallery-card__text">${featuredEntry.introText}</p>
+                                    </c:forEach>
+                                </button>
                             </c:if>
-                        </a>
+                            <div class="gallery-card__body">
+                                <div class="gallery-card__meta">
+                                    <span class="gallery-card__tag">${empty featuredEntry.category ? 'Gallery' : featuredEntry.category}</span>
+                                    <span>${empty featuredEntry.publishedAt ? 'Published' : fn:substring(featuredEntry.publishedAt, 0, 10)}</span>
+                                </div>
+                                <h3 class="gallery-card__title">
+                                    <a href="${ctx}/gallery/${featuredEntry.id}">${featuredEntry.title}</a>
+                                </h3>
+                                <c:if test="${not empty featuredEntry.introText}">
+                                    <p class="gallery-card__text">${featuredEntry.introText}</p>
+                                </c:if>
+                            </div>
+                        </article>
                     </aside>
                 </c:if>
             </div>
         </div>
     </main>
-    <script src="${ctx}/assets/js/gallery-order.js?v=2" defer></script>
+    <script src="${ctx}/assets/js/gallery-order.js?v=3" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=1" defer></script>
 </body>
 </html>

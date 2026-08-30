@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=13">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=14">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -24,7 +24,7 @@
 
             <section class="page-intro">
                 <div class="detail-meta">
-                    <span>${empty entry.category ? 'Gallery' : entry.category}</span>
+                    <span class="gallery-card__tag">${empty entry.category ? 'Gallery' : entry.category}</span>
                     <span>${empty entry.publishedAt ? 'Published' : fn:substring(entry.publishedAt, 0, 10)}</span>
                 </div>
                 <h1 class="detail-title">${entry.title}</h1>
@@ -40,18 +40,17 @@
             </c:if>
 
             <c:if test="${not empty entry.media}">
-                <section class="detail-gallery">
-                    <c:forEach items="${entry.media}" var="media" varStatus="status">
-                        <figure class="detail-gallery__item">
-                            <img src="${ctx}${media.filePath}"
-                                 alt="${empty media.altText ? entry.title : media.altText}"
-                                 <c:if test="${status.index > 0}">loading="lazy"</c:if>
-                                 decoding="async">
-                        </figure>
+                <div class="gallery-stage work-modal__media has-image" data-gallery-stage>
+                    <c:forEach items="${entry.media}" var="media" varStatus="mediaStatus">
+                        <img src="${ctx}${media.filePath}"
+                             alt="${empty media.altText ? entry.title : media.altText}"
+                             decoding="async"
+                             <c:if test="${not mediaStatus.first}">hidden</c:if>>
                     </c:forEach>
-                </section>
+                </div>
             </c:if>
         </div>
     </main>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=1" defer></script>
 </body>
 </html>
