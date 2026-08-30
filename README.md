@@ -19,7 +19,7 @@ Personal site. Quiet CMS. One WAR behind nginx.
 Visitors see work, gallery, and blog. The owner edits that at `custom /domain` — never `/admin`. Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source, not the live site.
 
 ```
-CMS  (custom /domain)     CRUD + image upload
+CMS  (custom /domain for the cms)     CRUD + image upload
         │
         ▼
  SQLite  +  storage/uploads
@@ -104,7 +104,7 @@ What is actually in this repo — not a wish list.
 | Process | systemd `portfolio.service` as `deploy` | Linode |
 | Edge | Cloudflare in front of the VPS | `coft.moe` |
 
-CMS path is **`/cmsmgmnt`**. `/admin` and `/studio` are not management UIs. No React. No SPA. Devtools is optional and local only.
+CMS path is **`custom /domain for the cms`**. `/admin` and `/studio` are not management UIs. No React. No SPA. Devtools is optional and local only.
 
 ---
 
@@ -233,25 +233,25 @@ The WAR lands in `target/` (`portfolio.war`, or `portfolio-studio-0.0.1-SNAPSHOT
 | GET | `/blog` | Blog index |
 | GET | `/blog/{id}` | Post |
 
-### CMS (`/cmsmgmnt`)
+### CMS (`/custom /domain for the cms`)
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/custom /domain/sign-in` | Login (permit all) |
-| GET | `/custom /domain/dashboard` | Desk |
-| GET/POST | `/custom /domain/projects…` | Project CRUD |
-| GET/POST | `/custom /domain/gallery…` | Gallery CRUD |
-| GET/POST | `/custom /domain/blog…` | Blog CRUD |
-| GET | `/custom /domain/media` | Media |
-| POST | `/cmsmgmnt/logout` | Sign out |
+| GET | `/custom /domain for the cms/sign-in` | Login (permit all) |
+| GET | `/custom /domain for the cms/dashboard` | Desk |
+| GET/POST | `/custom /domain for the cms/projects…` | Project CRUD |
+| GET/POST | `/custom /domain for the cms/gallery…` | Gallery CRUD |
+| GET/POST | `/custom /domain for the cms/blog…` | Blog CRUD |
+| GET | `/custom /domain for the cms/media` | Media |
+| POST | `/custom /domain for the cms/logout` | Sign out |
 
 Everything under `/custom /domain/**` except sign-in requires role `OWNER`. CSRF is on. Uploads cap at 10 MB per file / 50 MB per request.
 
 ---
 
-## CMS
+## CMS (/custom /domain for the cms)
 
-1. Sign in at `/custom /domain/sign-in`.
+1. Sign in at `/custom /domain for the cms/sign-in`.
 2. Create or edit projects, gallery entries, blog posts.
 3. Upload images. Project files go under `storage/uploads/projects/PJKT_<id>_img`.
 4. Refresh the public page. You should see the new row without a new deploy.
