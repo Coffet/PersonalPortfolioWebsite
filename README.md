@@ -18,6 +18,10 @@ Personal site. Quiet CMS. One WAR behind nginx.
 
 Visitors see work, gallery, and blog. The owner edits that at `custom /domain` — never `/admin`. Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source, not the live site.
 
+<br/>
+
+For what custom /domain for the cms is please clone the repo to check
+
 ```
 CMS  (custom /domain for the cms)     CRUD + image upload
         │
