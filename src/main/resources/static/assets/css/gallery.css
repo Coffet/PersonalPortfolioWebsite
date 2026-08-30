@@ -406,56 +406,65 @@ body.has-settled-header .page-shell {
     cursor: zoom-in;
 }
 
-.gallery-stage__count {
+.gallery-stage__count,
+.gallery-viewer__count {
     position: absolute;
     left: 50%;
     bottom: 12px;
+    z-index: 2;
     transform: translateX(-50%);
     padding: 6px 12px;
     border-radius: 999px;
-    background: rgba(17, 17, 17, 0.72);
+    background: rgba(17, 17, 17, 0.78);
     color: var(--text-soft);
     font-size: 0.78rem;
     letter-spacing: 0.04em;
 }
 
-.gallery-viewer__nav,
-.gallery-stage .gallery-viewer__nav {
+.gallery-viewer__nav {
     position: absolute;
     top: 50%;
     z-index: 2;
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     padding: 0;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 999px;
-    background: rgba(17, 17, 17, 0.72);
+    background: rgba(0, 0, 0, 0.45);
     color: var(--text);
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     line-height: 1;
     cursor: pointer;
     transform: translateY(-50%);
 }
 
 .gallery-viewer__nav--prev {
-    left: 10px;
+    left: 14px;
 }
 
 .gallery-viewer__nav--next {
-    right: 10px;
+    right: 14px;
 }
 
-.gallery-viewer__nav:focus-visible {
+.gallery-viewer__nav:hover,
+.gallery-viewer__close:hover {
+    background: rgba(0, 0, 0, 0.7);
+    border-color: var(--accent);
+}
+
+.gallery-viewer__nav:focus-visible,
+.gallery-viewer__close:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
 }
 
+/* Above #header (9999) so the close X is not hidden behind "You are now at: Gallery". */
 .gallery-viewer {
     position: fixed;
     inset: 0;
-    z-index: 45;
+    z-index: 10080;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -471,72 +480,77 @@ body.has-settled-header .page-shell {
 .gallery-viewer__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.88);
+    background: rgba(0, 0, 0, 0.86);
 }
 
 .gallery-viewer__dialog {
     position: absolute;
-    inset: clamp(16px, 3vw, 32px);
+    inset: clamp(18px, 3vw, 28px);
     display: grid;
+    grid-template-areas: "stack";
     place-items: center;
+}
+
+.gallery-viewer__img,
+.gallery-viewer__nav,
+.gallery-viewer__count,
+.gallery-viewer__close {
+    grid-area: stack;
 }
 
 .gallery-viewer__img {
     width: auto;
     height: auto;
-    max-width: min(100%, 1200px);
-    max-height: calc(100vh - 72px);
-    max-height: calc(100dvh - 72px);
+    max-width: min(92vw, 1200px);
+    max-height: min(78vh, 820px);
     object-fit: contain;
     border-radius: 8px;
 }
 
-.gallery-viewer__close,
-.gallery-viewer__count {
-    position: fixed;
-    z-index: 3;
-}
-
 .gallery-viewer__close {
+    position: fixed;
     top: 18px;
     right: 18px;
+    z-index: 2;
+    justify-self: auto;
+    align-self: auto;
     display: grid;
     place-items: center;
     width: 44px;
     height: 44px;
+    margin: 0;
     padding: 0;
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.55);
-    color: #f5f4ef;
-    font-size: 1.6rem;
-    line-height: 1;
+    color: var(--text);
     cursor: pointer;
 }
 
-.gallery-viewer__close:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
+.gallery-viewer__close svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.75;
+    stroke-linecap: round;
 }
 
 .gallery-viewer__count {
+    position: fixed;
     left: 50%;
     bottom: 18px;
-    transform: translateX(-50%);
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: rgba(17, 17, 17, 0.72);
-    color: var(--text-soft);
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
+    justify-self: auto;
+    align-self: auto;
+    margin: 0;
 }
 
 .gallery-viewer .gallery-viewer__nav--prev {
-    left: clamp(12px, 2vw, 28px);
+    left: 18px;
 }
 
 .gallery-viewer .gallery-viewer__nav--next {
-    right: clamp(12px, 2vw, 28px);
+    right: 18px;
 }
 
 .blog-card__media img,

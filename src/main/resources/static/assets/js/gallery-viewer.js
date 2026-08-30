@@ -110,7 +110,7 @@
         close.type = "button";
         close.className = "gallery-viewer__close";
         close.setAttribute("aria-label", "Close image viewer");
-        close.innerHTML = '<span aria-hidden="true">×</span>';
+        close.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4L12 12M12 4L4 12"/></svg>';
 
         prev.addEventListener("click", () => stepLightbox(-1));
         next.addEventListener("click", () => stepLightbox(1));
