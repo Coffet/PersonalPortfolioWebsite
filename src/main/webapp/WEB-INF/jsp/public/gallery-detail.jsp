@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=14">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=15">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -40,7 +40,7 @@
             </c:if>
 
             <c:if test="${not empty entry.media}">
-                <div class="gallery-stage work-modal__media has-image" data-gallery-stage>
+                <div class="gallery-stage" data-gallery-stage>
                     <c:forEach items="${entry.media}" var="media" varStatus="mediaStatus">
                         <img src="${ctx}${media.filePath}"
                              alt="${empty media.altText ? entry.title : media.altText}"
@@ -51,6 +51,6 @@
             </c:if>
         </div>
     </main>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=1" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=2" defer></script>
 </body>
 </html>

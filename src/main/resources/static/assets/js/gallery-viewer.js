@@ -11,6 +11,7 @@
         prevEl: null,
         nextEl: null,
         countEl: null,
+        closeEl: null,
         images: [],
         index: 0,
         isOpen: false
@@ -54,7 +55,7 @@
         lightbox.isOpen = true;
         lightbox.root.classList.add("is-open");
         lightbox.root.setAttribute("aria-hidden", "false");
-        window.requestAnimationFrame(() => lightbox.root.querySelector(".work-lightbox__close")?.focus());
+        window.requestAnimationFrame(() => lightbox.closeEl?.focus());
     };
 
     const stepLightbox = (delta) => {
@@ -65,47 +66,47 @@
         syncLightbox();
     };
 
+    const makeNav = (direction, label) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `gallery-viewer__nav gallery-viewer__nav--${direction}`;
+        button.setAttribute("aria-label", label);
+        button.innerHTML = `<span aria-hidden="true">${direction === "prev" ? "‹" : "›"}</span>`;
+        return button;
+    };
+
     const ensureLightbox = () => {
         if (lightbox.root) {
             return;
         }
 
         const root = document.createElement("div");
-        root.className = "work-lightbox";
+        root.className = "gallery-viewer";
         root.setAttribute("aria-hidden", "true");
 
         const backdrop = document.createElement("div");
-        backdrop.className = "work-lightbox__backdrop";
+        backdrop.className = "gallery-viewer__backdrop";
 
         const dialog = document.createElement("div");
-        dialog.className = "work-lightbox__dialog";
+        dialog.className = "gallery-viewer__dialog";
         dialog.setAttribute("role", "dialog");
         dialog.setAttribute("aria-modal", "true");
         dialog.setAttribute("aria-label", "Image viewer");
 
         const img = document.createElement("img");
-        img.className = "work-lightbox__img";
+        img.className = "gallery-viewer__img";
         img.decoding = "async";
         img.alt = "";
 
-        const prev = document.createElement("button");
-        prev.type = "button";
-        prev.className = "work-lightbox__nav work-lightbox__nav--prev";
-        prev.setAttribute("aria-label", "Previous image");
-        prev.innerHTML = '<span aria-hidden="true">‹</span>';
-
-        const next = document.createElement("button");
-        next.type = "button";
-        next.className = "work-lightbox__nav work-lightbox__nav--next";
-        next.setAttribute("aria-label", "Next image");
-        next.innerHTML = '<span aria-hidden="true">›</span>';
+        const prev = makeNav("prev", "Previous image");
+        const next = makeNav("next", "Next image");
 
         const count = document.createElement("div");
-        count.className = "work-lightbox__count";
+        count.className = "gallery-viewer__count";
 
         const close = document.createElement("button");
         close.type = "button";
-        close.className = "work-lightbox__close";
+        close.className = "gallery-viewer__close";
         close.setAttribute("aria-label", "Close image viewer");
         close.innerHTML = '<span aria-hidden="true">×</span>';
 
@@ -123,6 +124,7 @@
         lightbox.prevEl = prev;
         lightbox.nextEl = next;
         lightbox.countEl = count;
+        lightbox.closeEl = close;
     };
 
     const enhanceStage = (stage) => {
@@ -132,29 +134,18 @@
         }
 
         stage.replaceChildren();
-        stage.classList.add("has-image");
 
         const img = document.createElement("img");
-        img.className = "work-modal__media-img";
+        img.className = "gallery-stage__img";
         img.decoding = "async";
         img.alt = images[0].alt;
         img.src = images[0].src;
-        img.style.cursor = "zoom-in";
 
-        const prev = document.createElement("button");
-        prev.type = "button";
-        prev.className = "work-modal__nav work-modal__nav--prev";
-        prev.setAttribute("aria-label", "Previous image");
-        prev.innerHTML = '<span aria-hidden="true">‹</span>';
-
-        const next = document.createElement("button");
-        next.type = "button";
-        next.className = "work-modal__nav work-modal__nav--next";
-        next.setAttribute("aria-label", "Next image");
-        next.innerHTML = '<span aria-hidden="true">›</span>';
+        const prev = makeNav("prev", "Previous image");
+        const next = makeNav("next", "Next image");
 
         const count = document.createElement("div");
-        count.className = "work-modal__count";
+        count.className = "gallery-stage__count";
 
         let index = 0;
 
