@@ -1,0 +1,95 @@
+# Build and test on GitHub. Live go-live is still a manual WAR copy (scp + systemd).
+# Deploy job runs only when you click "Run workflow" — not on every push to main.
+#
+# Required GitHub secrets if you ever use the deploy job:
+#   DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
+# Optional: DEPLOY_PORT, DEPLOY_KNOWN_HOSTS
+#
+# One-time server setup (as root):
+#   sudo bash deploy/bootstrap-server.sh
+
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Run tests and package WAR
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -ntp verify
+
+      - name: Upload WAR
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-war
+          path: target/portfolio.war
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    needs: build
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: portfolio-war
+          path: dist
+
+      - name: Copy WAR and restart
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_HOST:-}" ] || [ -z "${DEPLOY_USER:-}" ] || [ -z "${DEPLOY_SSH_KEY:-}" ]; then
+            echo "Add GitHub secrets DEPLOY_HOST, DEPLOY_USER, and DEPLOY_SSH_KEY, then re-run this workflow."
+            exit 1
+          fi
+          if [ ! -f dist/portfolio.war ]; then
+            echo "Build did not produce dist/portfolio.war"
+            exit 1
+          fi
+          PORT="${DEPLOY_PORT:-22}"
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          if [ -n "${DEPLOY_KNOWN_HOSTS:-}" ]; then
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -p "$PORT" -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          fi
+          chmod 600 ~/.ssh/known_hosts
+          REMOTE="${DEPLOY_USER}@${DEPLOY_HOST}"
+          ssh -p "$PORT" -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes "$REMOTE" \
+            'mkdir -p /home/deploy/portfolio-app'
+          scp -P "$PORT" -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes \
+            dist/portfolio.war "$REMOTE:/home/deploy/portfolio-app/portfolio.war.new"
+          ssh -p "$PORT" -i ~/.ssh/id_ed25519 -o IdentitiesOnly=yes "$REMOTE" \
+            'bash -s' < deploy/remote-release.sh

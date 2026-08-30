@@ -1,0 +1,3 @@
+# Install as /etc/sudoers.d/portfolio-deploy (visudo -c -f ...)
+# Lets GitHub Actions restart the app without a root SSH login.
+deploy ALL=(root) NOPASSWD: /bin/systemctl restart portfolio.service, /bin/systemctl status portfolio.service, /bin/systemctl is-active portfolio.service
