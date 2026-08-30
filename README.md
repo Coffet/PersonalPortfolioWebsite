@@ -1,65 +1,23 @@
 <div align="center">
 
-<img src="src/main/resources/static/assets/images/logo.webp" alt="Coft" width="72">
+<img src="src/main/resources/static/assets/images/logo.webp" alt="Coft" width="56">
 
 # Portfolio Studio
 
-**Personal site. Quiet CMS. One WAR behind nginx.**
+Personal site. Quiet CMS. One WAR behind nginx.
 
-Visitors see work, gallery, and blog. The owner edits that content at `/cmsmgmnt` — never `/admin`.  
-Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source, not the live site.
+[coft.moe](https://coft.moe) · [Apache-2.0](LICENSE)
 
-[coft.moe](https://coft.moe) · [Apache-2.0](LICENSE) · [Coffet/PersonalPortfolioWebsite](https://github.com/Coffet/PersonalPortfolioWebsite)
-
-<br>
-
-<a href="https://coft.moe"><img alt="Live site" src="https://img.shields.io/badge/live-coft.moe-111111?style=for-the-badge&labelColor=0a0a0a"></a>
-<a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Apache%202.0-D22128?style=for-the-badge&logo=apache&logoColor=white&labelColor=0a0a0a"></a>
-<a href="https://github.com/Coffet/PersonalPortfolioWebsite"><img alt="Last commit" src="https://img.shields.io/github/last-commit/Coffet/PersonalPortfolioWebsite?style=for-the-badge&labelColor=0a0a0a&color=6B7280"></a>
-<a href="https://github.com/Coffet/PersonalPortfolioWebsite/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/Coffet/PersonalPortfolioWebsite?style=for-the-badge&labelColor=0a0a0a&color=C9A227"></a>
-<img alt="Manual deploy" src="https://img.shields.io/badge/deploy-manual%20WAR-111111?style=for-the-badge&labelColor=0a0a0a">
-<img alt="No auto CD" src="https://img.shields.io/badge/CD-off%20on%20purpose-3F3F46?style=for-the-badge&labelColor=0a0a0a">
-
-<br>
-
-**Runtime**
-
-<img alt="Java 17" src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white&labelColor=1a1a1a">
-<img alt="Spring Boot 3.5.3" src="https://img.shields.io/badge/Spring%20Boot-3.5.3-6DB33F?style=for-the-badge&logo=springboot&logoColor=white&labelColor=1a1a1a">
-<img alt="Maven" src="https://img.shields.io/badge/Maven-wrapper-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white&labelColor=1a1a1a">
-<img alt="WAR" src="https://img.shields.io/badge/packaging-WAR-5C2D91?style=for-the-badge&labelColor=1a1a1a">
-
-**App**
-
-<img alt="Spring Web" src="https://img.shields.io/badge/Spring%20Web-MVC-6DB33F?style=for-the-badge&logo=spring&logoColor=white&labelColor=1a1a1a">
-<img alt="Spring Security" src="https://img.shields.io/badge/Spring%20Security-BCrypt-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white&labelColor=1a1a1a">
-<img alt="Validation" src="https://img.shields.io/badge/Validation-Jakarta-007396?style=for-the-badge&labelColor=1a1a1a">
-<img alt="Actuator" src="https://img.shields.io/badge/Actuator-health-6DB33F?style=for-the-badge&logo=springboot&logoColor=white&labelColor=1a1a1a">
-<img alt="JSP JSTL" src="https://img.shields.io/badge/JSP%20%2B%20JSTL-3.0-F80000?style=for-the-badge&logo=apachetomcat&logoColor=white&labelColor=1a1a1a">
-<img alt="Tomcat Jasper" src="https://img.shields.io/badge/Tomcat%20Jasper-10.1-F8DC75?style=for-the-badge&logo=apachetomcat&logoColor=black&labelColor=1a1a1a">
-
-**Data**
-
-<img alt="SQLite" src="https://img.shields.io/badge/SQLite-3.49-003B57?style=for-the-badge&logo=sqlite&logoColor=white&labelColor=1a1a1a">
-<img alt="Flyway" src="https://img.shields.io/badge/Flyway-migrations-CC0200?style=for-the-badge&logo=flyway&logoColor=white&labelColor=1a1a1a">
-<img alt="JDBC Hikari" src="https://img.shields.io/badge/JDBC-HikariCP-3A3A3A?style=for-the-badge&labelColor=1a1a1a">
-
-**Front of house**
-
-<img alt="Plain CSS" src="https://img.shields.io/badge/CSS-plain%20only-1572B6?style=for-the-badge&logo=css3&logoColor=white&labelColor=1a1a1a">
-<img alt="Vanilla JS" src="https://img.shields.io/badge/JavaScript-vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black&labelColor=1a1a1a">
-<img alt="GSAP" src="https://img.shields.io/badge/GSAP-3.12.5-88CE02?style=for-the-badge&logo=greensock&logoColor=black&labelColor=1a1a1a">
-<img alt="Google Fonts" src="https://img.shields.io/badge/Fonts-Instrument%20%2B%20Nata-4285F4?style=for-the-badge&logo=googlefonts&logoColor=white&labelColor=1a1a1a">
-
-**Box**
-
-<img alt="nginx" src="https://img.shields.io/badge/nginx-reverse%20proxy-009639?style=for-the-badge&logo=nginx&logoColor=white&labelColor=1a1a1a">
-<img alt="systemd" src="https://img.shields.io/badge/systemd-portfolio.service-333333?style=for-the-badge&logo=linux&logoColor=white&labelColor=1a1a1a">
-<img alt="Ubuntu" src="https://img.shields.io/badge/Ubuntu-24.04-E95420?style=for-the-badge&logo=ubuntu&logoColor=white&labelColor=1a1a1a">
-<img alt="Linode" src="https://img.shields.io/badge/Linode-VPS-00A95C?style=for-the-badge&logo=linode&logoColor=white&labelColor=1a1a1a">
-<img alt="Cloudflare" src="https://img.shields.io/badge/Cloudflare-CDN%20%2B%20SSL-F38020?style=for-the-badge&logo=cloudflare&logoColor=white&labelColor=1a1a1a">
+<img alt="Java 17" src="https://img.shields.io/badge/Java-17-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
+<img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?style=flat-square&logo=springboot&logoColor=white">
+<img alt="JSP" src="https://img.shields.io/badge/JSP-JSTL-F80000?style=flat-square&logo=apachetomcat&logoColor=white">
+<img alt="SQLite" src="https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite&logoColor=white">
+<img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-D22128?style=flat-square">
+<img alt="Deploy" src="https://img.shields.io/badge/Deploy-manual-111111?style=flat-square">
 
 </div>
+
+Visitors see work, gallery, and blog. The owner edits that at `/cmsmgmnt` — never `/admin`. Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source, not the live site.
 
 ```
 CMS  (/cmsmgmnt)     CRUD + image upload
