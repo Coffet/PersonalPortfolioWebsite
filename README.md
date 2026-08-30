@@ -2,8 +2,7 @@
 
 <img src="src/main/resources/static/assets/images/logo.webp" alt="Coft" width="56">
 
-# Portfolio Studio
-
+# Portfolio
 Personal site. Quiet CMS. One WAR behind nginx.
 
 [coft.moe](https://coft.moe) · [Apache-2.0](LICENSE)
