@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import com.portfolio.studio.model.BlogPost;
 import com.portfolio.studio.model.GalleryEntry;
+import com.portfolio.studio.model.GalleryMedia;
 import com.portfolio.studio.service.PortfolioService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -87,6 +89,27 @@ class PortfolioServiceSlugTests {
         assertThat(saved.getIntroText()).isEmpty();
         assertThat(saved.getBody()).isEmpty();
         assertThat(saved.getSlug()).isEqualTo("title-only");
+    }
+
+    @Test
+    void pickRandomGalleryEntryReturnsEmptyWhenThereAreNoEntries() {
+        assertThat(portfolioService.pickRandomGalleryEntry(List.of())).isEmpty();
+        assertThat(portfolioService.pickRandomGalleryEntry(null)).isEmpty();
+    }
+
+    @Test
+    void pickRandomGalleryEntryPrefersEntriesWithMedia() {
+        GalleryEntry withoutMedia = new GalleryEntry();
+        withoutMedia.setTitle("Notes only");
+
+        GalleryEntry withMedia = new GalleryEntry();
+        withMedia.setTitle("Printed study");
+        GalleryMedia media = new GalleryMedia();
+        media.setFilePath("/uploads/cms/printed-study.png");
+        withMedia.setMedia(List.of(media));
+
+        assertThat(portfolioService.pickRandomGalleryEntry(List.of(withoutMedia, withMedia)).orElseThrow().getTitle())
+            .isEqualTo("Printed study");
     }
 
     @Test

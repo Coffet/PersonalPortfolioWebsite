@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.portfolio.studio.config.PortfolioProperties;
 import com.portfolio.studio.model.BlogPost;
@@ -255,6 +256,22 @@ public class PortfolioService {
         );
         entries.forEach(entry -> entry.setMedia(listGalleryMedia(entry.getId())));
         return entries;
+    }
+
+    public Optional<GalleryEntry> pickRandomGalleryEntry(List<GalleryEntry> entries) {
+        if (entries == null || entries.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<GalleryEntry> withMedia = new ArrayList<>();
+        for (GalleryEntry entry : entries) {
+            if (entry.getMedia() != null && !entry.getMedia().isEmpty()) {
+                withMedia.add(entry);
+            }
+        }
+
+        List<GalleryEntry> pool = withMedia.isEmpty() ? entries : withMedia;
+        return Optional.of(pool.get(ThreadLocalRandom.current().nextInt(pool.size())));
     }
 
     public List<GalleryEntry> listAllGalleryEntries() {

@@ -1,7 +1,10 @@
 package com.portfolio.studio.controller;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.portfolio.studio.model.GalleryEntry;
 import com.portfolio.studio.service.PortfolioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,8 +33,11 @@ public class PublicController {
 
     @GetMapping("/gallery")
     public String gallery(Model model) {
+        List<GalleryEntry> entries = portfolioService.listPublishedGalleryEntries();
         model.addAttribute("pageTitle", "Gallery");
-        model.addAttribute("galleryEntries", portfolioService.listPublishedGalleryEntries());
+        model.addAttribute("galleryEntries", entries);
+        portfolioService.pickRandomGalleryEntry(entries)
+            .ifPresent(entry -> model.addAttribute("featuredEntry", entry));
         return "public/gallery";
     }
 
