@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=8">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=9">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -106,43 +106,36 @@
                     </c:choose>
                 </div>
 
-                <aside class="gallery-split__aside featured-selection" aria-labelledby="featured-selection-title">
-                    <h2 class="featured-selection__title" id="featured-selection-title">Featured Selection</h2>
-                    <c:choose>
-                        <c:when test="${not empty featuredEntry}">
-                            <a class="gallery-card gallery-card--featured"
-                               href="${ctx}/gallery/${featuredEntry.id}">
-                                <div class="gallery-card__media">
-                                    <c:choose>
-                                        <c:when test="${not empty featuredEntry.media}">
-                                            <img src="${ctx}${featuredEntry.media[0].filePath}"
-                                                 alt="${empty featuredEntry.media[0].altText ? featuredEntry.title : featuredEntry.media[0].altText}"
-                                                 width="720"
-                                                 height="900"
-                                                 decoding="async">
-                                        </c:when>
-                                        <c:otherwise>
-                                            <div class="featured-selection__fallback" aria-hidden="true"></div>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                                <div class="gallery-card__meta">
-                                    <span>${empty featuredEntry.category ? 'Gallery' : featuredEntry.category}</span>
-                                    <span>${empty featuredEntry.publishedAt ? 'Published' : fn:substring(featuredEntry.publishedAt, 0, 10)}</span>
-                                </div>
-                                <h3 class="gallery-card__title">${featuredEntry.title}</h3>
-                                <c:if test="${not empty featuredEntry.introText}">
-                                    <p class="gallery-card__text">${featuredEntry.introText}</p>
-                                </c:if>
-                            </a>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="featured-selection__slot">
-                                <p>A featured piece will appear here once a gallery entry is published.</p>
+                <c:if test="${not empty featuredEntry}">
+                    <aside class="gallery-split__aside featured-selection" aria-labelledby="featured-selection-title">
+                        <h2 class="featured-selection__title" id="featured-selection-title">Featured Selection</h2>
+                        <a class="gallery-card gallery-card--featured"
+                           href="${ctx}/gallery/${featuredEntry.id}">
+                            <div class="gallery-card__media">
+                                <c:choose>
+                                    <c:when test="${not empty featuredEntry.media}">
+                                        <img src="${ctx}${featuredEntry.media[0].filePath}"
+                                             alt="${empty featuredEntry.media[0].altText ? featuredEntry.title : featuredEntry.media[0].altText}"
+                                             width="720"
+                                             height="900"
+                                             decoding="async">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div class="featured-selection__fallback" aria-hidden="true"></div>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
-                        </c:otherwise>
-                    </c:choose>
-                </aside>
+                            <div class="gallery-card__meta">
+                                <span>${empty featuredEntry.category ? 'Gallery' : featuredEntry.category}</span>
+                                <span>${empty featuredEntry.publishedAt ? 'Published' : fn:substring(featuredEntry.publishedAt, 0, 10)}</span>
+                            </div>
+                            <h3 class="gallery-card__title">${featuredEntry.title}</h3>
+                            <c:if test="${not empty featuredEntry.introText}">
+                                <p class="gallery-card__text">${featuredEntry.introText}</p>
+                            </c:if>
+                        </a>
+                    </aside>
+                </c:if>
             </div>
         </div>
     </main>

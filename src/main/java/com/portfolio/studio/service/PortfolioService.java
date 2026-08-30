@@ -259,7 +259,7 @@ public class PortfolioService {
     }
 
     public Optional<GalleryEntry> pickRandomGalleryEntry(List<GalleryEntry> entries) {
-        if (entries == null || entries.isEmpty()) {
+        if (entries == null || entries.size() < 2) {
             return Optional.empty();
         }
 

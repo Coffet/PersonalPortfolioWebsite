@@ -92,9 +92,13 @@ class PortfolioServiceSlugTests {
     }
 
     @Test
-    void pickRandomGalleryEntryReturnsEmptyWhenThereAreNoEntries() {
+    void pickRandomGalleryEntryReturnsEmptyWhenThereAreFewerThanTwoEntries() {
+        GalleryEntry only = new GalleryEntry();
+        only.setTitle("Alone on the wall");
+
         assertThat(portfolioService.pickRandomGalleryEntry(List.of())).isEmpty();
         assertThat(portfolioService.pickRandomGalleryEntry(null)).isEmpty();
+        assertThat(portfolioService.pickRandomGalleryEntry(List.of(only))).isEmpty();
     }
 
     @Test
