@@ -42,6 +42,7 @@
         lightbox.isOpen = false;
         lightbox.root.classList.remove("is-open");
         lightbox.root.setAttribute("aria-hidden", "true");
+        document.body.style.removeProperty("overflow");
     };
 
     const openLightbox = (images, index) => {
@@ -55,6 +56,7 @@
         lightbox.isOpen = true;
         lightbox.root.classList.add("is-open");
         lightbox.root.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
         window.requestAnimationFrame(() => lightbox.closeEl?.focus());
     };
 

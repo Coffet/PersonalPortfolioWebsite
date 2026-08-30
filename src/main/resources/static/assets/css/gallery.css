@@ -455,7 +455,7 @@ body.has-settled-header .page-shell {
 .gallery-viewer {
     position: fixed;
     inset: 0;
-    z-index: 40;
+    z-index: 45;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -471,7 +471,7 @@ body.has-settled-header .page-shell {
 .gallery-viewer__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(8, 8, 8, 0.82);
+    background: rgba(0, 0, 0, 0.88);
 }
 
 .gallery-viewer__dialog {
@@ -494,7 +494,7 @@ body.has-settled-header .page-shell {
 .gallery-viewer__close,
 .gallery-viewer__count {
     position: fixed;
-    z-index: 2;
+    z-index: 3;
 }
 
 .gallery-viewer__close {
@@ -505,11 +505,11 @@ body.has-settled-header .page-shell {
     width: 44px;
     height: 44px;
     padding: 0;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 999px;
-    background: rgba(17, 17, 17, 0.72);
-    color: var(--text);
-    font-size: 1.5rem;
+    background: rgba(0, 0, 0, 0.55);
+    color: #f5f4ef;
+    font-size: 1.6rem;
     line-height: 1;
     cursor: pointer;
 }
