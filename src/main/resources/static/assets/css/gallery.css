@@ -296,16 +296,26 @@ body.has-settled-header .page-shell {
     background: var(--bg-soft);
 }
 
+.gallery-card__media {
+    width: fit-content;
+    max-width: 100%;
+}
+
+.gallery-card--featured .gallery-card__media {
+    width: 100%;
+}
+
 .blog-card__media,
 .detail-hero {
     aspect-ratio: 16 / 10;
 }
 
 .gallery-card__media img {
+    display: block;
     width: auto;
-    max-width: 100%;
     height: auto;
-    max-height: clamp(120px, 16vw, 168px);
+    max-width: 100%;
+    max-height: clamp(220px, 28vw, 320px);
 }
 
 .gallery-card--featured .gallery-card__media img {
