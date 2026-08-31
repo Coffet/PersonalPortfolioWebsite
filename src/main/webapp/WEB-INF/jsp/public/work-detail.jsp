@@ -4,8 +4,8 @@
 <html lang="en">
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=3">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=18">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=20">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -30,14 +30,13 @@
             </header>
 
             <c:if test="${not empty project.media}">
-                <div class="work-case__media" data-gallery-viewer>
+                <div class="gallery-stage work-case__stage" data-gallery-stage>
                     <c:forEach items="${project.media}" var="media" varStatus="mediaStatus">
-                        <figure class="${mediaStatus.first ? 'work-case__lead' : 'work-case__shot'}">
-                            <img src="${ctx}${media.filePath}"
-                                 alt="${empty media.altText ? project.title : media.altText}"
-                                 decoding="async"
-                                 <c:if test="${mediaStatus.first}">fetchpriority="high"</c:if>>
-                        </figure>
+                        <img src="${ctx}${media.filePath}"
+                             alt="${empty media.altText ? project.title : media.altText}"
+                             decoding="async"
+                             <c:if test="${mediaStatus.first}">fetchpriority="high"</c:if>
+                             <c:if test="${not mediaStatus.first}">hidden</c:if>>
                     </c:forEach>
                 </div>
             </c:if>
@@ -61,11 +60,7 @@
                     <c:if test="${not empty project.externalLink}">
                         <div>
                             <h2>Visit</h2>
-                            <p>
-                                <a class="work-case__link" href="${project.externalLink}" target="_blank" rel="noopener noreferrer">
-                                    ${empty project.linkLabel ? 'Visit project' : project.linkLabel}
-                                </a>
-                            </p>
+                            <a class="work-case__link" href="${project.externalLink}" target="_blank" rel="noopener noreferrer">${empty project.linkLabel ? 'Visit project' : project.linkLabel}</a>
                         </div>
                     </c:if>
                 </aside>

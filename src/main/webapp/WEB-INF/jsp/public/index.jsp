@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="preload" href="${ctx}/assets/images/logo.webp" as="image" type="image/webp">
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=3">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=4">
 </head>
 <body>
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
@@ -158,9 +158,7 @@
                     </div>
                     <div class="work-modal__meta-item work-modal__meta-item--link">
                         <dt>Visit</dt>
-                        <dd>
-                            <a class="work-modal__visit is-disabled" id="work-modal-link" aria-disabled="true">Link available on request</a>
-                        </dd>
+                        <dd><a class="work-modal__visit is-disabled" id="work-modal-link" aria-disabled="true">Link available on request</a></dd>
                     </div>
                 </dl>
             </div>

@@ -697,29 +697,16 @@ body.has-settled-header .page-shell {
     overflow-wrap: anywhere;
 }
 
-.work-case__media {
-    display: grid;
-    gap: 18px;
+.work-case__stage {
+    width: 100%;
+    max-width: 100%;
 }
 
-.work-case__lead,
-.work-case__shot {
-    margin: 0;
-    overflow: hidden;
+.work-case__stage .gallery-stage__img {
+    margin-inline: auto;
+    max-height: min(72vh, 820px);
     border-radius: 14px;
     background: #101010;
-}
-
-.work-case__lead img,
-.work-case__shot img {
-    display: block;
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: min(72vh, 820px);
-    margin-inline: auto;
-    object-fit: contain;
-    cursor: zoom-in;
 }
 
 .work-case__layout {
@@ -776,8 +763,14 @@ body.has-settled-header .page-shell {
 }
 
 .work-case__link {
+    display: inline-block;
+    width: fit-content;
+    max-width: 100%;
     color: var(--text);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
 }
 
 .work-case__link:hover {
