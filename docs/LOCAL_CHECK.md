@@ -17,7 +17,7 @@ Or run `PortfolioStudioApplication` from IntelliJ.
 ## Local Access Links
 - Public home: `http://localhost:8080/`
 - Gallery: `http://localhost:8080/gallery`
-- Work detail: `http://localhost:8080/work/singularity`
+- Work section: `http://localhost:8080/` (empty until you add a project in the CMS)
 - Blog: `http://localhost:8080/blog`
 - CMS sign-in: `http://localhost:8080/cmsmgmnt/sign-in`
 

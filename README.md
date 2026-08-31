@@ -193,7 +193,7 @@ Or open the root in IntelliJ and run `PortfolioStudioApplication`.
 |---|---|
 | Home | http://localhost:8080/ |
 | Gallery | http://localhost:8080/gallery |
-| Work | http://localhost:8080/work/singularity |
+| Work | http://localhost:8080/ (home work section) |
 | Blog | http://localhost:8080/blog |
 | CMS sign-in | http://localhost:8080/cmsmgmnt/sign-in |
 

@@ -495,7 +495,6 @@ public class PortfolioService {
     @Transactional
     public void ensureSeedData() {
         ensureStudioOwner();
-        ensureSeedProject();
         removeSeedGalleryExample();
         removeSeedBlogExample();
     }
@@ -730,70 +729,6 @@ public class PortfolioService {
             passwordEncoder.encode(password)
         );
         logAudit(username, "SEED_OWNER_CREATED", "cms_user", username, "Seed owner account created", "system");
-    }
-
-    private void ensureSeedProject() {
-        if (countRows("projects") > 0) {
-            return;
-        }
-
-        jdbcTemplate.update(
-            """
-                INSERT INTO projects (
-                    title, slug, summary, year_label, role, tools, external_link, link_label,
-                    card_image_path, fallback_image_path, card_gradient, card_image_mode, card_image_scale,
-                    narrative, featured, published, sort_order
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-            "Singularity",
-            "singularity",
-            "AI-assisted software requirements gathering platform.",
-            "2025-2026",
-            "Frontend & backend development, UI/UX design.",
-            "React, Node.js, SQLite3, MinIO, Figma, Express.js, Socket.IO",
-            "https://github.com/Chung1045/singularity",
-            "GitHub",
-            "/assets/images/PJKT_1_img/PJKT_1_Logo.png",
-            "/assets/images/PJKT_1_img/PJKT_1_Logo.png",
-            "linear-gradient(180deg,rgb(255, 255, 255) 0%,rgb(255, 255, 255) 100%)",
-            "contain",
-            0.2,
-            "A collaborative platform for requirements gathering that turns scattered project conversations into a clearer working process. This seed project keeps the current portfolio content alive while the CMS takes over as the new content source.",
-            1,
-            1,
-            1
-        );
-
-        Long projectId = jdbcTemplate.queryForObject("SELECT id FROM projects WHERE slug = 'singularity'", Long.class);
-        if (projectId != null) {
-            String[] images = {
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_01.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_02.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_03.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_04.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_05.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_06.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_07.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_08.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_09.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_10.png",
-                "/assets/images/PJKT_1_img/PJKT_1_Modal_11.png"
-            };
-            for (int index = 0; index < images.length; index++) {
-                jdbcTemplate.update(
-                    """
-                        INSERT INTO project_media (project_id, file_path, alt_text, media_order, is_cover, original_filename)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                        """,
-                    projectId,
-                    images[index],
-                    "Singularity image " + (index + 1),
-                    index,
-                    index == 0 ? 1 : 0,
-                    "seed-image-" + (index + 1)
-                );
-            }
-        }
     }
 
     private void removeSeedGalleryExample() {
