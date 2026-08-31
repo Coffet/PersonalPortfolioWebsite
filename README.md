@@ -33,6 +33,29 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 
 ---
 
+## Contents
+
+1. [Pick a path](#pick-a-path)
+2. [Why there is no default password](#why-there-is-no-default-password-why-this-was-painful)
+3. [Read this first](#read-this-first) ([If you screwed up](#if-you-screwed-up))
+4. [Why no GitHub Actions auto-deploy](#why-no-github-actions-auto-deploy)
+5. [Structure](#structure)
+6. [How data moves](#how-data-moves)
+7. [Stack](#stack)
+8. [Routes](#routes)
+9. [CMS](#cms) (default URL, how to open it, how to rename it)
+10. [Run locally (dev work)](#run-locally-dev-work)
+11. [Make the WAR](#make-the-war)
+12. [Make the VPS and host](#make-the-vps-and-host) (bootstrap **or** [manual install](#4b-manual-setup-if-bootstrap-did-not-work))
+13. [If you already have a server](#if-you-already-have-a-server)
+14. [Host env on this VPS](#host-env-on-this-vps)
+15. [What you should do](#what-you-should-do)
+16. [What you should not do](#what-you-should-not-do)
+17. [Troubleshooting](#troubleshooting)
+18. [Notes](#notes)
+
+---
+
 ## Pick a path
 
 
@@ -112,28 +135,6 @@ If copying a file and typing a password feels like extra work: that is the point
 
 
 Screwing up **git** is usually cheap (the live WAR is separate). Screwing up **SQLite** or **shipping a password** is not. If the box is 502, check Java first (`systemctl status portfolio`), then nginx (`nginx -t`), then Cloudflare.
-
----
-
-## Contents
-
-1. [Why no GitHub Actions auto-deploy](#why-no-github-actions-auto-deploy)
-2. [Structure](#structure)
-3. [How data moves](#how-data-moves)
-4. [Stack](#stack)
-5. [Routes](#routes)
-6. [CMS](#cms) (default URL, how to open it, how to rename it)
-7. [Run locally (dev work)](#run-locally-dev-work)
-8. [Make the WAR](#make-the-war)
-9. [Make the VPS and host](#make-the-vps-and-host) (bootstrap **or** [manual install](#4b-manual-setup-if-bootstrap-did-not-work))
-10. [If you already have a server](#if-you-already-have-a-server)
-11. [Host env on this VPS](#host-env-on-this-vps)
-12. [What you should do](#what-you-should-do)
-13. [What you should not do](#what-you-should-not-do)
-14. [Troubleshooting](#troubleshooting)
-15. [Notes](#notes)
-
-If something already went wrong: [If you screwed up](#if-you-screwed-up) (under Read this first).
 
 ---
 
