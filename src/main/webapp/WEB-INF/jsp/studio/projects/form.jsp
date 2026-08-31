@@ -71,8 +71,10 @@
                         </div>
                         <c:if test="${not empty project.cardImagePath}">
                             <div class="current-cover">
-                                <img src="${ctx}${project.cardImagePath}" alt="Current card image for ${project.title}">
-                                <span>Current card image</span>
+                                <button class="media-preview-trigger" type="button" data-preview-src="${ctx}${project.cardImagePath}" aria-label="Preview current card image">
+                                    <img src="${ctx}${project.cardImagePath}" alt="Current card image for ${project.title}">
+                                </button>
+                                <span>Current card image — click to preview</span>
                             </div>
                         </c:if>
                         <div class="upload-field" data-file-field data-empty-caption="Add gallery images">
@@ -88,7 +90,9 @@
                             <div class="media-strip">
                                 <c:forEach items="${project.media}" var="media">
                                     <article class="media-card">
-                                        <img src="${ctx}${media.filePath}" alt="${empty media.altText ? project.title : media.altText}">
+                                        <button class="media-preview-trigger" type="button" data-preview-src="${ctx}${media.filePath}" aria-label="Preview ${empty media.altText ? project.title : media.altText}">
+                                            <img src="${ctx}${media.filePath}" alt="${empty media.altText ? project.title : media.altText}">
+                                        </button>
                                     </article>
                                 </c:forEach>
                             </div>
@@ -109,11 +113,11 @@
                         </div>
                         <div class="field">
                             <label for="role">Role</label>
-                            <input id="role" name="role" value="${project.role}" required maxlength="180">
+                            <textarea id="role" name="role" required maxlength="180" rows="3">${project.role}</textarea>
                         </div>
                         <div class="field">
                             <label for="tools">Tools</label>
-                            <input id="tools" name="tools" value="${project.tools}" required maxlength="280">
+                            <textarea id="tools" name="tools" required maxlength="280" rows="3">${project.tools}</textarea>
                         </div>
                     </section>
 

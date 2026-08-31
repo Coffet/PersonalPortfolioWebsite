@@ -63,8 +63,10 @@
                         </div>
                         <c:if test="${not empty post.coverImagePath}">
                             <div class="current-cover">
-                                <img src="${ctx}${post.coverImagePath}" alt="Current cover for ${post.title}">
-                                <span>Current cover. Choose a new file to replace it.</span>
+                                <button class="media-preview-trigger" type="button" data-preview-src="${ctx}${post.coverImagePath}" aria-label="Preview current cover">
+                                    <img src="${ctx}${post.coverImagePath}" alt="Current cover for ${post.title}">
+                                </button>
+                                <span>Current cover — click to preview</span>
                             </div>
                         </c:if>
                     </section>

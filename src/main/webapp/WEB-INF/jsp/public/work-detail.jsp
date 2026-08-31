@@ -4,8 +4,8 @@
 <html lang="en">
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=7">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=3">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=18">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -13,53 +13,65 @@
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
 
     <main class="page-shell">
-        <div class="wrap detail-layout">
-            <a class="page-return" href="${ctx}/">
+        <article class="wrap work-case">
+            <a class="page-return" href="${ctx}/#work">
                 <svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Return
             </a>
 
-            <section class="page-intro">
-                <div class="detail-meta">
-                    <span>${project.yearLabel}</span>
-                    <span>${project.role}</span>
-                </div>
-                <h1 class="detail-title">${project.title}</h1>
-                <p class="detail-copy">${project.summary}</p>
-            </section>
-
-            <c:if test="${not empty project.media}">
-                <div class="detail-hero">
-                    <img src="${ctx}${project.media[0].filePath}" alt="${project.media[0].altText}">
-                </div>
-            </c:if>
-
-            <section class="detail-richtext">
-                <p>${project.narrative}</p>
-                <p><strong>Tools:</strong> ${project.tools}</p>
-            </section>
-
-            <div class="detail-links">
-                <c:if test="${not empty project.externalLink}">
-                    <a class="detail-link" href="${project.externalLink}" target="_blank" rel="noopener noreferrer">
-                        ${empty project.linkLabel ? 'Visit project' : project.linkLabel}
-                    </a>
+            <header class="work-case__intro">
+                <p class="work-case__kicker">${project.yearLabel}</p>
+                <h1 class="work-case__title">${project.title}</h1>
+                <c:if test="${not empty project.summary}">
+                    <p class="work-case__lede">${project.summary}</p>
                 </c:if>
-                <a class="detail-link detail-link--ghost" href="${ctx}/">Back to home</a>
-            </div>
+            </header>
 
             <c:if test="${not empty project.media}">
-                <section class="detail-gallery">
-                    <c:forEach items="${project.media}" var="media">
-                        <figure class="detail-gallery__item">
-                            <img src="${ctx}${media.filePath}" alt="${media.altText}">
+                <div class="work-case__media" data-gallery-viewer>
+                    <c:forEach items="${project.media}" var="media" varStatus="mediaStatus">
+                        <figure class="${mediaStatus.first ? 'work-case__lead' : 'work-case__shot'}">
+                            <img src="${ctx}${media.filePath}"
+                                 alt="${empty media.altText ? project.title : media.altText}"
+                                 decoding="async"
+                                 <c:if test="${mediaStatus.first}">fetchpriority="high"</c:if>>
                         </figure>
                     </c:forEach>
-                </section>
+                </div>
             </c:if>
-        </div>
+
+            <div class="work-case__layout${empty project.narrative ? ' work-case__layout--solo' : ''}">
+                <c:if test="${not empty project.narrative}">
+                    <section class="work-case__story">
+                        <p>${project.narrative}</p>
+                    </section>
+                </c:if>
+
+                <aside class="work-case__facts">
+                    <div>
+                        <h2>Role</h2>
+                        <p>${project.role}</p>
+                    </div>
+                    <div>
+                        <h2>Tools</h2>
+                        <p>${project.tools}</p>
+                    </div>
+                    <c:if test="${not empty project.externalLink}">
+                        <div>
+                            <h2>Visit</h2>
+                            <p>
+                                <a class="work-case__link" href="${project.externalLink}" target="_blank" rel="noopener noreferrer">
+                                    ${empty project.linkLabel ? 'Visit project' : project.linkLabel}
+                                </a>
+                            </p>
+                        </div>
+                    </c:if>
+                </aside>
+            </div>
+        </article>
     </main>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=5" defer></script>
 </body>
 </html>

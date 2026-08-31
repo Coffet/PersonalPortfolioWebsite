@@ -60,10 +60,10 @@
                     caption.textContent = field.dataset.emptyCaption || "Choose images";
                 } else if (multiple) {
                     caption.textContent = staged.length === 1
-                        ? "1 image ready — click to add more"
-                        : staged.length + " images ready — click to add more";
+                        ? "1 image ready — click it to preview, or add more"
+                        : staged.length + " images ready — click to preview, or add more";
                 } else {
-                    caption.textContent = "Click to replace " + staged[0].name;
+                    caption.textContent = "Click the image to preview, or choose a replacement";
                 }
             }
 
@@ -81,6 +81,16 @@
                 image.alt = file.name;
                 image.src = URL.createObjectURL(file);
                 item.appendChild(image);
+
+                image.title = "Click to preview";
+                image.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    field.dispatchEvent(new CustomEvent("cms:preview", {
+                        bubbles: true,
+                        detail: { src: image.src, alt: file.name }
+                    }));
+                });
 
                 if (multiple) {
                     const remove = document.createElement("button");
@@ -216,6 +226,206 @@
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
             hide();
+        }
+    });
+})();
+
+(() => {
+    const collectImages = (scope, preferredSrc) => {
+        const root = scope || document;
+        const nodes = Array.from(root.querySelectorAll(
+            ".drop-preview img, .current-cover img, .media-card img, [data-preview-src]"
+        ));
+        const images = [];
+        const seen = new Set();
+
+        nodes.forEach((node) => {
+            const src = node.getAttribute("data-preview-src") || node.currentSrc || node.getAttribute("src") || "";
+            if (!src || seen.has(src)) {
+                return;
+            }
+            seen.add(src);
+            images.push({
+                src,
+                alt: node.getAttribute("alt") || node.getAttribute("aria-label") || "Image preview"
+            });
+        });
+
+        if (preferredSrc && !seen.has(preferredSrc)) {
+            images.unshift({ src: preferredSrc, alt: "Image preview" });
+        }
+
+        return images;
+    };
+
+    const wrapIndex = (index, length) => ((index % length) + length) % length;
+
+    const lightbox = {
+        root: null,
+        imgEl: null,
+        prevEl: null,
+        nextEl: null,
+        countEl: null,
+        closeEl: null,
+        images: [],
+        index: 0,
+        isOpen: false
+    };
+
+    const sync = () => {
+        if (!lightbox.images.length) {
+            return;
+        }
+        const current = lightbox.images[lightbox.index];
+        lightbox.imgEl.src = current.src;
+        lightbox.imgEl.alt = current.alt || `Image ${lightbox.index + 1} of ${lightbox.images.length}`;
+        lightbox.countEl.textContent = `${lightbox.index + 1} / ${lightbox.images.length}`;
+        const showNav = lightbox.images.length > 1;
+        lightbox.prevEl.hidden = !showNav;
+        lightbox.nextEl.hidden = !showNav;
+        lightbox.countEl.hidden = !showNav;
+    };
+
+    const closeLightbox = () => {
+        if (!lightbox.isOpen) {
+            return;
+        }
+        lightbox.isOpen = false;
+        lightbox.root.classList.remove("is-open");
+        lightbox.root.setAttribute("aria-hidden", "true");
+        document.body.style.removeProperty("overflow");
+    };
+
+    const openLightbox = (images, index) => {
+        if (!images.length) {
+            return;
+        }
+        ensureLightbox();
+        lightbox.images = images;
+        lightbox.index = wrapIndex(index, images.length);
+        sync();
+        lightbox.isOpen = true;
+        lightbox.root.classList.add("is-open");
+        lightbox.root.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        window.requestAnimationFrame(() => lightbox.closeEl?.focus());
+    };
+
+    const step = (delta) => {
+        if (!lightbox.isOpen || lightbox.images.length < 2) {
+            return;
+        }
+        lightbox.index = wrapIndex(lightbox.index + delta, lightbox.images.length);
+        sync();
+    };
+
+    const ensureLightbox = () => {
+        if (lightbox.root) {
+            return;
+        }
+
+        const root = document.createElement("div");
+        root.className = "cms-lightbox";
+        root.setAttribute("aria-hidden", "true");
+
+        const backdrop = document.createElement("div");
+        backdrop.className = "cms-lightbox__backdrop";
+
+        const dialog = document.createElement("div");
+        dialog.className = "cms-lightbox__dialog";
+        dialog.setAttribute("role", "dialog");
+        dialog.setAttribute("aria-modal", "true");
+        dialog.setAttribute("aria-label", "Image preview");
+
+        const img = document.createElement("img");
+        img.className = "cms-lightbox__img";
+        img.alt = "";
+
+        const prev = document.createElement("button");
+        prev.type = "button";
+        prev.className = "cms-lightbox__nav cms-lightbox__nav--prev";
+        prev.setAttribute("aria-label", "Previous image");
+        prev.innerHTML = '<span aria-hidden="true">‹</span>';
+
+        const next = document.createElement("button");
+        next.type = "button";
+        next.className = "cms-lightbox__nav cms-lightbox__nav--next";
+        next.setAttribute("aria-label", "Next image");
+        next.innerHTML = '<span aria-hidden="true">›</span>';
+
+        const count = document.createElement("div");
+        count.className = "cms-lightbox__count";
+
+        const close = document.createElement("button");
+        close.type = "button";
+        close.className = "cms-lightbox__close";
+        close.setAttribute("aria-label", "Close image preview");
+        close.innerHTML = '<span aria-hidden="true">×</span>';
+
+        prev.addEventListener("click", () => step(-1));
+        next.addEventListener("click", () => step(1));
+        close.addEventListener("click", closeLightbox);
+        backdrop.addEventListener("click", closeLightbox);
+
+        dialog.append(img, prev, next, count, close);
+        root.append(backdrop, dialog);
+        document.body.appendChild(root);
+
+        lightbox.root = root;
+        lightbox.imgEl = img;
+        lightbox.prevEl = prev;
+        lightbox.nextEl = next;
+        lightbox.countEl = count;
+        lightbox.closeEl = close;
+    };
+
+    const openFrom = (target, preferredSrc) => {
+        const scope = target.closest(".inspector, .composer__stage, .upload-field, form") || document;
+        const images = collectImages(scope, preferredSrc);
+        const index = Math.max(0, images.findIndex((image) => image.src === preferredSrc));
+        openLightbox(images, index);
+    };
+
+    document.addEventListener("cms:preview", (event) => {
+        const src = event.detail?.src;
+        if (!src) {
+            return;
+        }
+        openFrom(event.target, src);
+    });
+
+    document.addEventListener("click", (event) => {
+        if (event.target.closest(".drop-preview__remove")) {
+            return;
+        }
+        const trigger = event.target.closest(".media-preview-trigger, .current-cover img, .media-card img");
+        if (!trigger) {
+            return;
+        }
+        const src = trigger.getAttribute("data-preview-src")
+            || trigger.querySelector?.("img")?.currentSrc
+            || trigger.currentSrc
+            || trigger.getAttribute("src");
+        if (!src) {
+            return;
+        }
+        event.preventDefault();
+        openFrom(trigger, src);
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (!lightbox.isOpen) {
+            return;
+        }
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeLightbox();
+        }
+        if (event.key === "ArrowLeft") {
+            step(-1);
+        }
+        if (event.key === "ArrowRight") {
+            step(1);
         }
     });
 })();

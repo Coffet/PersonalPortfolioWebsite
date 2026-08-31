@@ -501,6 +501,7 @@ img {
     grid-column: span 12;
     display: grid;
     gap: 8px;
+    min-width: 0;
 }
 
 .field.half {
@@ -523,6 +524,8 @@ img {
 .field textarea,
 .field select {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     min-height: 48px;
     border: 1px solid var(--line);
     border-radius: 14px;
@@ -860,6 +863,7 @@ body.is-composer .desk-top {
     border: 1px solid var(--line);
     border-radius: 20px;
     background: #161513;
+    overflow-wrap: anywhere;
 }
 
 .inspector h2 {
@@ -874,11 +878,14 @@ body.is-composer .desk-top {
 
 .inspector .field {
     gap: 6px;
+    min-width: 0;
 }
 
 .inspector .field input,
 .inspector .field textarea,
 .inspector .field select {
+    min-width: 0;
+    max-width: 100%;
     min-height: 44px;
     border-radius: 12px;
     background: #11100e;
@@ -886,12 +893,16 @@ body.is-composer .desk-top {
 
 .inspector .field textarea {
     min-height: 88px;
+    resize: vertical;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .inspector-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 12px;
+    min-width: 0;
 }
 
 .switch {
@@ -1056,6 +1067,7 @@ body.is-composer .desk-top {
     height: auto;
     border-radius: 12px;
     background: #1a1916;
+    cursor: zoom-in;
 }
 
 .drop-preview__remove {
@@ -1085,6 +1097,115 @@ body.is-composer .desk-top {
     font-size: 0.82rem;
 }
 
+.media-preview-trigger {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+    border-radius: 12px;
+}
+
+.media-preview-trigger:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.cms-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s var(--ease-out), visibility 0.2s var(--ease-out);
+}
+
+.cms-lightbox.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.cms-lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.86);
+}
+
+.cms-lightbox__dialog {
+    position: absolute;
+    inset: clamp(18px, 3vw, 32px);
+    display: grid;
+    place-items: center;
+}
+
+.cms-lightbox__img {
+    width: auto;
+    height: auto;
+    max-width: min(92vw, 1200px);
+    max-height: min(78vh, 820px);
+    object-fit: contain;
+    border-radius: 12px;
+    background: #161513;
+    border: 1px solid var(--line);
+}
+
+.cms-lightbox__nav,
+.cms-lightbox__close,
+.cms-lightbox__count {
+    z-index: 1;
+}
+
+.cms-lightbox__nav,
+.cms-lightbox__close {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.cms-lightbox__nav {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.cms-lightbox__nav--prev { left: 18px; }
+.cms-lightbox__nav--next { right: 18px; }
+
+.cms-lightbox__nav span {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.cms-lightbox__close {
+    top: 18px;
+    right: 18px;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.cms-lightbox__count {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text-soft);
+    font-size: 0.78rem;
+}
+
 .composer-actions {
     display: grid;
     gap: 8px;
@@ -1097,7 +1218,7 @@ body.is-composer .desk-top {
 
 @media (min-width: 1101px) {
     .composer {
-        grid-template-columns: minmax(0, 1fr) 320px;
+        grid-template-columns: minmax(0, 1fr) 360px;
     }
 
     .composer__rail {
@@ -1121,6 +1242,13 @@ body.is-composer .desk-top {
 
     .button:hover {
         transform: translateY(-1px);
+    }
+
+    .drop-preview img:hover,
+    .media-preview-trigger:hover img,
+    .current-cover img:hover,
+    .media-card img:hover {
+        filter: brightness(1.06);
     }
 }
 
@@ -1325,5 +1453,9 @@ body.is-composer .desk-top {
 
     .toast-region.is-hidden {
         transform: translate(-50%, 100%);
+    }
+
+    .cms-lightbox {
+        transition: none;
     }
 }

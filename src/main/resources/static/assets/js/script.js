@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const linkEl = document.getElementById('work-modal-link');
         const mediaEl = document.getElementById('work-modal-media');
         const animatedParts = modal.querySelectorAll(
-            '.work-modal__title, .work-modal__desc, .work-modal__year, .work-modal__media, .work-modal__meta-item'
+            '.work-modal__media, .work-modal__year, .work-modal__title, .work-modal__desc, .work-modal__meta-item'
         );
         const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
         let lastFocused = null;
@@ -543,8 +543,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const clearModalMedia = () => {
                 gallery.images = [];
                 gallery.index = 0;
+                gallery.imgEl = null;
+                gallery.prevEl = null;
+                gallery.nextEl = null;
+                gallery.countEl = null;
                 mediaEl.replaceChildren();
                 mediaEl.classList.remove('has-image');
+                mediaEl.classList.add('is-empty');
+                mediaEl.setAttribute('aria-hidden', 'true');
                 mediaEl.style.background = '';
             };
 
@@ -560,16 +566,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imagesToShow.length) {
                 ensureGalleryShell();
                 mediaEl.classList.add('has-image');
+                mediaEl.classList.remove('is-empty');
+                mediaEl.setAttribute('aria-hidden', 'false');
                 gallery.images = imagesToShow;
                 setGalleryIndex(0);
                 return;
             }
 
             clearModalMedia();
-            const sourceMedia = card.querySelector('.work-media');
-            if (sourceMedia) {
-                mediaEl.style.background = window.getComputedStyle(sourceMedia).background;
-            }
         };
 
         const firstProjectCard = document.querySelector('.work-card[data-project-id]');

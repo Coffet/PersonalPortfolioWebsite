@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="preload" href="${ctx}/assets/images/logo.webp" as="image" type="image/webp">
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=3">
 </head>
 <body>
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
@@ -140,24 +140,24 @@
                 </svg>
             </button>
 
+            <div class="work-modal__media is-empty" id="work-modal-media" aria-hidden="true"></div>
+
             <div class="work-modal__content">
+                <p class="work-modal__year" id="work-modal-year">--</p>
                 <h3 class="work-modal__title" id="work-modal-title">Project details</h3>
                 <p class="work-modal__desc" id="work-modal-desc">Loading project description...</p>
-                <p class="work-modal__year" id="work-modal-year">--</p>
-
-                <div class="work-modal__media" id="work-modal-media" aria-hidden="true"></div>
 
                 <dl class="work-modal__meta">
                     <div class="work-modal__meta-item">
-                        <dt>What I handled</dt>
+                        <dt>Role</dt>
                         <dd id="work-modal-role">Loading role details...</dd>
                     </div>
                     <div class="work-modal__meta-item">
-                        <dt>Tools Used</dt>
+                        <dt>Tools</dt>
                         <dd id="work-modal-tools">Loading tools...</dd>
                     </div>
-                    <div class="work-modal__meta-item">
-                        <dt>Visit Link</dt>
+                    <div class="work-modal__meta-item work-modal__meta-item--link">
+                        <dt>Visit</dt>
                         <dd>
                             <a class="work-modal__visit is-disabled" id="work-modal-link" aria-disabled="true">Link available on request</a>
                         </dd>
@@ -170,6 +170,6 @@
     <script id="work-projects-data" type="application/json"><c:out value="${workProjectsJson}" escapeXml="false" /></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="${ctx}/assets/js/script.js?v=1" defer></script>
+    <script src="${ctx}/assets/js/script.js?v=2" defer></script>
 </body>
 </html>

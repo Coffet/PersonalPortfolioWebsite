@@ -35,11 +35,13 @@
                     </div>
 
                     <c:if test="${not empty entry.media}">
-                        <p class="upload-field__label">Already on this entry</p>
+                        <p class="upload-field__label">Already on this entry — click to preview</p>
                         <div class="media-strip">
                             <c:forEach items="${entry.media}" var="media">
                                 <article class="media-card">
-                                    <img src="${ctx}${media.filePath}" alt="${empty media.altText ? entry.title : media.altText}">
+                                    <button class="media-preview-trigger" type="button" data-preview-src="${ctx}${media.filePath}" aria-label="Preview ${empty media.altText ? entry.title : media.altText}">
+                                        <img src="${ctx}${media.filePath}" alt="${empty media.altText ? entry.title : media.altText}">
+                                    </button>
                                 </article>
                             </c:forEach>
                         </div>
