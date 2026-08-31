@@ -51,7 +51,7 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 | The VPS already exists — only ship a new build | [If you already have a server](#if-you-already-have-a-server)                                     |
 
 
-You can develop forever without a server. A VPS is only for putting [coft.moe](https://coft.moe) (or your domain) on the public internet.
+You can develop forever without a server. A VPS is only for putting [a domain](https://coft.moe) (or your domain) on the public internet.
 
 ---
 
