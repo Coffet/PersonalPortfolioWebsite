@@ -61,7 +61,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('intro-lock');
     };
 
+    let introTl = null;
+    let introFinished = false;
+
+    const restoreTicker = () => {
+        gsap.ticker.lagSmoothing(500, 33);
+    };
+
     const finishIntro = () => {
+        if (introFinished) {
+            return;
+        }
+        introFinished = true;
+        restoreTicker();
         stopIntroViewportWatch();
         unlockIntroScroll();
         document.body.style.overflow = 'auto';
@@ -755,10 +767,26 @@ document.addEventListener('DOMContentLoaded', () => {
     initWorkModal();
     lockIntroScroll();
 
+    const silentCompleteIntro = () => {
+        if (introFinished) {
+            return;
+        }
+        introFinished = true;
+        restoreTicker();
+        introTl?.kill();
+        introTl = null;
+        snapToTopbar();
+        markIntroPlayed();
+    };
+
     if (shouldSkipIntro()) {
         snapToTopbar();
+        introFinished = true;
     } else {
-        const tl = gsap.timeline({ onComplete: finishIntro });
+        introTl = gsap.timeline({
+            paused: true,
+            onComplete: finishIntro,
+        });
 
         gsap.set(logo, {
             left: '50%',
@@ -768,7 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Step 1: Black screen, logo breathes
-        tl.to(logo, {
+        introTl.to(logo, {
             opacity: 1,
             duration: 1.5,
             ease: "power2.inOut",
@@ -784,7 +812,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!isMobile) {
             // Step 2: Transition to 40% on left side
-            tl.to(headerBg, {
+            introTl.to(headerBg, {
                 width: '40vw',
                 duration: 0.8,
                 ease: "expo.inOut"
@@ -819,7 +847,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Step 5: Transition to topbar
-        tl.set(colorPanels, { display: "none" }, isMobile ? "+=0.2" : "+=1.0")
+        introTl.set(colorPanels, { display: "none" }, isMobile ? "+=0.2" : "+=1.0")
         .to(header, {
             height: headerHeight,
             duration: 1.2,
@@ -860,6 +888,28 @@ document.addEventListener('DOMContentLoaded', () => {
             duration: 0.8,
             ease: "power2.out"
         }, "-=0.4");
+
+        if (document.hidden) {
+            silentCompleteIntro();
+        } else {
+            introTl.play();
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (introFinished) {
+                return;
+            }
+            if (document.hidden) {
+                silentCompleteIntro();
+            }
+        });
+
+        window.addEventListener('pagehide', silentCompleteIntro);
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted && !introFinished) {
+                silentCompleteIntro();
+            }
+        });
     }
 
     const yearEl = document.getElementById('year');

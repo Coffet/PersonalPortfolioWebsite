@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=4">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=20">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=21">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />

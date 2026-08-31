@@ -231,27 +231,47 @@
 })();
 
 (() => {
+    const normalizeSrc = (src) => {
+        if (!src) {
+            return "";
+        }
+        if (src.startsWith("blob:") || src.startsWith("data:")) {
+            return src;
+        }
+        try {
+            const url = new URL(src, window.location.href);
+            return url.pathname + url.search;
+        } catch {
+            return src;
+        }
+    };
+
     const collectImages = (scope, preferredSrc) => {
         const root = scope || document;
         const nodes = Array.from(root.querySelectorAll(
-            ".drop-preview img, .current-cover img, .media-card img, [data-preview-src]"
+            ".drop-preview img, .current-cover img, .media-card img"
         ));
         const images = [];
         const seen = new Set();
 
         nodes.forEach((node) => {
-            const src = node.getAttribute("data-preview-src") || node.currentSrc || node.getAttribute("src") || "";
-            if (!src || seen.has(src)) {
+            if (node.closest(".cms-lightbox")) {
                 return;
             }
-            seen.add(src);
+            const src = node.currentSrc || node.getAttribute("src") || "";
+            const key = normalizeSrc(src);
+            if (!key || seen.has(key)) {
+                return;
+            }
+            seen.add(key);
             images.push({
                 src,
-                alt: node.getAttribute("alt") || node.getAttribute("aria-label") || "Image preview"
+                alt: node.getAttribute("alt") || "Image preview"
             });
         });
 
-        if (preferredSrc && !seen.has(preferredSrc)) {
+        const preferredKey = normalizeSrc(preferredSrc);
+        if (preferredKey && !seen.has(preferredKey)) {
             images.unshift({ src: preferredSrc, alt: "Image preview" });
         }
 
@@ -382,7 +402,8 @@
     const openFrom = (target, preferredSrc) => {
         const scope = target.closest(".inspector, .composer__stage, .upload-field, form") || document;
         const images = collectImages(scope, preferredSrc);
-        const index = Math.max(0, images.findIndex((image) => image.src === preferredSrc));
+        const preferredKey = normalizeSrc(preferredSrc);
+        const index = Math.max(0, images.findIndex((image) => normalizeSrc(image.src) === preferredKey));
         openLightbox(images, index);
     };
 

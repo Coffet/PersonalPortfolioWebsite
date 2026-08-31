@@ -168,6 +168,6 @@
     <script id="work-projects-data" type="application/json"><c:out value="${workProjectsJson}" escapeXml="false" /></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="${ctx}/assets/js/script.js?v=2" defer></script>
+    <script src="${ctx}/assets/js/script.js?v=4" defer></script>
 </body>
 </html>
