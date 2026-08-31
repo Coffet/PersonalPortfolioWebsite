@@ -40,7 +40,7 @@ CMS  (custom /domain for the cms)     CRUD + image upload
 > GitHub holds source. Visitors see whatever WAR is running on the server. After you push, you still package a WAR, copy that one file, and restart Java.
 
 > **Do not put CMS credentials in git.**  
-> First-boot owner values live in gitignored `application-local.properties` (local) or `/etc/portfolio.env` (server). They are not the live login after `cms_users` has a row.
+> First-boot owner values live in gitignored `application-local.properties` (local) or in the **systemd unit** on the VPS. They are not the live login after `cms_users` has a row.
 
 > **Do not `git pull` into a web root.**  
 > This repo is a Maven tree. Dropping it in `/var/www` publishes source, not a homepage.
@@ -259,7 +259,7 @@ Everything under `/custom /domain/**` except sign-in requires role `OWNER`. CSRF
 
 Content is **not** in git. A WAR replace does not wipe it. A deleted database does.
 
-On the server, copy `deploy/portfolio.env.example` to `/etc/portfolio.env` (mode 600) and set the two seed variables **before the first Java start** if `cms_users` is empty. Use values that do **not** appear in this repository.
+On this VPS, seed and host env are `Environment=` lines in `/etc/systemd/system/portfolio.service`, not `/etc/portfolio.env`. That file does not exist here on purpose: one unit to read, nothing extra to forget. Use values that do **not** appear in this repository. `systemctl cat portfolio` is the source of truth. Do not paste those values back into git.
 
 ---
 
@@ -276,7 +276,7 @@ Target shape (Linode + Ubuntu + nginx + Java 17):
 | SQLite | `/home/deploy/portfolio-app/storage/database/portfolio.db` |
 | Uploads | `/home/deploy/portfolio-app/storage/uploads/` |
 | systemd | `/etc/systemd/system/portfolio.service` |
-| Env file | `/etc/portfolio.env` (mode `600`) |
+| Host env | `Environment=` inside that unit (`systemctl cat portfolio`). **Not** `/etc/portfolio.env` |
 | nginx site | `/etc/nginx/sites-available/portfolio` |
 | TLS | `/etc/ssl/cf/coft.moe.pem` + `.key` |
 | Firewall | `22`, `80`, `443` only — **do not open `8080`** |
@@ -303,7 +303,11 @@ If the VPS is empty (new rebuild):
 sudo bash deploy/bootstrap-server.sh
 ```
 
-That installs JRE 17, nginx, the `deploy` user, directories, sudoers, and a self-signed origin cert if none exists. Then edit `/etc/portfolio.env` **before** the first start. Cloudflare SSL mode should be **Full** (not Full Strict) until you install a real origin certificate.
+That installs JRE 17, nginx, the `deploy` user, directories, sudoers, and a self-signed origin cert if none exists.
+
+`deploy/portfolio.service` in git still has `EnvironmentFile=-/etc/portfolio.env` as a template. **This live box does not use that file.** Host env was put in the unit itself (`Environment=…`) so nginx/TLS/Java settings live in one place you can `systemctl cat`. If you rebuild from the template, either keep doing that or create `/etc/portfolio.env` — but do not assume the env file exists on coft.moe.
+
+Cloudflare SSL mode should be **Full** (not Full Strict) until you install a real origin certificate.
 
 ### Every release (the actual go-live)
 
@@ -365,7 +369,8 @@ The GitHub repo may be cloned for bootstrap scripts. It must **not** become the 
 | `git pull` into `/var/www` | Publishes a Maven tree. Site dies. |
 | Open port `8080` on ufw | Java stays loopback-only. nginx is the door. |
 | Commit `.env`, `application-local.properties`, `portfolio.db`, keys | Those are live secrets / data. |
-| Start Java the first time with an empty DB and no seed values | CMS will have no owner. Set the local file or systemd env first. |
+| Start Java the first time with an empty DB and no seed values | CMS will have no owner. Local file, or `Environment=` in the unit. |
+| Assume `/etc/portfolio.env` exists on this VPS | It does not. Env is in `/etc/systemd/system/portfolio.service`. |
 | Delete `portfolio.db*` to “refresh code” | That wipes CMS content. Replace the WAR instead. |
 | Paste new root or CMS passwords into chat or into this file | Write them in a password manager. |
 | Expect GitHub Actions to ship the site | It does not. You upload the WAR. |

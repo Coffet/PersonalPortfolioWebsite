@@ -24,7 +24,7 @@ Or run `PortfolioStudioApplication` from IntelliJ.
 ## CMS credentials
 Local first-boot values come from gitignored `application-local.properties` (copy the example file in the project root).
 
-On Linode, set them in `/etc/portfolio.env` before the first start. See `deploy/portfolio.env.example`.
+On Linode, they are `Environment=` lines in `/etc/systemd/system/portfolio.service` (`systemctl cat portfolio`). There is no `/etc/portfolio.env` on this host.
 
 If `cms_users` already has a row, the file and env vars are ignored. Login uses the hash in SQLite:
 
