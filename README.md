@@ -1,8 +1,29 @@
-# Portfolio
+<div align="center">
 
+<img src="src/main/resources/static/assets/images/logo.webp" alt="Coft" width="56">
+
+# Portfolio
 Personal site. Quiet CMS. One WAR behind nginx.
 
 [coft.moe](https://coft.moe) · [Apache-2.0](LICENSE) · [GitHub](https://github.com/Coffet/PersonalPortfolioWebsite)
+
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Coffet/PersonalPortfolioWebsite?style=flat-square&labelColor=111111">
+<img alt="GitHub license" src="https://img.shields.io/github/license/Coffet/PersonalPortfolioWebsite?style=flat-square&labelColor=111111">
+<img alt="GitHub stars" src="https://img.shields.io/github/stars/Coffet/PersonalPortfolioWebsite?style=flat-square&labelColor=111111">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues/Coffet/PersonalPortfolioWebsite?style=flat-square&labelColor=111111">
+
+<br>
+
+<img alt="Java 17" src="https://img.shields.io/badge/Java-17-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
+<img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?style=flat-square&logo=springboot&logoColor=white">
+<img alt="Maven" src="https://img.shields.io/badge/Maven-wrapper-C71A36?style=flat-square&logo=apachemaven&logoColor=white">
+<img alt="JSP" src="https://img.shields.io/badge/JSP-JSTL-F80000?style=flat-square&logo=apachetomcat&logoColor=white">
+<img alt="SQLite" src="https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite&logoColor=white">
+<img alt="nginx" src="https://img.shields.io/badge/nginx-proxy-009639?style=flat-square&logo=nginx&logoColor=white">
+<img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-D22128?style=flat-square">
+<img alt="Deploy" src="https://img.shields.io/badge/Deploy-manual%20WAR-111111?style=flat-square">
+
+</div>
 
 Visitors see work, gallery, and blog. The owner edits that at **`/cmsmgmnt`** — never `/admin`. Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source. The live site is one WAR behind nginx.
 
