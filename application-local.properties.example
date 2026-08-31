@@ -1,0 +1,5 @@
+# Copy to application-local.properties in the project root (gitignored).
+# Used only when cms_users is empty (first local boot).
+# Do not reuse these values on the live server.
+portfolio.seed.owner.username=local-dev
+portfolio.seed.owner.password=local-password

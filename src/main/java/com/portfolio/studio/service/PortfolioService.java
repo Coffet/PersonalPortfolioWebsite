@@ -22,6 +22,8 @@ import com.portfolio.studio.model.GalleryEntry;
 import com.portfolio.studio.model.GalleryMedia;
 import com.portfolio.studio.model.Project;
 import com.portfolio.studio.model.ProjectMedia;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -36,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class PortfolioService {
 
+    private static final Logger log = LoggerFactory.getLogger(PortfolioService.class);
     private static final DateTimeFormatter SQL_TIMESTAMP = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final JdbcTemplate jdbcTemplate;
@@ -717,6 +720,11 @@ public class PortfolioService {
         String username = portfolioProperties.getSeed().getOwner().getUsername();
         String password = portfolioProperties.getSeed().getOwner().getPassword();
         if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
+            log.warn(
+                "cms_users is empty and no seed owner is configured. "
+                    + "Copy application-local.properties.example to application-local.properties, "
+                    + "or set PORTFOLIO_SEED_OWNER_USERNAME and PORTFOLIO_SEED_OWNER_PASSWORD."
+            );
             return;
         }
 

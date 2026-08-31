@@ -34,6 +34,7 @@ build/
 
 ### App Data ###
 .env
+application-local.properties
 identifier.sqlite
 storage/database/*.db
 storage/uploads/*

@@ -39,8 +39,8 @@ CMS  (custom /domain for the cms)     CRUD + image upload
 > **`git push` does not update the website.**  
 > GitHub holds source. Visitors see whatever WAR is running on the server. After you push, you still package a WAR, copy that one file, and restart Java.
 
-> **The passwords in this repo are dummy / local-only.**  
-> `CMS_Admin` / `PDW_CMSpwd` seed a **fresh local database**. They are not the live server cms login. Production credentials live on the server (SQLite hash + systemd env). Do not reuse the git pair on the VPS.
+> **Do not put CMS credentials in git.**  
+> First-boot owner values live in gitignored `application-local.properties` (local) or `/etc/portfolio.env` (server). They are not the live login after `cms_users` has a row.
 
 > **Do not `git pull` into a web root.**  
 > This repo is a Maven tree. Dropping it in `/var/www` publishes source, not a homepage.
@@ -201,14 +201,11 @@ Or open the root in IntelliJ and run `PortfolioStudioApplication`.
 
 On a **new** `storage/database/portfolio.db`:
 
-| | |
-|---|---|
-| Username | `CMS_Admin` |
-| Password | `PDW_CMSpwd` |
+1. Copy `application-local.properties.example` to `application-local.properties` in the project root (gitignored).
+2. Change the two seed values to something you will remember. Do not reuse the live server login.
+3. Start the app. The owner row is created only while `cms_users` is empty.
 
-These come from `application.properties`. They exist so you can run the project without env vars. Treat them as **demo credentials**. Anyone who clones the public repo can see them.
-
-After the first start, login is the BCrypt hash in `cms_users`. Changing the properties file later does **not** change an existing user.
+After the first start, login is the BCrypt hash in `cms_users`. Changing the local file later does **not** change an existing user.
 
 ### Tests
 
@@ -262,14 +259,7 @@ Everything under `/custom /domain/**` except sign-in requires role `OWNER`. CSRF
 
 Content is **not** in git. A WAR replace does not wipe it. A deleted database does.
 
-On the server, set seed env vars **before the first Java start** if `cms_users` is empty:
-
-```ini
-PORTFOLIO_SEED_OWNER_USERNAME=your-name
-PORTFOLIO_SEED_OWNER_PASSWORD=a-long-unique-password
-```
-
-Use values that do **not** appear in this repository.
+On the server, copy `deploy/portfolio.env.example` to `/etc/portfolio.env` (mode 600) and set the two seed variables **before the first Java start** if `cms_users` is empty. Use values that do **not** appear in this repository.
 
 ---
 
@@ -374,9 +364,8 @@ The GitHub repo may be cloned for bootstrap scripts. It must **not** become the 
 |---|---|
 | `git pull` into `/var/www` | Publishes a Maven tree. Site dies. |
 | Open port `8080` on ufw | Java stays loopback-only. nginx is the door. |
-| Commit `.env`, `portfolio.db`, keys, `/root/cms-login.txt` | Those are live secrets / data. |
-| Use `CMS_Admin` / `PDW_CMSpwd` on Linode | They are in the public repo. |
-| Start Java the first time with an empty DB and no systemd seed | It will seed the git dummy user. |
+| Commit `.env`, `application-local.properties`, `portfolio.db`, keys | Those are live secrets / data. |
+| Start Java the first time with an empty DB and no seed values | CMS will have no owner. Set the local file or systemd env first. |
 | Delete `portfolio.db*` to “refresh code” | That wipes CMS content. Replace the WAR instead. |
 | Paste new root or CMS passwords into chat or into this file | Write them in a password manager. |
 | Expect GitHub Actions to ship the site | It does not. You upload the WAR. |

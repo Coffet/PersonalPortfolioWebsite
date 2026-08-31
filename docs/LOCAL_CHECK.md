@@ -6,7 +6,7 @@
 3. Confirm the main source layout is under `src/main/java`, `src/main/resources`, and `src/main/webapp`.
 
 ## Run The App
-Local defaults live in `application.properties`. You do not need env vars on this PC.
+Copy `application-local.properties.example` to `application-local.properties` in the project root, then set a local-only username and password. That file is gitignored.
 
 ```powershell
 .\mvnw.cmd spring-boot:run
@@ -22,15 +22,9 @@ Or run `PortfolioStudioApplication` from IntelliJ.
 - CMS sign-in: `http://localhost:8080/cmsmgmnt/sign-in`
 
 ## CMS credentials
-Local first-boot defaults (from `application.properties`):
+Local first-boot values come from gitignored `application-local.properties` (copy the example file in the project root).
 
-- Username: `CMS_Admin`
-- Password: `PDW_CMSpwd`
-
-On Linode, override them in systemd before the first start:
-
-- `PORTFOLIO_SEED_OWNER_USERNAME`
-- `PORTFOLIO_SEED_OWNER_PASSWORD`
+On Linode, set them in `/etc/portfolio.env` before the first start. See `deploy/portfolio.env.example`.
 
 If `cms_users` already has a row, the file and env vars are ignored. Login uses the hash in SQLite:
 
