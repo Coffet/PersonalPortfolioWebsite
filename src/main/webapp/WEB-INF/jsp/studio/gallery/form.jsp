@@ -76,8 +76,9 @@
                     <section class="inspector">
                         <h2>Details</h2>
                         <div class="field">
-                            <label for="category">Category</label>
-                            <input id="category" name="category" value="${entry.category}" maxlength="80" placeholder="Process, personal, study">
+                            <label for="category">Tag</label>
+                            <input id="category" name="category" value="${entry.category}" maxlength="80" placeholder="UI, Motion, study">
+                            <p class="hint">Saved with the entry. It appears after someone opens it, not on the gallery grid.</p>
                         </div>
                         <div class="field">
                             <label for="sortOrder">Position</label>

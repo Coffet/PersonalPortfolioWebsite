@@ -34,7 +34,7 @@
                                 <div class="work-item__copy">
                                     <h2>${entry.title}</h2>
                                     <p>
-                                        ${empty entry.category ? 'Gallery' : entry.category}
+                                        ${empty entry.category ? 'No tag' : entry.category}
                                         ·
                                         <span class="chip ${entry.published ? 'chip--live' : 'chip--draft'}">${entry.published ? 'Live' : 'Draft'}</span>
                                     </p>

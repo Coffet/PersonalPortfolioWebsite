@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=5">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=23">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=26">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -25,9 +25,9 @@
 
             <section class="page-intro">
                 <div class="detail-meta">
-                    <c:if test="${not empty entry.category}">
-                        <span class="gallery-card__tag">${entry.category}</span>
-                    </c:if>
+                    <c:forEach items="${entry.tags}" var="tag">
+                        <span class="gallery-card__tag">${tag}</span>
+                    </c:forEach>
                     <span>${empty entry.publishedAt ? 'Published' : fn:substring(entry.publishedAt, 0, 10)}</span>
                 </div>
                 <h1 class="detail-title">${entry.title}</h1>
@@ -54,6 +54,15 @@
             </c:if>
         </div>
     </main>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=5" defer></script>
+    <footer class="gallery-dock">
+        <div class="wrap gallery-dock__inner">
+            <p>&copy; coft</p>
+            <nav class="gallery-dock__nav" aria-label="Footer">
+                <a href="${ctx}/#about">About</a>
+                <a href="mailto:KennyCCW@protonmail.com">Contact</a>
+            </nav>
+        </div>
+    </footer>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=6" defer></script>
 </body>
 </html>

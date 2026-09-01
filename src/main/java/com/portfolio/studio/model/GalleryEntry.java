@@ -80,6 +80,20 @@ public class GalleryEntry {
         this.category = category;
     }
 
+    public List<String> getTags() {
+        List<String> tags = new ArrayList<>();
+        if (category == null || category.isBlank()) {
+            return tags;
+        }
+        for (String part : category.split("[,/|]")) {
+            String tag = part.trim();
+            if (!tag.isEmpty() && !tags.contains(tag)) {
+                tags.add(tag);
+            }
+        }
+        return tags;
+    }
+
     public boolean isPublished() {
         return published;
     }

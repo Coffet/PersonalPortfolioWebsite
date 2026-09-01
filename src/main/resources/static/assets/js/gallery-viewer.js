@@ -205,6 +205,58 @@
 
     document.querySelectorAll("[data-gallery-stage]").forEach(enhanceStage);
 
+    const fineHover = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const markPortrait = (image) => {
+        if (!image.naturalWidth || !image.naturalHeight) {
+            return;
+        }
+        const portrait = image.naturalHeight > image.naturalWidth;
+        image.classList.toggle("is-portrait", portrait);
+        if (portrait) {
+            image.style.setProperty("--pan-y", "50%");
+        }
+    };
+
+    const enhancePortraitPan = (frame) => {
+        const image = frame.querySelector(".gallery-featured__image, .gallery-tile__image");
+        if (!image) {
+            return;
+        }
+
+        const ready = () => markPortrait(image);
+        if (image.complete) {
+            ready();
+        } else {
+            image.addEventListener("load", ready, { once: true });
+        }
+
+        if (!fineHover.matches || reduceMotion.matches) {
+            return;
+        }
+
+        const setPan = (event) => {
+            if (!image.classList.contains("is-portrait")) {
+                return;
+            }
+            const rect = frame.getBoundingClientRect();
+            if (rect.height <= 0) {
+                return;
+            }
+            const amount = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
+            frame.classList.add("is-panning");
+            image.style.setProperty("--pan-y", `${(amount * 100).toFixed(2)}%`);
+        };
+
+        frame.addEventListener("pointerenter", setPan);
+        frame.addEventListener("pointermove", setPan);
+        frame.addEventListener("pointerleave", () => {
+            frame.classList.remove("is-panning");
+            image.style.setProperty("--pan-y", "50%");
+        });
+    };
+
     document.querySelectorAll("[data-gallery-viewer]").forEach((viewer) => {
         viewer.addEventListener("pointerenter", () => prefetchAll(collectImages(viewer)), { once: true });
         viewer.addEventListener("click", (event) => {
@@ -217,6 +269,7 @@
             const index = clicked ? Math.max(0, Array.from(viewer.querySelectorAll("img")).indexOf(clicked)) : 0;
             openLightbox(images, index);
         });
+        enhancePortraitPan(viewer);
     });
 
     document.addEventListener("keydown", (event) => {

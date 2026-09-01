@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=5">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=23">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=26">
 </head>
 <body class="has-settled-header gallery-page">
     <c:set var="headerSettled" value="true" />
@@ -16,6 +16,12 @@
     <main class="page-shell">
         <div class="wrap">
             <section class="gallery-intro">
+                <a class="page-return" href="${ctx}/">
+                    <svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Return
+                </a>
                 <p class="gallery-kicker">Gallery</p>
                 <h1 class="gallery-title">Selected visuals</h1>
                 <p class="gallery-lede">Welcome to my gallery, where i share some insights in my design process, or some personal stuffs</p>
@@ -99,16 +105,15 @@
         </div>
     </main>
 
-    <footer class="gallery-site-footer">
-        <div class="wrap gallery-site-footer__inner">
-            <p>&copy; coft &middot; Personal archive of interfaces and experiments</p>
-            <nav class="gallery-site-footer__nav" aria-label="Footer">
+    <footer class="gallery-dock">
+        <div class="wrap gallery-dock__inner">
+            <p>&copy; coft</p>
+            <nav class="gallery-dock__nav" aria-label="Footer">
                 <a href="${ctx}/#about">About</a>
                 <a href="mailto:KennyCCW@protonmail.com">Contact</a>
-                <a href="${ctx}/#work">Work</a>
             </nav>
         </div>
     </footer>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=5" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=6" defer></script>
 </body>
 </html>

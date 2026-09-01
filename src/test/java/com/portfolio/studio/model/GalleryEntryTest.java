@@ -39,4 +39,13 @@ class GalleryEntryTest {
         entry.setPublishedAt("2024-11-02 09:00:00");
         assertThat(entry.getYear()).isEqualTo("2024");
     }
+
+    @Test
+    void tagsSplitFromTheCategoryField() {
+        GalleryEntry entry = new GalleryEntry();
+        assertThat(entry.getTags()).isEmpty();
+
+        entry.setCategory("UI, Motion, study");
+        assertThat(entry.getTags()).containsExactly("UI", "Motion", "study");
+    }
 }

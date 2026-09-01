@@ -92,13 +92,21 @@ class PortfolioServiceSlugTests {
     }
 
     @Test
-    void pickRandomGalleryEntryReturnsEmptyWhenThereAreFewerThanTwoEntries() {
-        GalleryEntry only = new GalleryEntry();
-        only.setTitle("Alone on the wall");
-
+    void pickRandomGalleryEntryReturnsEmptyWhenThereAreNoEntries() {
         assertThat(portfolioService.pickRandomGalleryEntry(List.of())).isEmpty();
         assertThat(portfolioService.pickRandomGalleryEntry(null)).isEmpty();
-        assertThat(portfolioService.pickRandomGalleryEntry(List.of(only))).isEmpty();
+    }
+
+    @Test
+    void pickRandomGalleryEntryCanFeatureTheFirstUploadedEntry() {
+        GalleryEntry first = new GalleryEntry();
+        first.setTitle("Alone on the wall");
+        GalleryMedia media = new GalleryMedia();
+        media.setFilePath("/uploads/cms/alone.png");
+        first.setMedia(List.of(media));
+
+        assertThat(portfolioService.pickRandomGalleryEntry(List.of(first)).orElseThrow().getTitle())
+            .isEqualTo("Alone on the wall");
     }
 
     @Test
