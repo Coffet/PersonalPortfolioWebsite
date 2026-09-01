@@ -127,4 +127,29 @@ public class GalleryEntry {
     public void setMedia(List<GalleryMedia> media) {
         this.media = media;
     }
+
+    public GalleryMedia getCoverMedia() {
+        if (media == null || media.isEmpty()) {
+            return null;
+        }
+        for (GalleryMedia item : media) {
+            if (item != null && item.isCover()) {
+                return item;
+            }
+        }
+        return media.get(0);
+    }
+
+    public String getYear() {
+        String source = null;
+        if (publishedAt != null && !publishedAt.isBlank()) {
+            source = publishedAt;
+        } else if (createdAt != null && !createdAt.isBlank()) {
+            source = createdAt;
+        }
+        if (source == null || source.length() < 4) {
+            return "";
+        }
+        return source.substring(0, 4);
+    }
 }

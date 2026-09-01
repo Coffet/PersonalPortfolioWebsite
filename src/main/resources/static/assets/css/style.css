@@ -228,6 +228,34 @@ img {
     cursor: default;
 }
 
+.status-cycle {
+    display: grid;
+    justify-items: end;
+}
+
+.status-cycle__item {
+    grid-area: 1 / 1;
+    white-space: nowrap;
+    animation: statusCycle 9s var(--ease-out) infinite;
+}
+
+.status-cycle__item--here {
+    opacity: 0;
+    animation-name: statusCycleHere;
+}
+
+@keyframes statusCycle {
+    0%, 38% { opacity: 1; }
+    46%, 88% { opacity: 0; }
+    96%, 100% { opacity: 1; }
+}
+
+@keyframes statusCycleHere {
+    0%, 38% { opacity: 0; }
+    46%, 88% { opacity: 1; }
+    96%, 100% { opacity: 0; }
+}
+
 body.has-settled-header {
     overflow: auto;
     overflow-x: hidden;
@@ -1625,8 +1653,17 @@ body.modal-open {
     }
 
     .status-dot,
-    .hero-glow {
+    .hero-glow,
+    .status-cycle__item {
         animation: none;
+    }
+
+    .status-cycle__item--open {
+        opacity: 1;
+    }
+
+    .status-cycle__item--here {
+        opacity: 0;
     }
 
     .social-card,

@@ -5,12 +5,13 @@
 <html lang="en">
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=2">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=21">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=5">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=23">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
-    <c:set var="headerLocation" value="You are now at: Gallery" />
+    <c:set var="headerCycle" value="true" />
+    <c:set var="headerLocation" value="You are now on: Gallery" />
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
 
     <main class="page-shell">
@@ -24,7 +25,9 @@
 
             <section class="page-intro">
                 <div class="detail-meta">
-                    <span class="gallery-card__tag">${empty entry.category ? 'Gallery' : entry.category}</span>
+                    <c:if test="${not empty entry.category}">
+                        <span class="gallery-card__tag">${entry.category}</span>
+                    </c:if>
                     <span>${empty entry.publishedAt ? 'Published' : fn:substring(entry.publishedAt, 0, 10)}</span>
                 </div>
                 <h1 class="detail-title">${entry.title}</h1>

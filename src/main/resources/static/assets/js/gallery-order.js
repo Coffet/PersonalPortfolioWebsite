@@ -1,8 +1,9 @@
 (() => {
     const grid = document.querySelector("[data-order-grid]");
     const menus = Array.from(document.querySelectorAll("[data-order-menu]"));
+    const tabsRoot = document.querySelector("[data-filter-tabs]");
     const empty = document.querySelector("[data-order-empty]");
-    if (!menus.length) {
+    if (!menus.length && !tabsRoot) {
         return;
     }
 
@@ -47,11 +48,14 @@
         }
 
         const items = cards();
-        items.sort((a, b) => {
-            const aTime = Date.parse(a.dataset.publishedAt || "") || 0;
-            const bTime = Date.parse(b.dataset.publishedAt || "") || 0;
-            return state.date === "oldest" ? aTime - bTime : bTime - aTime;
-        });
+        const hasDateMenu = menus.some((menu) => menu.dataset.orderType === "date");
+        if (hasDateMenu) {
+            items.sort((a, b) => {
+                const aTime = Date.parse(a.dataset.publishedAt || "") || 0;
+                const bTime = Date.parse(b.dataset.publishedAt || "") || 0;
+                return state.date === "oldest" ? aTime - bTime : bTime - aTime;
+            });
+        }
 
         items.forEach((card, index) => {
             const category = card.dataset.category || "Gallery";
@@ -89,6 +93,20 @@
         menu.removeAttribute("open");
     };
 
+    const setTab = (tab) => {
+        if (!tabsRoot || !tab) {
+            return;
+        }
+        state.category = tab.dataset.filter || "all";
+        const tabs = Array.from(tabsRoot.querySelectorAll("[data-filter]"));
+        tabs.forEach((item) => {
+            const selected = item === tab;
+            item.setAttribute("aria-selected", selected ? "true" : "false");
+            item.tabIndex = selected ? 0 : -1;
+        });
+        apply();
+    };
+
     fillCategories();
 
     menus.forEach((menu) => {
@@ -107,6 +125,47 @@
             setSelected(menu, option.dataset.orderValue);
         });
     });
+
+    if (tabsRoot) {
+        const tabs = Array.from(tabsRoot.querySelectorAll("[data-filter]"));
+        tabs.forEach((tab, index) => {
+            tab.tabIndex = index === 0 ? 0 : -1;
+        });
+
+        tabsRoot.addEventListener("click", (event) => {
+            const tab = event.target.closest("[data-filter]");
+            if (!tab || !tabsRoot.contains(tab)) {
+                return;
+            }
+            setTab(tab);
+        });
+
+        tabsRoot.addEventListener("keydown", (event) => {
+            const current = event.target.closest("[data-filter]");
+            if (!current || !tabsRoot.contains(current)) {
+                return;
+            }
+            const currentIndex = tabs.indexOf(current);
+            if (currentIndex < 0) {
+                return;
+            }
+            let nextIndex = currentIndex;
+            if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+                nextIndex = (currentIndex + 1) % tabs.length;
+            } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+                nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            } else if (event.key === "Home") {
+                nextIndex = 0;
+            } else if (event.key === "End") {
+                nextIndex = tabs.length - 1;
+            } else {
+                return;
+            }
+            event.preventDefault();
+            tabs[nextIndex].focus();
+            setTab(tabs[nextIndex]);
+        });
+    }
 
     document.addEventListener("pointerdown", (event) => {
         if (!menus.some((menu) => menu.contains(event.target))) {

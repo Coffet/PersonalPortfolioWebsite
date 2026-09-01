@@ -86,6 +86,6 @@
             </c:choose>
         </div>
     </main>
-    <script src="${ctx}/assets/js/gallery-order.js?v=2" defer></script>
+    <script src="${ctx}/assets/js/gallery-order.js?v=4" defer></script>
 </body>
 </html>

@@ -21,6 +21,17 @@
         </c:choose>
         <div id="nav-links">
             <c:choose>
+                <c:when test="${headerCycle}">
+                    <a class="status-link status-link--cycle"
+                       href="mailto:blaze459077@gmail.com"
+                       aria-label="Open to interesting conversations. ${empty headerLocation ? 'You are now on: Gallery' : headerLocation}">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        <span class="status-cycle" aria-hidden="true">
+                            <span class="status-cycle__item status-cycle__item--open">Open to interesting conversations</span>
+                            <span class="status-cycle__item status-cycle__item--here">${empty headerLocation ? 'You are now on: Gallery' : headerLocation}</span>
+                        </span>
+                    </a>
+                </c:when>
                 <c:when test="${not empty headerLocation}">
                     <span class="status-link header-location">
                         <span class="status-text">${headerLocation}</span>
