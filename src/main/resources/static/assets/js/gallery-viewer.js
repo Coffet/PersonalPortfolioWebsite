@@ -245,13 +245,29 @@
         ];
     };
 
+    const HOME_PAN = 0.5;
+    const RETURN_SPEED = 0.14;
+
     const tickPan = (now) => {
         if (!document.hidden) {
             panItems.forEach((item) => {
                 if (!item.active) {
                     return;
                 }
-                if (!item.hovering && !reduceMotion.matches) {
+                if (item.hovering) {
+                    applyPan(item.frame, item.image, item.x, item.y);
+                    return;
+                }
+                if (item.returning) {
+                    item.x += (HOME_PAN - item.x) * RETURN_SPEED;
+                    item.y += (HOME_PAN - item.y) * RETURN_SPEED;
+                    if (Math.abs(item.x - HOME_PAN) < 0.004 && Math.abs(item.y - HOME_PAN) < 0.004) {
+                        item.x = HOME_PAN;
+                        item.y = HOME_PAN;
+                        item.returning = false;
+                        item.restUntil = now + 800;
+                    }
+                } else if (!reduceMotion.matches && now >= (item.restUntil || 0)) {
                     const [targetX, targetY] = autoPanTarget(now, item.phase);
                     item.x += (targetX - item.x) * 0.06;
                     item.y += (targetY - item.y) * 0.06;
@@ -279,6 +295,8 @@
             image,
             phase: ((index * 0.17) + (Math.random() * 0.08)) % 1,
             hovering: false,
+            returning: false,
+            restUntil: 0,
             active: false,
             x: 0.5,
             y: 0.5
@@ -291,6 +309,7 @@
                 return;
             }
             item.hovering = true;
+            item.returning = false;
             item.x = clamp01((event.clientX - rect.left) / rect.width);
             item.y = clamp01((event.clientY - rect.top) / rect.height);
             applyPan(frame, image, item.x, item.y);
@@ -300,6 +319,7 @@
         frame.addEventListener("pointermove", setHoverPan);
         frame.addEventListener("pointerleave", () => {
             item.hovering = false;
+            item.returning = true;
         });
 
         const observer = new IntersectionObserver((entries) => {
