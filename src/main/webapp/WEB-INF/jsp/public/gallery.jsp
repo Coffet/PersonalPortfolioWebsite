@@ -4,8 +4,8 @@
 <html lang="en">
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=5">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=26">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=13">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=31">
 </head>
 <body class="has-settled-header gallery-page">
     <c:set var="headerSettled" value="true" />
@@ -69,35 +69,33 @@
                 <c:otherwise>
                     <section class="gallery-mosaic" aria-label="Gallery entries">
                         <c:forEach items="${galleryEntries}" var="entry" varStatus="status">
-                            <c:if test="${empty featuredEntry or entry.id ne featuredEntry.id}">
-                                <article class="gallery-tile" style="--stagger: ${status.index}">
-                                    <c:if test="${not empty entry.coverMedia}">
-                                        <button type="button"
-                                                class="gallery-tile__frame"
-                                                data-gallery-viewer
-                                                aria-label="View pictures for ${entry.title}">
-                                            <c:forEach items="${entry.media}" var="media" varStatus="mediaStatus">
-                                                <img src="${ctx}${media.filePath}"
-                                                     alt="${empty media.altText ? entry.title : media.altText}"
-                                                     class="${media.id eq entry.coverMedia.id ? 'gallery-tile__image' : ''}"
-                                                     <c:if test="${media.id ne entry.coverMedia.id}">hidden</c:if>
-                                                     <c:if test="${status.index gt 1 or mediaStatus.index gt 0}">loading="lazy"</c:if>
-                                                     decoding="async">
-                                            </c:forEach>
-                                        </button>
+                            <article class="gallery-tile" style="--stagger: ${status.index}">
+                                <c:if test="${not empty entry.coverMedia}">
+                                    <button type="button"
+                                            class="gallery-tile__frame"
+                                            data-gallery-viewer
+                                            aria-label="View pictures for ${entry.title}">
+                                        <c:forEach items="${entry.media}" var="media" varStatus="mediaStatus">
+                                            <img src="${ctx}${media.filePath}"
+                                                 alt="${empty media.altText ? entry.title : media.altText}"
+                                                 class="${media.id eq entry.coverMedia.id ? 'gallery-tile__image' : ''}"
+                                                 <c:if test="${media.id ne entry.coverMedia.id}">hidden</c:if>
+                                                 <c:if test="${status.index gt 1 or mediaStatus.index gt 0}">loading="lazy"</c:if>
+                                                 decoding="async">
+                                        </c:forEach>
+                                    </button>
+                                </c:if>
+                                <div class="gallery-tile__body">
+                                    <h2 class="gallery-tile__title">
+                                        <a href="${ctx}/gallery/${entry.id}">${entry.title}</a>
+                                    </h2>
+                                    <c:if test="${not empty entry.introText or not empty entry.year}">
+                                        <p class="gallery-tile__text">
+                                            <c:if test="${not empty entry.introText}">${entry.introText}</c:if><c:if test="${not empty entry.introText and not empty entry.year}"> &middot; </c:if><c:if test="${not empty entry.year}">${entry.year}</c:if>
+                                        </p>
                                     </c:if>
-                                    <div class="gallery-tile__body">
-                                        <h2 class="gallery-tile__title">
-                                            <a href="${ctx}/gallery/${entry.id}">${entry.title}</a>
-                                        </h2>
-                                        <c:if test="${not empty entry.introText or not empty entry.year}">
-                                            <p class="gallery-tile__text">
-                                                <c:if test="${not empty entry.introText}">${entry.introText}</c:if><c:if test="${not empty entry.introText and not empty entry.year}"> &middot; </c:if><c:if test="${not empty entry.year}">${entry.year}</c:if>
-                                            </p>
-                                        </c:if>
-                                    </div>
-                                </article>
-                            </c:if>
+                                </div>
+                            </article>
                         </c:forEach>
                     </section>
                 </c:otherwise>
@@ -114,6 +112,6 @@
             </nav>
         </div>
     </footer>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=6" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=9" defer></script>
 </body>
 </html>

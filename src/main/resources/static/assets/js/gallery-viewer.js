@@ -205,59 +205,118 @@
 
     document.querySelectorAll("[data-gallery-stage]").forEach(enhanceStage);
 
-    const fineHover = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const panItems = [];
+    const PAN_PERIOD = 26000;
+    const PAN_HOLD = 0.22;
+    const PAN_EDGES = [
+        [0, 0.5],
+        [0.5, 0],
+        [1, 0.5],
+        [0.5, 1]
+    ];
+    let panTicker = 0;
 
-    const markPortrait = (image) => {
-        if (!image.naturalWidth || !image.naturalHeight) {
-            return;
+    const clamp01 = (value) => Math.min(1, Math.max(0, value));
+
+    const visibleImage = (frame) =>
+        frame.querySelector("img:not([hidden])") || frame.querySelector("img");
+
+    const applyPan = (frame, image, x, y) => {
+        const overflowX = Math.max(0, image.offsetWidth - frame.clientWidth);
+        const overflowY = Math.max(0, image.offsetHeight - frame.clientHeight);
+        image.style.setProperty("--pan-x", `${(-overflowX * x).toFixed(1)}px`);
+        image.style.setProperty("--pan-y", `${(-overflowY * y).toFixed(1)}px`);
+    };
+
+    const autoPanTarget = (now, phase) => {
+        const cycle = (((now / PAN_PERIOD) + phase) % 1 + 1) % 1;
+        const scaled = cycle * PAN_EDGES.length;
+        const index = Math.floor(scaled) % PAN_EDGES.length;
+        const next = (index + 1) % PAN_EDGES.length;
+        const raw = scaled - Math.floor(scaled);
+        const progress = raw < PAN_HOLD ? 0 : (raw - PAN_HOLD) / (1 - PAN_HOLD);
+        const ease = progress * progress * (3 - (2 * progress));
+        const from = PAN_EDGES[index];
+        const to = PAN_EDGES[next];
+        return [
+            from[0] + ((to[0] - from[0]) * ease),
+            from[1] + ((to[1] - from[1]) * ease)
+        ];
+    };
+
+    const tickPan = (now) => {
+        if (!document.hidden) {
+            panItems.forEach((item) => {
+                if (!item.active) {
+                    return;
+                }
+                if (!item.hovering && !reduceMotion.matches) {
+                    const [targetX, targetY] = autoPanTarget(now, item.phase);
+                    item.x += (targetX - item.x) * 0.06;
+                    item.y += (targetY - item.y) * 0.06;
+                }
+                applyPan(item.frame, item.image, item.x, item.y);
+            });
         }
-        const portrait = image.naturalHeight > image.naturalWidth;
-        image.classList.toggle("is-portrait", portrait);
-        if (portrait) {
-            image.style.setProperty("--pan-y", "50%");
+        panTicker = window.requestAnimationFrame(tickPan);
+    };
+
+    const startPanTicker = () => {
+        if (!panTicker && panItems.length) {
+            panTicker = window.requestAnimationFrame(tickPan);
         }
     };
 
-    const enhancePortraitPan = (frame) => {
-        const image = frame.querySelector(".gallery-featured__image, .gallery-tile__image");
+    const enhanceImagePan = (frame, index) => {
+        const image = visibleImage(frame);
         if (!image) {
             return;
         }
 
-        const ready = () => markPortrait(image);
-        if (image.complete) {
-            ready();
-        } else {
-            image.addEventListener("load", ready, { once: true });
-        }
+        const item = {
+            frame,
+            image,
+            phase: ((index * 0.17) + (Math.random() * 0.08)) % 1,
+            hovering: false,
+            active: false,
+            x: 0.5,
+            y: 0.5
+        };
+        panItems.push(item);
 
-        if (!fineHover.matches || reduceMotion.matches) {
-            return;
-        }
-
-        const setPan = (event) => {
-            if (!image.classList.contains("is-portrait")) {
-                return;
-            }
+        const setHoverPan = (event) => {
             const rect = frame.getBoundingClientRect();
-            if (rect.height <= 0) {
+            if (rect.width <= 0 || rect.height <= 0) {
                 return;
             }
-            const amount = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
-            frame.classList.add("is-panning");
-            image.style.setProperty("--pan-y", `${(amount * 100).toFixed(2)}%`);
+            item.hovering = true;
+            item.x = clamp01((event.clientX - rect.left) / rect.width);
+            item.y = clamp01((event.clientY - rect.top) / rect.height);
+            applyPan(frame, image, item.x, item.y);
         };
 
-        frame.addEventListener("pointerenter", setPan);
-        frame.addEventListener("pointermove", setPan);
+        frame.addEventListener("pointerenter", setHoverPan);
+        frame.addEventListener("pointermove", setHoverPan);
         frame.addEventListener("pointerleave", () => {
-            frame.classList.remove("is-panning");
-            image.style.setProperty("--pan-y", "50%");
+            item.hovering = false;
         });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                item.active = entry.isIntersecting;
+            });
+        }, { threshold: 0.12 });
+        observer.observe(frame);
+
+        if (image.complete) {
+            applyPan(frame, image, item.x, item.y);
+        } else {
+            image.addEventListener("load", () => applyPan(frame, image, item.x, item.y), { once: true });
+        }
     };
 
-    document.querySelectorAll("[data-gallery-viewer]").forEach((viewer) => {
+    document.querySelectorAll("[data-gallery-viewer]").forEach((viewer, index) => {
         viewer.addEventListener("pointerenter", () => prefetchAll(collectImages(viewer)), { once: true });
         viewer.addEventListener("click", (event) => {
             event.preventDefault();
@@ -266,10 +325,21 @@
                 return;
             }
             const clicked = event.target.closest("img");
-            const index = clicked ? Math.max(0, Array.from(viewer.querySelectorAll("img")).indexOf(clicked)) : 0;
-            openLightbox(images, index);
+            const imageIndex = clicked ? Math.max(0, Array.from(viewer.querySelectorAll("img")).indexOf(clicked)) : 0;
+            openLightbox(images, imageIndex);
         });
-        enhancePortraitPan(viewer);
+        enhanceImagePan(viewer, index);
+    });
+
+    startPanTicker();
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && panTicker) {
+            window.cancelAnimationFrame(panTicker);
+            panTicker = 0;
+            return;
+        }
+        startPanTicker();
     });
 
     document.addEventListener("keydown", (event) => {

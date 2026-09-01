@@ -18,7 +18,7 @@
 
     --accent: #3eb297;
     --status: #4ade80;
-    --status-text: #86efac;
+    --status-text: #4ade80;
     --glow: #14b8a6;
 
     --font: "Instrument Sans", "Segoe UI", sans-serif;
@@ -186,6 +186,20 @@ img {
     white-space: nowrap;
 }
 
+.status-link,
+.status-link:link,
+.status-link:visited,
+.status-link:active,
+.status-cycle,
+.status-cycle__item {
+    color: var(--status);
+}
+
+.status-link:hover,
+.status-link:visited:hover {
+    color: color-mix(in srgb, var(--status) 72%, white);
+}
+
 .status-link {
     display: inline-flex;
     align-items: center;
@@ -194,23 +208,20 @@ img {
     font-family: var(--font);
     font-size: 14px;
     font-weight: 400;
-    color: var(--status-text);
     letter-spacing: 0.01em;
     line-height: 1.3;
     transition: color 0.25s var(--ease-out);
 }
 
-.status-link:hover {
-    color: var(--status);
-}
-
 .status-dot {
+    display: inline-block;
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: var(--status);
     box-shadow: 0 0 8px rgba(74, 222, 128, 0.55);
     flex-shrink: 0;
+    vertical-align: middle;
     animation: statusPulse 2.4s var(--ease-out) infinite;
 }
 
@@ -228,32 +239,54 @@ img {
     cursor: default;
 }
 
+.status-link--cycle {
+    gap: 0;
+}
+
 .status-cycle {
     display: grid;
-    justify-items: end;
+    justify-items: start;
+    color: var(--status);
 }
 
 .status-cycle__item {
     grid-area: 1 / 1;
     white-space: nowrap;
-    animation: statusCycle 9s var(--ease-out) infinite;
+    color: var(--status);
+}
+
+.status-cycle__item--open {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    animation: statusBreatheOut 10s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
 .status-cycle__item--here {
-    opacity: 0;
-    animation-name: statusCycleHere;
+    justify-self: start;
+    padding-left: 15px;
+    animation: statusBreatheIn 10s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
-@keyframes statusCycle {
-    0%, 38% { opacity: 1; }
-    46%, 88% { opacity: 0; }
-    96%, 100% { opacity: 1; }
+.status-link--cycle .status-dot {
+    animation: statusPulseScale 3.2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 
-@keyframes statusCycleHere {
-    0%, 38% { opacity: 0; }
-    46%, 88% { opacity: 1; }
-    96%, 100% { opacity: 0; }
+@keyframes statusBreatheOut {
+    0%, 30% { opacity: 1; }
+    50%, 80% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes statusBreatheIn {
+    0%, 30% { opacity: 0; }
+    50%, 80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes statusPulseScale {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.92); }
 }
 
 body.has-settled-header {
@@ -1652,18 +1685,8 @@ body.modal-open {
         scroll-behavior: auto;
     }
 
-    .status-dot,
-    .hero-glow,
-    .status-cycle__item {
+    .hero-glow {
         animation: none;
-    }
-
-    .status-cycle__item--open {
-        opacity: 1;
-    }
-
-    .status-cycle__item--here {
-        opacity: 0;
     }
 
     .social-card,

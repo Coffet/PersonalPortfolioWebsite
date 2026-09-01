@@ -77,20 +77,16 @@
                 const item = document.createElement("figure");
                 item.className = "drop-preview__item";
 
+                const trigger = document.createElement("button");
+                trigger.type = "button";
+                trigger.className = "media-preview-trigger";
+                trigger.setAttribute("aria-label", "Preview " + file.name);
+
                 const image = document.createElement("img");
                 image.alt = file.name;
                 image.src = URL.createObjectURL(file);
-                item.appendChild(image);
-
-                image.title = "Click to preview";
-                image.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    field.dispatchEvent(new CustomEvent("cms:preview", {
-                        bubbles: true,
-                        detail: { src: image.src, alt: file.name }
-                    }));
-                });
+                trigger.appendChild(image);
+                item.appendChild(trigger);
 
                 if (multiple) {
                     const remove = document.createElement("button");

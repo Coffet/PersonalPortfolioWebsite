@@ -25,9 +25,11 @@
                     <a class="status-link status-link--cycle"
                        href="mailto:blaze459077@gmail.com"
                        aria-label="Open to interesting conversations. ${empty headerLocation ? 'You are now on: Gallery' : headerLocation}">
-                        <span class="status-dot" aria-hidden="true"></span>
-                        <span class="status-cycle" aria-hidden="true">
-                            <span class="status-cycle__item status-cycle__item--open">Open to interesting conversations</span>
+                        <span class="status-cycle">
+                            <span class="status-cycle__item status-cycle__item--open">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                Open to interesting conversations
+                            </span>
                             <span class="status-cycle__item status-cycle__item--here">${empty headerLocation ? 'You are now on: Gallery' : headerLocation}</span>
                         </span>
                     </a>
