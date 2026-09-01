@@ -1009,7 +1009,7 @@ body.gallery-page .page-return {
 
 .gallery-title {
     margin: 0;
-    font-family: var(--font-display);
+    font-family: var(--font);
     font-size: clamp(2.35rem, 1.7rem + 2.4vw, 3.55rem);
     font-weight: 650;
     letter-spacing: -0.045em;
