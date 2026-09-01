@@ -245,7 +245,7 @@ img {
 
 .status-cycle {
     display: grid;
-    justify-items: start;
+    justify-items: end;
     color: var(--status);
 }
 
@@ -263,8 +263,7 @@ img {
 }
 
 .status-cycle__item--here {
-    justify-self: start;
-    padding-left: 15px;
+    justify-self: end;
     animation: statusBreatheIn 10s cubic-bezier(0.37, 0, 0.63, 1) infinite;
 }
 

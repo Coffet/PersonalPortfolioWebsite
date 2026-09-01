@@ -803,7 +803,7 @@ body.has-settled-header .page-shell {
     }
 
     body.gallery-page .page-return:hover {
-        color: var(--gallery-kicker);
+        color: rgb(160, 255, 130);
     }
 
     .gallery-card--featured:hover .gallery-card__title,
@@ -937,9 +937,10 @@ body.has-settled-header .page-shell {
 
 body.gallery-page {
     --wrap: min(1080px, calc(100% - clamp(24px, 6.5vw, 120px)));
+    --font: "Instrument Sans", "Segoe UI", sans-serif;
     --gallery-text: oklch(0.97 0.01 140);
     --gallery-muted: oklch(0.74 0.028 140);
-    --gallery-kicker: oklch(0.76 0.055 138);
+    --gallery-kicker: rgb(160, 255, 130);
     --gallery-card: oklch(0.168 0.014 140);
     --gallery-line: oklch(0.88 0.02 140 / 0.1);
     --gallery-well: oklch(0.145 0.012 140);
@@ -992,11 +993,12 @@ body.gallery-page .order-empty {
 body.gallery-page .page-return {
     margin-bottom: 6px;
     color: var(--gallery-text);
+    transition: color 0.25s var(--ease-out);
 }
 
 .gallery-kicker {
     margin: 0;
-    color: rgb(50, 227, 0);
+    color: rgb(160, 255, 130);
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.16em;
@@ -1017,9 +1019,8 @@ body.gallery-page .page-return {
 }
 
 .gallery-lede {
-    max-width: 36rem;
     margin: 0;
-    color: rgba(255, 255, 255, 0.68);
+    color: rgb(156, 156, 156);
     font-size: clamp(1rem, 0.94rem + 0.28vw, 1.12rem);
     line-height: 1.55;
 }
