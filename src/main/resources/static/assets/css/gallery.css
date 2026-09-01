@@ -803,7 +803,7 @@ body.has-settled-header .page-shell {
     }
 
     body.gallery-page .page-return:hover {
-        color: rgb(160, 255, 130);
+        color: var(--gallery-kicker);
     }
 
     .gallery-card--featured:hover .gallery-card__title,
@@ -940,7 +940,7 @@ body.gallery-page {
     --font: "Instrument Sans", "Segoe UI", sans-serif;
     --gallery-text: oklch(0.97 0.01 140);
     --gallery-muted: oklch(0.74 0.028 140);
-    --gallery-kicker: rgb(160, 255, 130);
+    --gallery-kicker: #3eb297;
     --gallery-card: oklch(0.168 0.014 140);
     --gallery-line: oklch(0.88 0.02 140 / 0.1);
     --gallery-well: oklch(0.145 0.012 140);
@@ -998,7 +998,7 @@ body.gallery-page .page-return {
 
 .gallery-kicker {
     margin: 0;
-    color: rgb(160, 255, 130);
+    color: var(--gallery-kicker);
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.16em;
