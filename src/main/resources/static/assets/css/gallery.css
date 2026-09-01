@@ -1025,7 +1025,7 @@ body.gallery-page .page-return {
 }
 
 .gallery-featured {
-    max-width: 680px;
+    width: 100%;
     margin-bottom: clamp(28px, 4vw, 44px);
 }
 
@@ -1059,7 +1059,7 @@ body.gallery-page .page-return {
 }
 
 .gallery-featured__frame {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 2.2 / 1;
     border-radius: 16px 16px 0 0;
 }
 

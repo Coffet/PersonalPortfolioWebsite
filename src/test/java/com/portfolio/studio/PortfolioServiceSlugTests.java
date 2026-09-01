@@ -125,6 +125,24 @@ class PortfolioServiceSlugTests {
     }
 
     @Test
+    void pickRandomGalleryPictureChoosesFromAllUploadedImages() {
+        GalleryEntry study = new GalleryEntry();
+        study.setId(3);
+        GalleryMedia first = new GalleryMedia();
+        first.setId(11);
+        first.setGalleryEntryId(3);
+        first.setFilePath("/uploads/cms/one.png");
+        GalleryMedia second = new GalleryMedia();
+        second.setId(12);
+        second.setGalleryEntryId(3);
+        second.setFilePath("/uploads/cms/two.png");
+        study.setMedia(List.of(first, second));
+
+        GalleryMedia picked = portfolioService.pickRandomGalleryPicture(List.of(study)).orElseThrow();
+        assertThat(picked.getFilePath()).isIn("/uploads/cms/one.png", "/uploads/cms/two.png");
+    }
+
+    @Test
     void recentActivityShowsDraftPublishedAndRemoved() {
         GalleryEntry entry = new GalleryEntry();
         entry.setTitle("Activity status check");

@@ -277,6 +277,24 @@ public class PortfolioService {
         return Optional.of(pool.get(ThreadLocalRandom.current().nextInt(pool.size())));
     }
 
+    public Optional<GalleryMedia> pickRandomGalleryPicture(List<GalleryEntry> entries) {
+        if (entries == null || entries.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<GalleryMedia> pictures = new ArrayList<>();
+        for (GalleryEntry entry : entries) {
+            if (entry.getMedia() == null) {
+                continue;
+            }
+            pictures.addAll(entry.getMedia());
+        }
+        if (pictures.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(pictures.get(ThreadLocalRandom.current().nextInt(pictures.size())));
+    }
+
     public List<GalleryEntry> listAllGalleryEntries() {
         List<GalleryEntry> entries = jdbcTemplate.query(
             "SELECT * FROM gallery_entries ORDER BY sort_order ASC, id DESC",

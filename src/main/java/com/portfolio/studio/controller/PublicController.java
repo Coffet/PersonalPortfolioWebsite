@@ -36,8 +36,19 @@ public class PublicController {
         List<GalleryEntry> entries = portfolioService.listPublishedGalleryEntries();
         model.addAttribute("pageTitle", "Gallery");
         model.addAttribute("galleryEntries", entries);
-        portfolioService.pickRandomGalleryEntry(entries)
-            .ifPresent(entry -> model.addAttribute("featuredEntry", entry));
+        portfolioService.pickRandomGalleryPicture(entries).ifPresent(picture -> {
+            for (GalleryEntry entry : entries) {
+                if (entry.getId() == picture.getGalleryEntryId()) {
+                    model.addAttribute("featuredEntry", entry);
+                    model.addAttribute("featuredMedia", picture);
+                    return;
+                }
+            }
+        });
+        if (!model.containsAttribute("featuredEntry")) {
+            portfolioService.pickRandomGalleryEntry(entries)
+                .ifPresent(entry -> model.addAttribute("featuredEntry", entry));
+        }
         return "public/gallery";
     }
 

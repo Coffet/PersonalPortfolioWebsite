@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=13">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=32">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=33">
 </head>
 <body class="has-settled-header gallery-page">
     <c:set var="headerSettled" value="true" />
@@ -31,7 +31,8 @@
                 <section class="gallery-featured" aria-labelledby="featured-title">
                     <p class="gallery-kicker gallery-kicker--inline">Featured</p>
                     <article class="gallery-featured__card">
-                        <c:if test="${not empty featuredEntry.coverMedia}">
+                        <c:set var="featuredPic" value="${not empty featuredMedia ? featuredMedia : featuredEntry.coverMedia}" />
+                        <c:if test="${not empty featuredPic}">
                             <button type="button"
                                     class="gallery-featured__frame"
                                     data-gallery-viewer
@@ -39,8 +40,8 @@
                                 <c:forEach items="${featuredEntry.media}" var="media">
                                     <img src="${ctx}${media.filePath}"
                                          alt="${empty media.altText ? featuredEntry.title : media.altText}"
-                                         class="${media.id eq featuredEntry.coverMedia.id ? 'gallery-featured__image' : ''}"
-                                         <c:if test="${media.id ne featuredEntry.coverMedia.id}">hidden</c:if>
+                                         class="${media.id eq featuredPic.id ? 'gallery-featured__image' : ''}"
+                                         <c:if test="${media.id ne featuredPic.id}">hidden</c:if>
                                          decoding="async">
                                 </c:forEach>
                             </button>
