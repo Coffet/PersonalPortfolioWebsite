@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="preload" href="${ctx}/assets/images/logo.webp" as="image" type="image/webp">
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=4">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=14">
 </head>
 <body>
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>

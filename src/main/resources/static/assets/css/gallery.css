@@ -987,7 +987,7 @@ body.gallery-page .order-empty {
     display: grid;
     justify-items: start;
     gap: 12px;
-    margin-bottom: clamp(36px, 5.5vw, 64px);
+    margin-bottom: clamp(30px, 5.5vw, 30px);
 }
 
 body.gallery-page .page-return {
