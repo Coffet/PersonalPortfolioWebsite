@@ -960,7 +960,7 @@ body.gallery-page.has-settled-header .header-bg {
 
 body.gallery-page.has-settled-header .page-shell {
     flex: 1 1 auto;
-    padding-top: calc(75px + clamp(28px, 5vw, 56px));
+    padding-top: calc(35px + clamp(15px, 5vw, 50px));
     padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
 }
 
