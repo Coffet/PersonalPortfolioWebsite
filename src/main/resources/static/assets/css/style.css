@@ -1559,7 +1559,7 @@ body.modal-open {
         grid-template-columns: minmax(0, 1fr);
         gap: 16px;
         margin-top: 20px;
-        padding-top: 18px;
+        padding-top: 20px;
     }
 
     .work-modal__nav {
