@@ -207,7 +207,7 @@
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const panItems = [];
-    const PAN_PERIOD = reduceMotion.matches ? 53000 : 39000;
+    const PAN_PERIOD = reduceMotion.matches ? 40000 : 25000;
     const HOVER_IDLE_MS = 1400;
     let panTicker = 0;
 

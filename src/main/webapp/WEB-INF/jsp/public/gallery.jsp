@@ -116,6 +116,6 @@
             </nav>
         </div>
     </footer>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=15" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=16" defer></script>
 </body>
 </html>
