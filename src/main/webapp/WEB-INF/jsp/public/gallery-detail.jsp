@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=14">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=38">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=40">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -63,6 +63,6 @@
             </nav>
         </div>
     </footer>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=12" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=14" defer></script>
 </body>
 </html>

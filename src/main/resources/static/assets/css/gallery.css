@@ -1090,7 +1090,7 @@ body.gallery-page .page-return {
     max-height: none;
     object-fit: cover;
     object-position: center;
-    transform: translate3d(var(--pan-x, -16.5%), var(--pan-y, -16.5%), 0);
+    transform: translate3d(var(--pan-x, -16.666%), var(--pan-y, -16.666%), 0);
     will-change: transform;
     pointer-events: none;
 }

@@ -207,15 +207,8 @@
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const panItems = [];
-    const PAN_PERIOD = 48000;
-    const PAN_HOLD = 0.28;
+    const PAN_PERIOD = reduceMotion.matches ? 72000 : 56000;
     const HOVER_IDLE_MS = 1400;
-    const PAN_EDGES = [
-        [0, 0.5],
-        [0.5, 0],
-        [1, 0.5],
-        [0.5, 1]
-    ];
     let panTicker = 0;
 
     const clamp01 = (value) => Math.min(1, Math.max(0, value));
@@ -226,34 +219,32 @@
     const applyPan = (frame, image, x, y) => {
         const overflowX = Math.max(0, image.offsetWidth - frame.clientWidth);
         const overflowY = Math.max(0, image.offsetHeight - frame.clientHeight);
-        image.style.setProperty("--pan-x", `${(-overflowX * x).toFixed(1)}px`);
-        image.style.setProperty("--pan-y", `${(-overflowY * y).toFixed(1)}px`);
+        image.style.setProperty("--pan-x", `${(-overflowX * x)}px`);
+        image.style.setProperty("--pan-y", `${(-overflowY * y)}px`);
     };
 
-    const autoPanTarget = (now, phase) => {
-        const cycle = (((now / PAN_PERIOD) + phase) % 1 + 1) % 1;
-        const scaled = cycle * PAN_EDGES.length;
-        const index = Math.floor(scaled) % PAN_EDGES.length;
-        const next = (index + 1) % PAN_EDGES.length;
-        const raw = scaled - Math.floor(scaled);
-        const progress = raw < PAN_HOLD ? 0 : (raw - PAN_HOLD) / (1 - PAN_HOLD);
-        const ease = progress * progress * (3 - (2 * progress));
-        const from = PAN_EDGES[index];
-        const to = PAN_EDGES[next];
+    // Lissajous path: starts at center (t = 0), then drifts smoothly.
+    const autoPanTarget = (elapsed) => {
+        const t = (elapsed / PAN_PERIOD) * Math.PI * 2;
         return [
-            from[0] + ((to[0] - from[0]) * ease),
-            from[1] + ((to[1] - from[1]) * ease)
+            clamp01(0.5 + (0.5 * Math.sin(t))),
+            clamp01(0.5 + (0.5 * Math.sin(t * 0.5)))
         ];
     };
 
     const HOME_PAN = 0.5;
-    const RETURN_SPEED = 0.14;
+    const RETURN_SPEED = 0.1;
 
     const tickPan = (now) => {
         if (!document.hidden) {
             panItems.forEach((item) => {
                 if (!item.active) {
                     return;
+                }
+                if (item.startAt == null) {
+                    item.startAt = now + (item.stagger || 0);
+                    item.x = HOME_PAN;
+                    item.y = HOME_PAN;
                 }
                 if (item.hovering) {
                     applyPan(item.frame, item.image, item.x, item.y);
@@ -262,17 +253,17 @@
                 if (item.returning) {
                     item.x += (HOME_PAN - item.x) * RETURN_SPEED;
                     item.y += (HOME_PAN - item.y) * RETURN_SPEED;
-                    if (Math.abs(item.x - HOME_PAN) < 0.004 && Math.abs(item.y - HOME_PAN) < 0.004) {
+                    if (Math.abs(item.x - HOME_PAN) < 0.002 && Math.abs(item.y - HOME_PAN) < 0.002) {
                         item.x = HOME_PAN;
                         item.y = HOME_PAN;
                         item.returning = false;
-                        item.restUntil = now + 600;
+                        item.startAt = now + 700;
+                        item.restUntil = now + 700;
                     }
                 } else if (now >= (item.restUntil || 0)) {
-                    const [targetX, targetY] = autoPanTarget(now, item.phase);
-                    const ease = reduceMotion.matches ? 0.018 : 0.028;
-                    item.x += (targetX - item.x) * ease;
-                    item.y += (targetY - item.y) * ease;
+                    const [targetX, targetY] = autoPanTarget(Math.max(0, now - item.startAt));
+                    item.x = targetX;
+                    item.y = targetY;
                 }
                 applyPan(item.frame, item.image, item.x, item.y);
             });
@@ -295,14 +286,15 @@
         const item = {
             frame,
             image,
-            phase: ((index * 0.17) + (Math.random() * 0.08)) % 1,
+            startAt: null,
+            stagger: index * 450,
             hovering: false,
             returning: false,
             restUntil: 0,
             active: false,
             idleTimer: 0,
-            x: 0.5,
-            y: 0.5
+            x: HOME_PAN,
+            y: HOME_PAN
         };
         panItems.push(item);
 
@@ -349,7 +341,9 @@
 
         const readyPan = () => {
             item.active = true;
-            applyPan(frame, image, item.x, item.y);
+            item.x = HOME_PAN;
+            item.y = HOME_PAN;
+            applyPan(frame, image, HOME_PAN, HOME_PAN);
             startPanTicker();
         };
 
