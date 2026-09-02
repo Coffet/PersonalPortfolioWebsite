@@ -1229,9 +1229,9 @@ body.modal-open {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 20px 28px;
-    margin-top: 26px;
-    padding-top: 22px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 20px;
+    padding-top: 20px;
+    /* border-top: 1px solid rgba(255, 255, 255, 0.08); */
 }
 
 .work-modal__meta-item {

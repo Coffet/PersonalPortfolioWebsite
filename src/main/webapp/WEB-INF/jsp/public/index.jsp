@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="preload" href="${ctx}/assets/images/logo.webp" as="image" type="image/webp">
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=14">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=16">
 </head>
 <body>
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
@@ -18,7 +18,7 @@
                 <div class="hero-glow hero-glow--right"></div>
             </div>
             <div class="wrap hero-copy fade-up">
-                <h1>Hi, I’m Kenny.<br>Nice to meet you.</h1>
+                <h1>Hi, I?�m Kenny.<br>Nice to meet you.</h1>
                 <p class="hero-lede">
                     I design interfaces that feel human.<br>
                     Let's make something good.<br>
@@ -40,7 +40,7 @@
                             </span>
                             <span class="social-name">Github</span>
                             <span class="social-user">@Coffet</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
                         </a>
 
                         <a class="social-card" href="https://discordapp.com/users/971666916525621258" target="_blank" rel="noopener noreferrer">
@@ -49,7 +49,7 @@
                             </span>
                             <span class="social-name">Discord</span>
                             <span class="social-user">@thekccw</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
                         </a>
 
                         <a class="social-card" href="https://x.com/coftdo" target="_blank" rel="noopener noreferrer">
@@ -58,7 +58,7 @@
                             </span>
                             <span class="social-name">X</span>
                             <span class="social-user">@coftdo</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
                         </a>
 
                         <a class="social-card" href="mailto:KennyCCW@protonmail.com">
@@ -67,7 +67,7 @@
                             </span>
                             <span class="social-name">Email</span>
                             <span class="social-user">KennyCCW@protonmail.com</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">›</span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
                         </a>
                     </div>
                 </div>
