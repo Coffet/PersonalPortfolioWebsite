@@ -18,7 +18,7 @@
                 <div class="hero-glow hero-glow--right"></div>
             </div>
             <div class="wrap hero-copy fade-up">
-                <h1>Hi, I?™m Kenny.<br>Nice to meet you.</h1>
+                <h1>Hi, I'm Kenny.<br>Nice to meet you.</h1>
                 <p class="hero-lede">
                     I design interfaces that feel human.<br>
                     Let's make something good.<br>
