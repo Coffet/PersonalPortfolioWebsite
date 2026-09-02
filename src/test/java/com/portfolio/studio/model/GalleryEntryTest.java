@@ -41,6 +41,18 @@ class GalleryEntryTest {
     }
 
     @Test
+    void displayDateIncludesDayMonthAndYear() {
+        GalleryEntry entry = new GalleryEntry();
+        assertThat(entry.getDisplayDate()).isEmpty();
+
+        entry.setCreatedAt("2023-04-01 10:00:00");
+        assertThat(entry.getDisplayDate()).isEqualTo("1 Apr 2023");
+
+        entry.setPublishedAt("2024-11-02T09:00:00");
+        assertThat(entry.getDisplayDate()).isEqualTo("2 Nov 2024");
+    }
+
+    @Test
     void tagsSplitFromTheCategoryField() {
         GalleryEntry entry = new GalleryEntry();
         assertThat(entry.getTags()).isEmpty();

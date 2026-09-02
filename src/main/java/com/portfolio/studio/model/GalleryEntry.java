@@ -155,15 +155,44 @@ public class GalleryEntry {
     }
 
     public String getYear() {
-        String source = null;
-        if (publishedAt != null && !publishedAt.isBlank()) {
-            source = publishedAt;
-        } else if (createdAt != null && !createdAt.isBlank()) {
-            source = createdAt;
-        }
+        String source = dateSource();
         if (source == null || source.length() < 4) {
             return "";
         }
         return source.substring(0, 4);
+    }
+
+    public String getDisplayDate() {
+        String source = dateSource();
+        if (source == null || source.length() < 10) {
+            return getYear();
+        }
+        try {
+            String day = source.substring(8, 10);
+            if (day.startsWith("0")) {
+                day = day.substring(1);
+            }
+            int month = Integer.parseInt(source.substring(5, 7));
+            String[] months = {
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            };
+            if (month < 1 || month > 12) {
+                return getYear();
+            }
+            return day + " " + months[month - 1] + " " + source.substring(0, 4);
+        } catch (RuntimeException ignored) {
+            return getYear();
+        }
+    }
+
+    private String dateSource() {
+        if (publishedAt != null && !publishedAt.isBlank()) {
+            return publishedAt.trim().replace('T', ' ');
+        }
+        if (createdAt != null && !createdAt.isBlank()) {
+            return createdAt.trim().replace('T', ' ');
+        }
+        return null;
     }
 }

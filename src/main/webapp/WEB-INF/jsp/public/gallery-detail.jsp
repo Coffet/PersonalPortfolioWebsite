@@ -63,6 +63,6 @@
             </nav>
         </div>
     </footer>
-    <script src="${ctx}/assets/js/gallery-viewer.js?v=10" defer></script>
+    <script src="${ctx}/assets/js/gallery-viewer.js?v=11" defer></script>
 </body>
 </html>

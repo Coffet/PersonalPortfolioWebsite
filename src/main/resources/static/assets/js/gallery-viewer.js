@@ -209,6 +209,7 @@
     const panItems = [];
     const PAN_PERIOD = 26000;
     const PAN_HOLD = 0.22;
+    const HOVER_IDLE_MS = 1400;
     const PAN_EDGES = [
         [0, 0.5],
         [0.5, 0],
@@ -265,12 +266,13 @@
                         item.x = HOME_PAN;
                         item.y = HOME_PAN;
                         item.returning = false;
-                        item.restUntil = now + 800;
+                        item.restUntil = now + 600;
                     }
-                } else if (!reduceMotion.matches && now >= (item.restUntil || 0)) {
+                } else if (now >= (item.restUntil || 0)) {
                     const [targetX, targetY] = autoPanTarget(now, item.phase);
-                    item.x += (targetX - item.x) * 0.06;
-                    item.y += (targetY - item.y) * 0.06;
+                    const ease = reduceMotion.matches ? 0.035 : 0.06;
+                    item.x += (targetX - item.x) * ease;
+                    item.y += (targetY - item.y) * ease;
                 }
                 applyPan(item.frame, item.image, item.x, item.y);
             });
@@ -298,10 +300,24 @@
             returning: false,
             restUntil: 0,
             active: false,
+            idleTimer: 0,
             x: 0.5,
             y: 0.5
         };
         panItems.push(item);
+
+        const clearHoverIdle = () => {
+            if (item.idleTimer) {
+                window.clearTimeout(item.idleTimer);
+                item.idleTimer = 0;
+            }
+        };
+
+        const releaseHoverForAutoPan = () => {
+            item.hovering = false;
+            item.returning = false;
+            item.idleTimer = 0;
+        };
 
         const setHoverPan = (event) => {
             const rect = frame.getBoundingClientRect();
@@ -313,11 +329,13 @@
             item.x = clamp01((event.clientX - rect.left) / rect.width);
             item.y = clamp01((event.clientY - rect.top) / rect.height);
             applyPan(frame, image, item.x, item.y);
+            clearHoverIdle();
+            item.idleTimer = window.setTimeout(releaseHoverForAutoPan, HOVER_IDLE_MS);
         };
 
-        frame.addEventListener("pointerenter", setHoverPan);
         frame.addEventListener("pointermove", setHoverPan);
         frame.addEventListener("pointerleave", () => {
+            clearHoverIdle();
             item.hovering = false;
             item.returning = true;
         });
@@ -326,13 +344,19 @@
             entries.forEach((entry) => {
                 item.active = entry.isIntersecting;
             });
-        }, { threshold: 0.12 });
+        }, { threshold: 0.05 });
         observer.observe(frame);
 
-        if (image.complete) {
+        const readyPan = () => {
+            item.active = true;
             applyPan(frame, image, item.x, item.y);
+            startPanTicker();
+        };
+
+        if (image.complete && image.naturalWidth > 0) {
+            readyPan();
         } else {
-            image.addEventListener("load", () => applyPan(frame, image, item.x, item.y), { once: true });
+            image.addEventListener("load", readyPan, { once: true });
         }
     };
 

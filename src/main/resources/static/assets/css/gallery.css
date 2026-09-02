@@ -1181,6 +1181,10 @@ body.gallery-page .page-return {
     border-bottom-color: var(--gallery-text);
 }
 
+.gallery-all {
+    margin-top: 0;
+}
+
 .gallery-mosaic {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
