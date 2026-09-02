@@ -207,8 +207,8 @@
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const panItems = [];
-    const PAN_PERIOD = 26000;
-    const PAN_HOLD = 0.22;
+    const PAN_PERIOD = 48000;
+    const PAN_HOLD = 0.28;
     const HOVER_IDLE_MS = 1400;
     const PAN_EDGES = [
         [0, 0.5],
@@ -270,7 +270,7 @@
                     }
                 } else if (now >= (item.restUntil || 0)) {
                     const [targetX, targetY] = autoPanTarget(now, item.phase);
-                    const ease = reduceMotion.matches ? 0.035 : 0.06;
+                    const ease = reduceMotion.matches ? 0.018 : 0.028;
                     item.x += (targetX - item.x) * ease;
                     item.y += (targetY - item.y) * ease;
                 }
