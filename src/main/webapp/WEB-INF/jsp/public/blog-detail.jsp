@@ -5,12 +5,13 @@
 <html lang="en">
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=17">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=18">
     <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=43">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
-    <c:set var="headerLocation" value="You are now at: Blog" />
+    <c:set var="headerCycle" value="true" />
+    <c:set var="headerLocation" value="You are now on: Blog" />
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
 
     <main class="page-shell">

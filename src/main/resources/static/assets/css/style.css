@@ -268,7 +268,7 @@ img {
 }
 
 .status-link--cycle .status-dot {
-    animation: statusPulseScale 3.2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+    animation: statusPulse 2.4s var(--ease-out) infinite;
 }
 
 @keyframes statusBreatheOut {
@@ -281,11 +281,6 @@ img {
     0%, 30% { opacity: 0; }
     50%, 80% { opacity: 1; }
     100% { opacity: 0; }
-}
-
-@keyframes statusPulseScale {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(0.92); }
 }
 
 body.has-settled-header {

@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=17">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=18">
     <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=43">
 </head>
 <body class="has-settled-header gallery-page">
