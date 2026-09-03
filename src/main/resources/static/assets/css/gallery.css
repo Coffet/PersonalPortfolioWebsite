@@ -1270,6 +1270,16 @@ body.has-settled-header:has(.gallery-dock) .page-shell {
     }
 }
 
+@media (max-width: 768px) {
+    body.gallery-page.has-settled-header .page-shell {
+        padding-top: calc(75px + clamp(20px, 5vw, 28px));
+    }
+
+    .gallery-title {
+        font-size: clamp(1.85rem, 1.5rem + 1.8vw, 2.35rem);
+    }
+}
+
 @media (max-width: 640px) {
     .gallery-mosaic {
         grid-template-columns: minmax(0, 1fr);
@@ -1290,7 +1300,10 @@ body.has-settled-header:has(.gallery-dock) .page-shell {
         flex: 0 0 auto;
     }
 
-    .gallery-featured__frame,
+    .gallery-featured__frame {
+        aspect-ratio: 16 / 9;
+    }
+
     .gallery-tile__frame {
         aspect-ratio: 5 / 4;
     }
