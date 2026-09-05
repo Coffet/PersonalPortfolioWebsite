@@ -67,10 +67,11 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 12. [Make the VPS and host](#make-the-vps-and-host) (bootstrap **or** [manual install](#4b-manual-setup-if-bootstrap-did-not-work))
 13. [If you already have a server](#if-you-already-have-a-server)
 14. [Host env on this VPS](#host-env-on-this-vps)
-15. [What you should do](#what-you-should-do)
-16. [What you should not do](#what-you-should-not-do)
-17. [Troubleshooting](#troubleshooting)
-18. [Notes](#notes)
+15. [Opt-in MinIO](#opt-in-minio) (local **or** [VPS](#vps-after-a-war-with-this-code))
+16. [What you should do](#what-you-should-do)
+17. [What you should not do](#what-you-should-not-do)
+18. [Troubleshooting](#troubleshooting)
+19. [Notes](#notes)
 
 ---
 
@@ -82,6 +83,7 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 | Run it on your PC for development              | [Run locally (dev work)](#run-locally-dev-work) then `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` |
 | **Make a new VPS** and host the site           | [Make the VPS and host](#make-the-vps-and-host) (start at step 1)                                 |
 | The VPS already exists — only ship a new build | [If you already have a server](#if-you-already-have-a-server)                                     |
+| Turn on MinIO for uploads (optional)           | [Opt-in MinIO](#opt-in-minio) — local PC **or** the VPS                                          |
 
 
 You can develop forever without a server. A VPS is only for putting [a domain](https://coft.moe) (or your domain) on the public internet.
@@ -203,6 +205,10 @@ PersonalPortfolioWebsite/
 │   ├── apache.htaccess                     Old static-site leftover; nginx is live
 │   ├── portfolio.service                   systemd *template*
 │   ├── portfolio.env.example               Placeholders — not a real password
+│   ├── bootstrap-minio.sh                  Optional localhost MinIO
+│   ├── provision-minio-app.sh              Bucket + scoped app user
+│   ├── minio.service                       127.0.0.1:9000 only
+│   ├── minio.env.example                   MinIO root — provisioning only
 │   ├── remote-release.sh                   Atomic WAR swap
 │   └── sudoers-deploy
 ├── storage/                                Appears when you run locally; gitignored
@@ -293,7 +299,8 @@ flowchart LR
 
 
 - Public pages **read**. They do not write the database or the upload folder.
-- CMS **writes**. Images on disk. Rows in SQLite.
+- CMS **writes**. Images on disk by default. Rows in SQLite.
+- **Opt-in MinIO** can hold objects on the same box (`127.0.0.1` only). SQLite paths stay `/uploads/...`. Java serves them. Off until you turn it on. How: [Opt-in MinIO](#opt-in-minio).
 - Flyway creates tables on first start (`V1__init_schema.sql`).
 - The owner account is created **only when** `cms_users` **is empty**.
 - Only **published** projects / gallery / posts appear on the public site.
@@ -418,7 +425,7 @@ There is no `application.properties` switch for this. A properties key would be 
 
 ## Run locally (dev work)
 
-You do **not** need a VPS to develop. This is the normal day-to-day path. The longer inspect checklist is `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)`.
+You do **not** need a VPS to develop. This is the normal day-to-day path. The longer inspect checklist is `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)`. Disk uploads are the default. MinIO is optional: [Opt-in MinIO](#opt-in-minio).
 
 ### What you need
 
@@ -940,6 +947,7 @@ Sign in to the CMS with the pair **you** put in the unit, not anything from this
 | Host env       | `systemctl cat portfolio` or `nano /etc/systemd/system/portfolio.service`             |
 | WAR + database | `sudo -u deploy -i` then `cd /home/deploy/portfolio-app`                              |
 | Logs           | `journalctl -u portfolio -n 80 --no-pager`                                            |
+| Optional MinIO | `journalctl -u minio -n 40 --no-pager` · `/etc/minio.env` · `/etc/minio-app.env`      |
 | Certbot        | There isn’t one. Stop looking.                                                        |
 
 
@@ -949,7 +957,7 @@ Cloudflare SSL stays **Full** while the origin cert is self-signed. After Let's 
 
 ## If you already have a server
 
-The VPS is already bootstrapped. You are only replacing the program file. SQLite and uploads stay.
+The VPS is already bootstrapped. You are only replacing the program file. SQLite and uploads stay. MinIO is a separate optional install after this WAR is on the box: [Opt-in MinIO](#opt-in-minio).
 
 On the **PC**:
 
@@ -1010,6 +1018,97 @@ A **new** VPS from bootstrap may still have `/etc/portfolio.env`. Either switch 
 
 ---
 
+## Opt-in MinIO
+
+Off by default. Clone, test, and host on disk with no extra service and no extra secrets.
+
+When it is on:
+
+- New CMS uploads go to MinIO only. If MinIO is down, the upload fails. There is no silent write to disk.
+- Public URLs stay `/uploads/...`. Java serves them (disk first, then MinIO).
+- MinIO listens on **this machine only** (`127.0.0.1:9000`). nginx does not proxy it. Do not `ufw allow 9000`.
+- Java requires an **HTTPS** endpoint. HTTP is rejected, including `127.0.0.1`. Self-signed MinIO: set `trust-cert` to the server certificate.
+- `git push` does not start MinIO, copy files, or delete disk copies.
+
+Two one-shot switches. Turn each on, restart Java **once**, then turn it off:
+
+| Switch | What it does |
+| ------ | ------------ |
+| `migrate` | Copy disk → MinIO. Keep the disk files. |
+| `delete-local-after-verify` | Delete a disk file only if MinIO has the **same** bytes. |
+
+Do not run delete until you have checked gallery, work, and blog. If you renamed `storage/uploads` to prove MinIO is serving, **restore it first**.
+
+### Local (this PC)
+
+You can skip this forever. Details also live in `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` §15.
+
+1. Run MinIO with **HTTPS** on `127.0.0.1:9000` (binary or Docker). Do not publish 9000 to the LAN.
+2. Open gitignored `application-local.properties`. The commented keys are in `application-local.properties.example`.
+3. Set **your** MinIO access key, secret, and bucket. Set `portfolio.storage.s3.enabled=true` and `portfolio.storage.s3.endpoint` to an `https://` URL. If the cert is self-signed, set `portfolio.storage.s3.trust-cert`. Do not commit that file. Do not reuse those keys on the VPS.
+4. Restart Java (`spring-boot:run` or the IntelliJ green arrow). Working directory = repo root.
+5. Sign in at `/cmsmgmnt`. Upload one image. Confirm it on `/gallery`, `/`, or `/blog`.
+6. Set `portfolio.storage.s3.migrate=true`, restart once, set it back to `false`. The log says how many objects copied. Disk files stay.
+7. Optional proof: rename `storage/uploads` (or point `upload-root` at an empty folder) and reload those pages. Then **put the real folder back** and remove any temp `upload-root`.
+8. Only then: `portfolio.storage.s3.delete-local-after-verify=true`, restart once, set it back to `false`.
+
+Local MinIO and VPS MinIO are different machines. Different keys.
+
+### VPS (after a WAR with this code)
+
+The site must already run from a WAR that includes this MinIO code. Bootstrap of Java/nginx is [Make the VPS](#make-the-vps-and-host). Shipping a new WAR is [If you already have a server](#if-you-already-have-a-server). Then:
+
+1. As **root**, from a checkout of this repo (or copy the `deploy/` scripts over):
+
+```bash
+sudo bash deploy/bootstrap-minio.sh
+```
+
+That installs a **pinned** MinIO binary, `mc`, and the systemd unit. It does not start MinIO until you set real root credentials.
+
+2. Edit `/etc/minio.env` (mode `600`). Replace `change-me`. These root values are **only** for MinIO itself and for the next script. Not for Java.
+
+```bash
+systemctl start minio
+systemctl status minio
+```
+
+3. Create the bucket and a **scoped app user** (not root):
+
+```bash
+sudo bash deploy/provision-minio-app.sh
+```
+
+That writes `/etc/minio-app.env` (mode `600`). Use **those** values in portfolio env.
+
+4. Put the app user on Java. On **this** live box, env is `Environment=` inside `/etc/systemd/system/portfolio.service` (`systemctl cat portfolio`). A new bootstrap box may still use `/etc/portfolio.env`. Either way: **not** `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`.
+
+Set at least:
+
+- `PORTFOLIO_STORAGE_S3_ENABLED=true`
+- `PORTFOLIO_STORAGE_S3_ENDPOINT` — `https://127.0.0.1:9000` (this host). HTTP is rejected.
+- `PORTFOLIO_STORAGE_S3_TRUST_CERT` — `/etc/minio/certs/public.crt` (self-signed from bootstrap)
+- `PORTFOLIO_STORAGE_S3_ACCESS_KEY` / `PORTFOLIO_STORAGE_S3_SECRET_KEY` — from `/etc/minio-app.env`
+- `PORTFOLIO_STORAGE_S3_BUCKET` — same bucket the provision script created
+- `PORTFOLIO_STORAGE_S3_MIGRATE=false`
+- `PORTFOLIO_STORAGE_S3_DELETE_LOCAL_AFTER_VERIFY=false`
+
+```bash
+systemctl daemon-reload
+systemctl restart portfolio
+journalctl -u portfolio -n 80 --no-pager
+```
+
+5. Open the **public** gallery, work, and blog. Upload one new image in `/cmsmgmnt`. Confirm it loads.
+
+6. Copy existing disk files: set `PORTFOLIO_STORAGE_S3_MIGRATE=true`, restart **once**, set it back to `false`, reload, restart. Check the pages again. Disk files are still there.
+
+7. After that looks right: set `PORTFOLIO_STORAGE_S3_DELETE_LOCAL_AFTER_VERIFY=true`, restart **once**, set it back to `false`, reload, restart.
+
+`git push` still does not update the live site. You still scp the WAR.
+
+---
+
 ## What you should do
 
 From first clone to a public site:
@@ -1022,6 +1121,7 @@ From first clone to a public site:
 6. Keep `8080` off the public firewall. nginx is the door.
 7. After `cms_users` has a row, the password manager is the login. The unit is not.
 8. Back up `storage/` if you care about content.
+9. MinIO is optional. Local: [Opt-in MinIO](#opt-in-minio). VPS: same section, after the WAR is on the box. Never put MinIO root keys in portfolio env.
 
 ---
 
@@ -1035,6 +1135,8 @@ From first clone to a public site:
 | Commit `.env`, `application-local.properties`, `portfolio.db`, keys | Secrets and data.                                                                                            |
 | `git pull` into `/var/www`                                          | Publishes a Maven tree. Site dies.                                                                           |
 | Open port `8080` on ufw                                             | Java is loopback-only.                                                                                       |
+| Open port `9000` or `9001` on ufw                                   | MinIO stays on `127.0.0.1`. Java is the only public image path.                                              |
+| Set `delete-local-after-verify` before you check the pages          | Copy first (`migrate`). Confirm gallery/work/blog. Then delete.                                              |
 | Leave bootstrap `change-me` as the live CMS password                | Same as shipping a default login.                                                                            |
 | Assume `/etc/portfolio.env` exists on coft.moe                      | It does not. Env is in the unit.                                                                             |
 | Start Java on an empty DB with no seed                              | No owner.                                                                                                    |
@@ -1106,6 +1208,18 @@ You are not on `http://localhost:8080` from `PortfolioStudioApplication`.
 **Locked out of CMS**  
 Five failures → ~15 minute lock. Wait, or clear `locked_until` in SQLite on a machine you own.
 
+**MinIO: Java starts, uploads still land on disk**  
+`enabled` is false, or endpoint / bucket / keys are blank. All four must be set. Local file is `application-local.properties`. VPS: `systemctl cat portfolio`.
+
+**MinIO: Java dies on start with “not fully configured”**  
+`migrate` or `delete-local-after-verify` is true, but MinIO is not fully set. Turn the flag off, or finish endpoint / bucket / keys.
+
+**MinIO: upload fails after I enabled it**  
+MinIO is down, or Java has the wrong user. VPS: `systemctl status minio`. Use the **app** user from `/etc/minio-app.env`, not `MINIO_ROOT_*`.
+
+**MinIO: I turned on delete and nothing was removed**  
+You still have `storage/uploads` renamed, or a temp `upload-root`. Restore the real folder first. Delete only removes a file when MinIO has matching content.
+
 ---
 
 ## Notes
@@ -1114,6 +1228,7 @@ Five failures → ~15 minute lock. Wait, or clear `locked_until` in SQLite on a 
 - `deploy/apache.htaccess` is leftover. nginx serves production.
 - `/actuator` exists. Do not advertise it.
 - Server Java memory: `-Xms256m` (start) and `-Xmx768m` (max heap). Explained under [Make the VPS](#make-the-vps-and-host).
+- Opt-in MinIO is off by default. How to turn it on locally or on the VPS: [Opt-in MinIO](#opt-in-minio). localhost only. Not in nginx.
 - More: `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` (dev inspect) · `[deploy/](deploy/)` (VPS scripts)
 
 Built to be read file-by-file in IntelliJ. One owner. One WAR. No surprise deploys. No password in git.

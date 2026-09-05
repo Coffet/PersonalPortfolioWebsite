@@ -3,18 +3,18 @@ package com.portfolio.studio.service;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import com.portfolio.studio.config.PortfolioProperties;
+import com.portfolio.studio.storage.LocalDiskObjectStore;
+import com.portfolio.studio.storage.MinioObjectStore;
+import com.portfolio.studio.storage.ObjectKeyValidator;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,12 +30,29 @@ public class MediaStorageService {
         "image/gif"
     );
 
-    private final Path uploadRoot;
+    private final LocalDiskObjectStore localDiskObjectStore;
+    private final MinioObjectStore minioObjectStore;
 
-    public MediaStorageService(PortfolioProperties portfolioProperties) {
-        this.uploadRoot = Paths.get(portfolioProperties.getStorage().getUploadRoot()).toAbsolutePath().normalize();
+    /**
+     * Initializes the media storage service with local storage and an optional MinIO store.
+     */
+    public MediaStorageService(
+        LocalDiskObjectStore localDiskObjectStore,
+        ObjectProvider<MinioObjectStore> minioObjectStoreProvider
+    ) {
+        this.localDiskObjectStore = localDiskObjectStore;
+        this.minioObjectStore = minioObjectStoreProvider.getIfAvailable();
     }
 
+    /**
+     * Stores a validated image upload in the specified folder.
+     *
+     * @param file   the image file to store
+     * @param folder the destination folder
+     * @return       the public storage path and original filename
+     * @throws IllegalArgumentException if the file is missing, empty, or is not a supported image
+     * @throws IllegalStateException    if the image cannot be stored
+     */
     public StoredFile store(MultipartFile file, String folder) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Please choose an image to upload.");
@@ -51,39 +68,44 @@ public class MediaStorageService {
 
         validateImage(file);
 
-        try {
-            Path targetFolder = uploadRoot.resolve(folder).normalize();
-            Files.createDirectories(targetFolder);
-            String storedFilename = UUID.randomUUID() + "." + extension;
-            Path storedPath = targetFolder.resolve(storedFilename).normalize();
-            if (!storedPath.startsWith(targetFolder)) {
-                throw new IllegalArgumentException("Invalid upload target.");
-            }
+        String storedFilename = UUID.randomUUID() + "." + extension;
+        String key = ObjectKeyValidator.requireValid(folder + "/" + storedFilename);
 
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, storedPath, StandardCopyOption.REPLACE_EXISTING);
+        try (InputStream inputStream = file.getInputStream()) {
+            if (minioObjectStore != null) {
+                minioObjectStore.put(key, inputStream, file.getSize(), contentType);
+            } else {
+                localDiskObjectStore.put(key, inputStream, file.getSize(), contentType);
             }
-
-            String publicPath = "/uploads/" + folder + "/" + storedFilename;
-            return new StoredFile(publicPath, originalFilename);
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to store image file.", exception);
         }
+
+        return new StoredFile("/uploads/" + key, originalFilename);
     }
 
+    /**
+     * Deletes the stored image identified by a public uploads path when present.
+     *
+     * @param publicPath the public path of the stored image
+     * @throws IllegalStateException if the image cannot be deleted
+     */
     public void deleteIfPresent(String publicPath) {
         if (!StringUtils.hasText(publicPath) || !publicPath.startsWith("/uploads/")) {
             return;
         }
 
+        Optional<String> key = ObjectKeyValidator.parse(publicPath.substring("/uploads/".length()));
+        if (key.isEmpty()) {
+            return;
+        }
         try {
-            String relative = publicPath.substring("/uploads/".length()).replace("/", java.io.File.separator);
-            Path filePath = uploadRoot.resolve(relative).normalize();
-            if (filePath.startsWith(uploadRoot)) {
-                Files.deleteIfExists(filePath);
+            if (minioObjectStore != null) {
+                minioObjectStore.deleteIfPresent(key.get());
             }
-        } catch (IOException ignored) {
-            // A missing file should not block content deletion.
+            localDiskObjectStore.deleteIfPresent(key.get());
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to delete image file.", exception);
         }
     }
 

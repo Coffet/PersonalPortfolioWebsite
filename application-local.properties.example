@@ -3,3 +3,17 @@
 # Do not reuse these values on the live server.
 portfolio.seed.owner.username=local-dev
 portfolio.seed.owner.password=local-password
+
+# Optional MinIO (off unless enabled AND endpoint/bucket/keys are set).
+# New uploads then go to MinIO only. Public URLs stay /uploads/...
+# portfolio.storage.s3.enabled=true
+# portfolio.storage.s3.endpoint=https://127.0.0.1:9000
+# portfolio.storage.s3.trust-cert=
+# portfolio.storage.s3.access-key=
+# portfolio.storage.s3.secret-key=
+# portfolio.storage.s3.bucket=portfolio-uploads
+# portfolio.storage.s3.region=us-east-1
+# Copy disk -> MinIO, keep disk. Turn off after the run.
+# portfolio.storage.s3.migrate=true
+# After you check gallery/work/blog, restore storage/uploads if you renamed it, then delete matching disk copies. Then turn off.
+# portfolio.storage.s3.delete-local-after-verify=true
