@@ -24,6 +24,7 @@ There is **no default CMS password in git**. A sample login in a public repo bec
 12. [Tests](#12-tests)
 13. [Troubleshooting](#13-troubleshooting)
 14. [When you want it on the internet](#14-when-you-want-it-on-the-internet)
+15. [Optional local MinIO](#15-optional-local-minio)
 
 ---
 
@@ -143,8 +144,8 @@ Walk these so you know what you are running.
 | # | File | Confirm |
 |---|---|---|
 | 1 | `pom.xml` | Java 17, Spring Boot 3.5, war, SQLite, Jasper, JSTL. No React. |
-| 2 | `application.properties` | Port 8080, SQLite path, upload root, optional import of `./application-local.properties`. |
-| 3 | `application-local.properties.example` | Two keys. Placeholders only. |
+| 2 | `application.properties` | Port 8080, SQLite path, upload root, MinIO flags default off, optional import of `./application-local.properties`. |
+| 3 | `application-local.properties.example` | Seed placeholders plus commented MinIO keys. |
 | 4 | `.gitignore` | Local properties, `storage/database/*.db`, uploads, `.env`. |
 | 5 | `db/migration/V1__init_schema.sql` | Users, projects, gallery, blog, audit. |
 | 6 | `SecurityConfig.java` | Public site + CMS sign-in open; rest of `/cmsmgmnt/**` needs `OWNER`. |
@@ -229,7 +230,7 @@ If `cms_users` already has a row, changing the local file does nothing. That is 
 .\mvnw.cmd test
 ```
 
-They use temporary databases. They must not contain the live CMS password.
+They use temporary databases. They must not contain the live CMS password. They do not need a running MinIO.
 
 ---
 
@@ -267,3 +268,20 @@ That is not this file. README:
 3. Machine already exists → [If you already have a server](../README.md#if-you-already-have-a-server)
 
 Do **not** copy this PC’s password onto the VPS.
+
+---
+
+## 15. Optional local MinIO
+
+Default is still `storage/uploads`. You can develop forever without MinIO.
+
+To try the addon on this PC:
+
+1. Run MinIO on `127.0.0.1:9000` (binary or Docker). Do not publish 9000.
+2. Put endpoint, bucket, and keys in gitignored `application-local.properties` (see the example file). Set `portfolio.storage.s3.enabled=true`.
+3. Restart Java. Upload one image in `/cmsmgmnt`. Confirm it on `/gallery`, `/`, or `/blog`.
+4. Set `portfolio.storage.s3.migrate=true`, restart once, then set it back to `false`. Logs say how many objects copied. Disk files stay.
+5. To prove Java is reading MinIO, briefly rename `storage/uploads` (or point `upload-root` at an empty folder) and reload those pages.
+6. Only after that looks right: set `portfolio.storage.s3.delete-local-after-verify=true`, restart once, then set it back to `false`.
+
+`git push` does not start MinIO or move files. The live box is a separate install (`deploy/bootstrap-minio.sh`) after a WAR with this code is on the VPS.

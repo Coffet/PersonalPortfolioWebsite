@@ -3,10 +3,6 @@ package com.portfolio.studio.service;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -14,7 +10,10 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import com.portfolio.studio.config.PortfolioProperties;
+import com.portfolio.studio.storage.LocalDiskObjectStore;
+import com.portfolio.studio.storage.MinioObjectStore;
+import com.portfolio.studio.storage.ObjectKeyValidator;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,10 +29,15 @@ public class MediaStorageService {
         "image/gif"
     );
 
-    private final Path uploadRoot;
+    private final LocalDiskObjectStore localDiskObjectStore;
+    private final MinioObjectStore minioObjectStore;
 
-    public MediaStorageService(PortfolioProperties portfolioProperties) {
-        this.uploadRoot = Paths.get(portfolioProperties.getStorage().getUploadRoot()).toAbsolutePath().normalize();
+    public MediaStorageService(
+        LocalDiskObjectStore localDiskObjectStore,
+        ObjectProvider<MinioObjectStore> minioObjectStoreProvider
+    ) {
+        this.localDiskObjectStore = localDiskObjectStore;
+        this.minioObjectStore = minioObjectStoreProvider.getIfAvailable();
     }
 
     public StoredFile store(MultipartFile file, String folder) {
@@ -51,24 +55,20 @@ public class MediaStorageService {
 
         validateImage(file);
 
-        try {
-            Path targetFolder = uploadRoot.resolve(folder).normalize();
-            Files.createDirectories(targetFolder);
-            String storedFilename = UUID.randomUUID() + "." + extension;
-            Path storedPath = targetFolder.resolve(storedFilename).normalize();
-            if (!storedPath.startsWith(targetFolder)) {
-                throw new IllegalArgumentException("Invalid upload target.");
-            }
+        String storedFilename = UUID.randomUUID() + "." + extension;
+        String key = ObjectKeyValidator.requireValid(folder + "/" + storedFilename);
 
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, storedPath, StandardCopyOption.REPLACE_EXISTING);
+        try (InputStream inputStream = file.getInputStream()) {
+            if (minioObjectStore != null) {
+                minioObjectStore.put(key, inputStream, file.getSize(), contentType);
+            } else {
+                localDiskObjectStore.put(key, inputStream, file.getSize(), contentType);
             }
-
-            String publicPath = "/uploads/" + folder + "/" + storedFilename;
-            return new StoredFile(publicPath, originalFilename);
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to store image file.", exception);
         }
+
+        return new StoredFile("/uploads/" + key, originalFilename);
     }
 
     public void deleteIfPresent(String publicPath) {
@@ -76,15 +76,12 @@ public class MediaStorageService {
             return;
         }
 
-        try {
-            String relative = publicPath.substring("/uploads/".length()).replace("/", java.io.File.separator);
-            Path filePath = uploadRoot.resolve(relative).normalize();
-            if (filePath.startsWith(uploadRoot)) {
-                Files.deleteIfExists(filePath);
+        ObjectKeyValidator.parse(publicPath.substring("/uploads/".length())).ifPresent(key -> {
+            localDiskObjectStore.deleteIfPresent(key);
+            if (minioObjectStore != null) {
+                minioObjectStore.deleteIfPresent(key);
             }
-        } catch (IOException ignored) {
-            // A missing file should not block content deletion.
-        }
+        });
     }
 
     public List<StoredFile> storeAll(MultipartFile[] files, String folder) {

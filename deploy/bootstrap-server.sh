@@ -81,3 +81,6 @@ echo "  DEPLOY_SSH_KEY  output of: sudo cat /home/deploy/.ssh/github_actions_dep
 echo
 echo "First deploy starts Java when GitHub uploads portfolio.war."
 echo "Until then, nginx is up but proxying to a process that is not running yet."
+echo
+echo "Optional MinIO (localhost only): sudo bash deploy/bootstrap-minio.sh"
+echo "Do not ufw allow 9000. git push does not install MinIO or move uploads."

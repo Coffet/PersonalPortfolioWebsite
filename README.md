@@ -293,7 +293,8 @@ flowchart LR
 
 
 - Public pages **read**. They do not write the database or the upload folder.
-- CMS **writes**. Images on disk. Rows in SQLite.
+- CMS **writes**. Images on disk by default. Rows in SQLite.
+- **Opt-in MinIO** (same box, `127.0.0.1:9000`) can hold objects. SQLite paths stay `/uploads/...`. Java serves them. Off unless you set endpoint, bucket, and keys. Two switches: `migrate` copies disk → MinIO and keeps disk; after you check gallery/work/blog, `delete-local-after-verify` removes disk files that exist in MinIO. `git push` does not turn this on or move files. Details: `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` and `deploy/bootstrap-minio.sh`.
 - Flyway creates tables on first start (`V1__init_schema.sql`).
 - The owner account is created **only when** `cms_users` **is empty**.
 - Only **published** projects / gallery / posts appear on the public site.
@@ -1035,6 +1036,8 @@ From first clone to a public site:
 | Commit `.env`, `application-local.properties`, `portfolio.db`, keys | Secrets and data.                                                                                            |
 | `git pull` into `/var/www`                                          | Publishes a Maven tree. Site dies.                                                                           |
 | Open port `8080` on ufw                                             | Java is loopback-only.                                                                                       |
+| Open port `9000` or `9001` on ufw                                   | MinIO stays on `127.0.0.1`. Java is the only public image path.                                              |
+| Set `delete-local-after-verify` before you check the pages          | Copy first (`migrate`). Confirm gallery/work/blog. Then delete.                                              |
 | Leave bootstrap `change-me` as the live CMS password                | Same as shipping a default login.                                                                            |
 | Assume `/etc/portfolio.env` exists on coft.moe                      | It does not. Env is in the unit.                                                                             |
 | Start Java on an empty DB with no seed                              | No owner.                                                                                                    |
@@ -1114,6 +1117,7 @@ Five failures → ~15 minute lock. Wait, or clear `locked_until` in SQLite on a 
 - `deploy/apache.htaccess` is leftover. nginx serves production.
 - `/actuator` exists. Do not advertise it.
 - Server Java memory: `-Xms256m` (start) and `-Xmx768m` (max heap). Explained under [Make the VPS](#make-the-vps-and-host).
+- Opt-in MinIO is off by default. Local disk still works with no extra credentials. VPS install is `deploy/bootstrap-minio.sh` — localhost only.
 - More: `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` (dev inspect) · `[deploy/](deploy/)` (VPS scripts)
 
 Built to be read file-by-file in IntelliJ. One owner. One WAR. No surprise deploys. No password in git.

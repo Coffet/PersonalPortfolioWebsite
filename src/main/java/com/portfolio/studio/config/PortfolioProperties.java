@@ -23,6 +23,7 @@ public class PortfolioProperties {
 
     public static class Storage {
         private String uploadRoot = "storage/uploads";
+        private final S3 s3 = new S3();
 
         public String getUploadRoot() {
             return uploadRoot;
@@ -30,6 +31,85 @@ public class PortfolioProperties {
 
         public void setUploadRoot(String uploadRoot) {
             this.uploadRoot = uploadRoot;
+        }
+
+        public S3 getS3() {
+            return s3;
+        }
+
+        public static class S3 {
+            private boolean enabled;
+            private String endpoint = "";
+            private String accessKey = "";
+            private String secretKey = "";
+            private String bucket = "";
+            private String region = "us-east-1";
+            private boolean migrate;
+            private boolean deleteLocalAfterVerify;
+
+            public boolean isEnabled() {
+                return enabled;
+            }
+
+            public void setEnabled(boolean enabled) {
+                this.enabled = enabled;
+            }
+
+            public String getEndpoint() {
+                return endpoint;
+            }
+
+            public void setEndpoint(String endpoint) {
+                this.endpoint = endpoint;
+            }
+
+            public String getAccessKey() {
+                return accessKey;
+            }
+
+            public void setAccessKey(String accessKey) {
+                this.accessKey = accessKey;
+            }
+
+            public String getSecretKey() {
+                return secretKey;
+            }
+
+            public void setSecretKey(String secretKey) {
+                this.secretKey = secretKey;
+            }
+
+            public String getBucket() {
+                return bucket;
+            }
+
+            public void setBucket(String bucket) {
+                this.bucket = bucket;
+            }
+
+            public String getRegion() {
+                return region;
+            }
+
+            public void setRegion(String region) {
+                this.region = region;
+            }
+
+            public boolean isMigrate() {
+                return migrate;
+            }
+
+            public void setMigrate(boolean migrate) {
+                this.migrate = migrate;
+            }
+
+            public boolean isDeleteLocalAfterVerify() {
+                return deleteLocalAfterVerify;
+            }
+
+            public void setDeleteLocalAfterVerify(boolean deleteLocalAfterVerify) {
+                this.deleteLocalAfterVerify = deleteLocalAfterVerify;
+            }
         }
     }
 
