@@ -9,6 +9,12 @@ public final class ContentTypeResolver {
     private ContentTypeResolver() {
     }
 
+    /**
+     * Resolves a file key's extension to its MIME type.
+     *
+     * @param key the file key to inspect
+     * @return the corresponding image MIME type, or {@code application/octet-stream} when the extension is unsupported or absent
+     */
     public static String fromKey(String key) {
         if (!StringUtils.hasText(key)) {
             return "application/octet-stream";

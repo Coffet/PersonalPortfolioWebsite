@@ -7,6 +7,12 @@ import org.springframework.util.StringUtils;
 
 public class S3FullyConfiguredCondition implements Condition {
 
+    /**
+     * Determines whether the S3 configuration is fully enabled and populated.
+     *
+     * @return {@code true} if S3 is enabled and all required properties contain text,
+     *         {@code false} otherwise
+     */
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         var environment = context.getEnvironment();

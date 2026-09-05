@@ -22,6 +22,7 @@ MC_RELEASE="RELEASE.2025-08-13T08-35-41Z"
 MC_URL="https://dl.min.io/client/mc/release/linux-amd64/archive/mc.${MC_RELEASE}"
 MC_SHA256="01f866e9c5f9b87c2b09116fa5d7c06695b106242d829a8bb32990c00312e891"
 
+# install_pinned_binary downloads a binary, verifies its SHA-256 checksum, and installs it with executable permissions.
 install_pinned_binary() {
   local dest="$1"
   local url="$2"

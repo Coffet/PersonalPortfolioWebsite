@@ -23,6 +23,13 @@ public class StorageMigrationRunner implements ApplicationRunner {
     private final LocalDiskObjectStore localDiskObjectStore;
     private final MinioObjectStore minioObjectStore;
 
+    /**
+     * Creates a runner for migrating and optionally removing local storage objects.
+     *
+     * @param portfolioProperties configuration for storage migration and cleanup
+     * @param localDiskObjectStore local object store containing the source files
+     * @param minioObjectStoreProvider provider for the optional MinIO object store
+     */
     public StorageMigrationRunner(
         PortfolioProperties portfolioProperties,
         LocalDiskObjectStore localDiskObjectStore,
@@ -33,6 +40,12 @@ public class StorageMigrationRunner implements ApplicationRunner {
         this.minioObjectStore = minioObjectStoreProvider.getIfAvailable();
     }
 
+    /**
+     * Executes the configured local-storage migration and cleanup operations.
+     *
+     * @throws IllegalStateException if migration or cleanup is enabled while MinIO is unavailable
+     * @throws Exception if a configured storage operation fails
+     */
     @Override
     public void run(ApplicationArguments args) throws Exception {
         PortfolioProperties.Storage.S3 s3 = portfolioProperties.getStorage().getS3();
@@ -54,6 +67,13 @@ public class StorageMigrationRunner implements ApplicationRunner {
         }
     }
 
+    /**
+     * Copies local disk objects that are absent from MinIO.
+     *
+     * <p>Existing MinIO objects are skipped, and local files are preserved after copying.</p>
+     *
+     * @throws IOException if a local object cannot be read or uploaded
+     */
     void copyDiskToMinio() throws IOException {
         List<String> keys = localDiskObjectStore.listKeys();
         int copied = 0;
@@ -72,6 +92,11 @@ public class StorageMigrationRunner implements ApplicationRunner {
         log.info("MinIO migrate copied {} object(s); skipped {} already present. Disk files were kept.", copied, skipped);
     }
 
+    /**
+     * Deletes local object files whose content matches the corresponding MinIO objects.
+     *
+     * @throws IOException if local object keys cannot be listed or a matching local file cannot be deleted
+     */
     void deleteLocalCopiesPresentInMinio() throws IOException {
         List<String> keys = localDiskObjectStore.listKeys();
         int deleted = 0;

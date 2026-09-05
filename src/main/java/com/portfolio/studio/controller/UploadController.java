@@ -26,6 +26,12 @@ public class UploadController {
     private final LocalDiskObjectStore localDiskObjectStore;
     private final MinioObjectStore minioObjectStore;
 
+    /**
+     * Creates a controller backed by local storage with optional Minio storage fallback.
+     *
+     * @param localDiskObjectStore the local object store used to retrieve uploads
+     * @param minioObjectStoreProvider the provider for an optional Minio object store
+     */
     public UploadController(
         LocalDiskObjectStore localDiskObjectStore,
         ObjectProvider<MinioObjectStore> minioObjectStoreProvider
@@ -34,6 +40,13 @@ public class UploadController {
         this.minioObjectStore = minioObjectStoreProvider.getIfAvailable();
     }
 
+    /**
+     * Serves a validated uploaded object from the configured object stores.
+     *
+     * @param request the HTTP request containing the uploaded object's path
+     * @return the object stream with its content metadata, or a not-found response when the path or object is unavailable
+     * @throws IOException if the object stream cannot be accessed
+     */
     @GetMapping("/uploads/**")
     public ResponseEntity<InputStreamResource> getUpload(HttpServletRequest request) throws IOException {
         Optional<String> key = extractKey(request);
@@ -60,6 +73,12 @@ public class UploadController {
         return builder.body(new InputStreamResource(object.content()));
     }
 
+    /**
+     * Extracts and validates the object key from an upload request URI.
+     *
+     * @param request the HTTP request containing the upload URI
+     * @return the validated object key, or an empty result when the URI does not match the upload path or the key is invalid
+     */
     private static Optional<String> extractKey(HttpServletRequest request) {
         String uri = request.getRequestURI();
         String prefix = request.getContextPath() + "/uploads/";
@@ -70,6 +89,12 @@ public class UploadController {
         return ObjectKeyValidator.parse(decoded);
     }
 
+    /**
+     * Parses a content type and falls back to {@code application/octet-stream} when it is blank or invalid.
+     *
+     * @param contentType the content type to parse
+     * @return the parsed media type or {@code application/octet-stream} when parsing fails
+     */
     private static MediaType parseMediaType(String contentType) {
         try {
             if (contentType != null && !contentType.isBlank()) {

@@ -34,6 +34,12 @@ public class StorageConfig {
 
     private static final Logger log = LoggerFactory.getLogger(StorageConfig.class);
 
+    /**
+     * Creates the local-disk object store using the configured upload root.
+     *
+     * @param portfolioProperties the application storage configuration
+     * @return the configured local-disk object store
+     */
     @Bean
     LocalDiskObjectStore localDiskObjectStore(PortfolioProperties portfolioProperties) {
         return new LocalDiskObjectStore(
@@ -41,6 +47,12 @@ public class StorageConfig {
         );
     }
 
+    /**
+     * Creates and initializes the configured MinIO client.
+     *
+     * @param portfolioProperties configuration containing the S3 endpoint, credentials, bucket, and optional TLS settings
+     * @return the configured MinIO client
+     */
     @Bean
     @Conditional(S3FullyConfiguredCondition.class)
     MinioClient minioClient(PortfolioProperties portfolioProperties) {
@@ -61,6 +73,13 @@ public class StorageConfig {
         return client;
     }
 
+    /**
+     * Creates the MinIO-backed object store for the configured bucket.
+     *
+     * @param minioClient          the configured MinIO client
+     * @param portfolioProperties  the application properties containing the bucket name
+     * @return                     the MinIO object store
+     */
     @Bean
     @Conditional(S3FullyConfiguredCondition.class)
     MinioObjectStore minioObjectStore(MinioClient minioClient, PortfolioProperties portfolioProperties) {
@@ -69,6 +88,13 @@ public class StorageConfig {
         return new MinioObjectStore(minioClient, bucket);
     }
 
+    /**
+     * Creates an HTTP client that trusts the specified X.509 certificate.
+     *
+     * @param certPath path to the certificate file
+     * @return an HTTP client configured with the certificate's trust manager
+     * @throws IllegalStateException if the certificate file is missing or cannot be loaded
+     */
     private static OkHttpClient httpClientTrusting(Path certPath) {
         if (!Files.isRegularFile(certPath)) {
             throw new IllegalStateException(
@@ -98,6 +124,12 @@ public class StorageConfig {
         }
     }
 
+    /**
+     * Ensures that the configured MinIO bucket exists, retrying transient failures.
+     *
+     * @param bucket the name of the bucket to verify or create
+     * @throws IllegalStateException if the operation is interrupted or all attempts fail
+     */
     private static void ensureBucket(MinioClient client, String bucket) {
         Exception last = null;
         long delayMs = 500L;
