@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -76,12 +77,18 @@ public class MediaStorageService {
             return;
         }
 
-        ObjectKeyValidator.parse(publicPath.substring("/uploads/".length())).ifPresent(key -> {
-            localDiskObjectStore.deleteIfPresent(key);
+        Optional<String> key = ObjectKeyValidator.parse(publicPath.substring("/uploads/".length()));
+        if (key.isEmpty()) {
+            return;
+        }
+        try {
             if (minioObjectStore != null) {
-                minioObjectStore.deleteIfPresent(key);
+                minioObjectStore.deleteIfPresent(key.get());
             }
-        });
+            localDiskObjectStore.deleteIfPresent(key.get());
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to delete image file.", exception);
+        }
     }
 
     public List<StoredFile> storeAll(MultipartFile[] files, String folder) {

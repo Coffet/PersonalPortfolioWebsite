@@ -76,13 +76,25 @@ class StorageMigrationRunnerTests {
         Files.createDirectories(present.getParent());
         Files.write(present, PIXEL_PNG);
         Files.write(missing, PIXEL_PNG);
-        when(minioObjectStore.exists("gallery/copied.png")).thenReturn(true);
-        when(minioObjectStore.exists("gallery/local-only.png")).thenReturn(false);
+        when(minioObjectStore.hasMatchingContent(eq("gallery/copied.png"), any(Path.class))).thenReturn(true);
+        when(minioObjectStore.hasMatchingContent(eq("gallery/local-only.png"), any(Path.class))).thenReturn(false);
 
         runner(false, true).run(null);
 
         assertThat(Files.exists(present)).isFalse();
         assertThat(Files.exists(missing)).isTrue();
+    }
+
+    @Test
+    void deleteKeepsDiskWhenMinioContentDoesNotMatch() throws Exception {
+        Path mismatch = tempDir.resolve("gallery/mismatch.png");
+        Files.createDirectories(mismatch.getParent());
+        Files.write(mismatch, PIXEL_PNG);
+        when(minioObjectStore.hasMatchingContent(eq("gallery/mismatch.png"), any(Path.class))).thenReturn(false);
+
+        runner(false, true).run(null);
+
+        assertThat(Files.exists(mismatch)).isTrue();
     }
 
     @Test

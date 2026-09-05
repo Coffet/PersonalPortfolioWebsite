@@ -83,4 +83,5 @@ echo "First deploy starts Java when GitHub uploads portfolio.war."
 echo "Until then, nginx is up but proxying to a process that is not running yet."
 echo
 echo "Optional MinIO (localhost only): sudo bash deploy/bootstrap-minio.sh"
+echo "Then: sudo bash deploy/provision-minio-app.sh (bucket + scoped app user)."
 echo "Do not ufw allow 9000. git push does not install MinIO or move uploads."

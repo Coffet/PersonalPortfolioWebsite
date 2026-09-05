@@ -294,7 +294,7 @@ flowchart LR
 
 - Public pages **read**. They do not write the database or the upload folder.
 - CMS **writes**. Images on disk by default. Rows in SQLite.
-- **Opt-in MinIO** (same box, `127.0.0.1:9000`) can hold objects. SQLite paths stay `/uploads/...`. Java serves them. Off unless you set endpoint, bucket, and keys. Two switches: `migrate` copies disk → MinIO and keeps disk; after you check gallery/work/blog, `delete-local-after-verify` removes disk files that exist in MinIO. `git push` does not turn this on or move files. Details: `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` and `deploy/bootstrap-minio.sh`.
+- **Opt-in MinIO** (same box, `127.0.0.1:9000`) can hold objects. SQLite paths stay `/uploads/...`. Java serves them. Off unless you set endpoint, bucket, and keys. Use the scoped app user from `deploy/provision-minio-app.sh`, not the MinIO root. Two switches: `migrate` copies disk → MinIO and keeps disk; after you check gallery/work/blog (and restore the real `storage/uploads` if you renamed it), `delete-local-after-verify` removes a disk file only when MinIO has matching content. `git push` does not turn this on or move files. Details: `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` and `deploy/bootstrap-minio.sh`.
 - Flyway creates tables on first start (`V1__init_schema.sql`).
 - The owner account is created **only when** `cms_users` **is empty**.
 - Only **published** projects / gallery / posts appear on the public site.

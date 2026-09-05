@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import com.portfolio.studio.storage.LocalDiskObjectStore;
 import com.portfolio.studio.storage.MinioObjectStore;
 import com.portfolio.studio.storage.S3FullyConfiguredCondition;
+import com.portfolio.studio.storage.S3StorageSupport;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -32,7 +33,7 @@ public class StorageConfig {
     @Conditional(S3FullyConfiguredCondition.class)
     MinioClient minioClient(PortfolioProperties portfolioProperties) {
         PortfolioProperties.Storage.S3 s3 = portfolioProperties.getStorage().getS3();
-        URI endpoint = parseEndpoint(s3.getEndpoint());
+        URI endpoint = S3StorageSupport.requireAllowedEndpoint(s3.getEndpoint());
         boolean secure = "https".equalsIgnoreCase(endpoint.getScheme());
         int port = endpoint.getPort();
         if (port < 0) {
@@ -57,24 +58,30 @@ public class StorageConfig {
         return new MinioObjectStore(minioClient, bucket);
     }
 
-    private static URI parseEndpoint(String rawEndpoint) {
-        URI endpoint = URI.create(rawEndpoint.trim());
-        if (endpoint.getScheme() == null || endpoint.getHost() == null) {
-            throw new IllegalStateException(
-                "portfolio.storage.s3.endpoint must be an absolute URL like http://127.0.0.1:9000"
-            );
-        }
-        return endpoint;
-    }
-
     private static void ensureBucket(MinioClient client, String bucket) {
-        try {
-            boolean found = client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
-            if (!found) {
-                client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+        Exception last = null;
+        long delayMs = 500L;
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            try {
+                boolean found = client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+                if (!found) {
+                    client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+                }
+                return;
+            } catch (Exception exception) {
+                last = exception;
+                if (attempt == 8) {
+                    break;
+                }
+                try {
+                    Thread.sleep(delayMs);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted while waiting for MinIO.", interrupted);
+                }
+                delayMs = Math.min(delayMs * 2, 4000L);
             }
-        } catch (Exception exception) {
-            throw new IllegalStateException("Unable to reach MinIO or create the configured bucket.", exception);
         }
+        throw new IllegalStateException("Unable to reach MinIO or create the configured bucket.", last);
     }
 }

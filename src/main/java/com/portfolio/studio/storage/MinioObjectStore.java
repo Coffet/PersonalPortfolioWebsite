@@ -2,8 +2,12 @@ package com.portfolio.studio.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Optional;
 
 import io.minio.GetObjectArgs;
@@ -90,7 +94,7 @@ public class MinioObjectStore implements ObjectStore {
     }
 
     @Override
-    public void deleteIfPresent(String key) {
+    public void deleteIfPresent(String key) throws IOException {
         Optional<String> parsed = ObjectKeyValidator.parse(key);
         if (parsed.isEmpty()) {
             return;
@@ -103,9 +107,68 @@ public class MinioObjectStore implements ObjectStore {
             if (isMissingObject(exception)) {
                 return;
             }
-            // A missing file should not block content deletion.
-        } catch (Exception ignored) {
-            // A missing file should not block content deletion.
+            throw wrap("Unable to delete object from MinIO.", exception);
+        } catch (Exception exception) {
+            throw wrap("Unable to delete object from MinIO.", exception);
+        }
+    }
+
+    public boolean hasMatchingContent(String key, Path localFile) throws IOException {
+        if (localFile == null || !Files.isRegularFile(localFile) || !exists(key)) {
+            return false;
+        }
+        String valid = ObjectKeyValidator.requireValid(key);
+        try {
+            StatObjectResponse stat = minioClient.statObject(
+                StatObjectArgs.builder().bucket(bucket).object(valid).build()
+            );
+            if (stat.size() != Files.size(localFile)) {
+                return false;
+            }
+            String etag = normalizeEtag(stat.etag());
+            if (etag != null && !etag.contains("-")) {
+                return etag.equalsIgnoreCase(md5Hex(localFile));
+            }
+            return sha256Hex(localFile).equalsIgnoreCase(sha256Hex(valid));
+        } catch (ErrorResponseException exception) {
+            if (isMissingObject(exception)) {
+                return false;
+            }
+            throw wrap("Unable to compare object in MinIO.", exception);
+        } catch (Exception exception) {
+            throw wrap("Unable to compare object in MinIO.", exception);
+        }
+    }
+
+    private static String normalizeEtag(String etag) {
+        if (!StringUtils.hasText(etag)) {
+            return null;
+        }
+        return etag.replace("\"", "").trim();
+    }
+
+    private static String md5Hex(Path localFile) throws IOException {
+        return digestHex("MD5", Files.readAllBytes(localFile));
+    }
+
+    private String sha256Hex(String key) throws Exception {
+        try (GetObjectResponse response = minioClient.getObject(
+            GetObjectArgs.builder().bucket(bucket).object(key).build()
+        )) {
+            return digestHex("SHA-256", response.readAllBytes());
+        }
+    }
+
+    private static String sha256Hex(Path localFile) throws IOException {
+        return digestHex("SHA-256", Files.readAllBytes(localFile));
+    }
+
+    private static String digestHex(String algorithm, byte[] content) throws IOException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance(algorithm);
+            return HexFormat.of().formatHex(digest.digest(content));
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IOException("Missing digest " + algorithm, exception);
         }
     }
 

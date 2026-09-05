@@ -14,5 +14,5 @@ portfolio.seed.owner.password=local-password
 # portfolio.storage.s3.region=us-east-1
 # Copy disk -> MinIO, keep disk. Turn off after the run.
 # portfolio.storage.s3.migrate=true
-# After you check gallery/work/blog, delete disk copies that exist in MinIO. Then turn off.
+# After you check gallery/work/blog, restore storage/uploads if you renamed it, then delete matching disk copies. Then turn off.
 # portfolio.storage.s3.delete-local-after-verify=true

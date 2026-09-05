@@ -77,13 +77,18 @@ public class StorageMigrationRunner implements ApplicationRunner {
         int deleted = 0;
         int kept = 0;
         for (String key : keys) {
-            if (minioObjectStore.exists(key)) {
+            Path filePath = localDiskObjectStore.getUploadRoot().resolve(key).normalize();
+            if (minioObjectStore.hasMatchingContent(key, filePath)) {
                 localDiskObjectStore.deleteIfPresent(key);
                 deleted++;
             } else {
                 kept++;
             }
         }
-        log.info("MinIO delete-local-after-verify removed {} disk file(s); kept {} not present in MinIO.", deleted, kept);
+        log.info(
+            "MinIO delete-local-after-verify removed {} disk file(s); kept {} missing or not matching MinIO content.",
+            deleted,
+            kept
+        );
     }
 }

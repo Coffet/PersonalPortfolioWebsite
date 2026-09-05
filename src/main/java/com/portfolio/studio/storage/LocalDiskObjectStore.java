@@ -50,7 +50,7 @@ public class LocalDiskObjectStore implements ObjectStore {
     }
 
     @Override
-    public void deleteIfPresent(String key) {
+    public void deleteIfPresent(String key) throws IOException {
         Path filePath = resolveIfPresent(key);
         if (filePath == null) {
             return;

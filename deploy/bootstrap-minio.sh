@@ -12,14 +12,44 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DATA_DIR="/var/lib/minio"
 BIN="/usr/local/bin/minio"
+MC_BIN="/usr/local/bin/mc"
+
+# Pinned community builds + hashes from dl.min.io (do not use the floating /minio URL).
+MINIO_RELEASE="RELEASE.2025-09-07T16-13-09Z"
+MINIO_URL="https://dl.min.io/server/minio/release/linux-amd64/archive/minio.${MINIO_RELEASE}"
+MINIO_SHA256="7c5bd8512c6e966455b1d198209358b2d191c77a83ab377c4073281065fb855f"
+MC_RELEASE="RELEASE.2025-08-13T08-35-41Z"
+MC_URL="https://dl.min.io/client/mc/release/linux-amd64/archive/mc.${MC_RELEASE}"
+MC_SHA256="01f866e9c5f9b87c2b09116fa5d7c06695b106242d829a8bb32990c00312e891"
+
+install_pinned_binary() {
+  local dest="$1"
+  local url="$2"
+  local expected_sha="$3"
+  local tmp
+  tmp="$(mktemp)"
+  curl -fsSL "$url" -o "$tmp"
+  local actual
+  actual="$(sha256sum "$tmp" | awk '{print $1}')"
+  if [ "$actual" != "$expected_sha" ]; then
+    rm -f "$tmp"
+    echo "Checksum mismatch for ${dest}. Aborting; existing binary (if any) was not replaced." >&2
+    exit 1
+  fi
+  install -m 755 "$tmp" "$dest"
+  rm -f "$tmp"
+}
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y curl ca-certificates
+apt-get install -y curl ca-certificates coreutils
 
 if [ ! -x "$BIN" ]; then
-  curl -fsSL https://dl.min.io/server/minio/release/linux-amd64/minio -o "$BIN"
-  chmod 755 "$BIN"
+  install_pinned_binary "$BIN" "$MINIO_URL" "$MINIO_SHA256"
+fi
+
+if [ ! -x "$MC_BIN" ]; then
+  install_pinned_binary "$MC_BIN" "$MC_URL" "$MC_SHA256"
 fi
 
 id minio-user >/dev/null 2>&1 || useradd --system --home "$DATA_DIR" --shell /usr/sbin/nologin minio-user
@@ -28,7 +58,7 @@ chown -R minio-user:minio-user "$DATA_DIR"
 
 if [ ! -f /etc/minio.env ]; then
   install -m 600 "$SCRIPT_DIR/minio.env.example" /etc/minio.env
-  echo "Edit /etc/minio.env and replace the change-me MinIO user/password before start."
+  echo "Edit /etc/minio.env and replace the change-me MinIO root user/password before start."
 fi
 
 install -m 644 "$SCRIPT_DIR/minio.service" /etc/systemd/system/minio.service
@@ -37,6 +67,7 @@ systemctl enable minio.service
 
 echo
 echo "MinIO unit installed. It listens on 127.0.0.1:9000 (console 127.0.0.1:9001)."
-echo "Set real values in /etc/minio.env, then: systemctl start minio"
-echo "Point portfolio env at http://127.0.0.1:9000. Do not ufw allow 9000."
+echo "Set real root values in /etc/minio.env, then: systemctl start minio"
+echo "Then provision the app bucket + scoped user: sudo bash deploy/provision-minio-app.sh"
+echo "Put that app user in portfolio env — not MINIO_ROOT_USER. Do not ufw allow 9000."
 echo "git push does not start MinIO or migrate files."

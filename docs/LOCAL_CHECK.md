@@ -282,6 +282,6 @@ To try the addon on this PC:
 3. Restart Java. Upload one image in `/cmsmgmnt`. Confirm it on `/gallery`, `/`, or `/blog`.
 4. Set `portfolio.storage.s3.migrate=true`, restart once, then set it back to `false`. Logs say how many objects copied. Disk files stay.
 5. To prove Java is reading MinIO, briefly rename `storage/uploads` (or point `upload-root` at an empty folder) and reload those pages.
-6. Only after that looks right: set `portfolio.storage.s3.delete-local-after-verify=true`, restart once, then set it back to `false`.
+6. Restore the original `storage/uploads` directory and remove any temporary `portfolio.storage.upload-root` override so Java sees the real files again. Only then set `portfolio.storage.s3.delete-local-after-verify=true`, restart once, then set it back to `false`. The delete pass only scans the configured upload root.
 
 `git push` does not start MinIO or move files. The live box is a separate install (`deploy/bootstrap-minio.sh`) after a WAR with this code is on the VPS.

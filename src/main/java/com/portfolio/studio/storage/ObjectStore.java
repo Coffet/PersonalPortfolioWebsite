@@ -12,7 +12,7 @@ public interface ObjectStore {
 
     boolean exists(String key) throws IOException;
 
-    void deleteIfPresent(String key);
+    void deleteIfPresent(String key) throws IOException;
 
     record StoredObject(InputStream content, long contentLength, String contentType) {
     }

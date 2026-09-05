@@ -88,6 +88,21 @@ class MediaStorageServiceTests {
         verify(minioObjectStore).deleteIfPresent("gallery/sample.png");
     }
 
+    @Test
+    void deleteFailsWhenMinioDeleteThrows() throws IOException {
+        MinioObjectStore minioObjectStore = mock(MinioObjectStore.class);
+        doThrow(new IOException("minio delete failed")).when(minioObjectStore).deleteIfPresent("gallery/sample.png");
+        MediaStorageService service = new MediaStorageService(localDiskObjectStore, provider(minioObjectStore));
+        Path diskFile = tempDir.resolve("gallery/sample.png");
+        Files.createDirectories(diskFile.getParent());
+        Files.write(diskFile, PIXEL_PNG);
+
+        assertThatThrownBy(() -> service.deleteIfPresent("/uploads/gallery/sample.png"))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessageContaining("Unable to delete image file");
+        assertThat(Files.exists(diskFile)).isTrue();
+    }
+
     private static MockMultipartFile png(String filename) {
         return new MockMultipartFile("file", filename, "image/png", PIXEL_PNG);
     }
