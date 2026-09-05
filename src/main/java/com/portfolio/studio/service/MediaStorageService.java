@@ -33,6 +33,9 @@ public class MediaStorageService {
     private final LocalDiskObjectStore localDiskObjectStore;
     private final MinioObjectStore minioObjectStore;
 
+    /**
+     * Initializes the media storage service with local storage and an optional MinIO store.
+     */
     public MediaStorageService(
         LocalDiskObjectStore localDiskObjectStore,
         ObjectProvider<MinioObjectStore> minioObjectStoreProvider
@@ -41,6 +44,15 @@ public class MediaStorageService {
         this.minioObjectStore = minioObjectStoreProvider.getIfAvailable();
     }
 
+    /**
+     * Stores a validated image upload in the specified folder.
+     *
+     * @param file   the image file to store
+     * @param folder the destination folder
+     * @return       the public storage path and original filename
+     * @throws IllegalArgumentException if the file is missing, empty, or is not a supported image
+     * @throws IllegalStateException    if the image cannot be stored
+     */
     public StoredFile store(MultipartFile file, String folder) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Please choose an image to upload.");
@@ -72,6 +84,12 @@ public class MediaStorageService {
         return new StoredFile("/uploads/" + key, originalFilename);
     }
 
+    /**
+     * Deletes the stored image identified by a public uploads path when present.
+     *
+     * @param publicPath the public path of the stored image
+     * @throws IllegalStateException if the image cannot be deleted
+     */
     public void deleteIfPresent(String publicPath) {
         if (!StringUtils.hasText(publicPath) || !publicPath.startsWith("/uploads/")) {
             return;

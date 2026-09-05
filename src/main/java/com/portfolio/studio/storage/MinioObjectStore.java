@@ -24,11 +24,26 @@ public class MinioObjectStore implements ObjectStore {
     private final MinioClient minioClient;
     private final String bucket;
 
+    /**
+     * Creates an object store backed by the specified MinIO bucket.
+     *
+     * @param minioClient the client used to access MinIO
+     * @param bucket      the bucket containing stored objects
+     */
     public MinioObjectStore(MinioClient minioClient, String bucket) {
         this.minioClient = minioClient;
         this.bucket = bucket;
     }
 
+    /**
+     * Stores content under the specified object key.
+     *
+     * @param key           the object key
+     * @param content       the content stream
+     * @param contentLength the content length in bytes
+     * @param contentType   the content type, or {@code null} or blank to infer it from the key
+     * @throws IOException if the object cannot be stored
+     */
     @Override
     public void put(String key, InputStream content, long contentLength, String contentType) throws IOException {
         String valid = ObjectKeyValidator.requireValid(key);
@@ -47,6 +62,13 @@ public class MinioObjectStore implements ObjectStore {
         }
     }
 
+    /**
+     * Retrieves an object and its metadata from the configured object store.
+     *
+     * @param key the object key
+     * @return the stored object, or an empty optional if the object is missing
+     * @throws IOException if the object cannot be read
+     */
     @Override
     public Optional<StoredObject> get(String key) throws IOException {
         String valid = ObjectKeyValidator.requireValid(key);
@@ -71,6 +93,13 @@ public class MinioObjectStore implements ObjectStore {
         }
     }
 
+    /**
+     * Checks whether an object exists in the configured bucket.
+     *
+     * @param key the object key to check
+     * @return true if the object exists, false if it is missing
+     * @throws IOException if the key is invalid or the object status cannot be checked
+     */
     @Override
     public boolean exists(String key) throws IOException {
         String valid = ObjectKeyValidator.requireValid(key);
@@ -87,6 +116,12 @@ public class MinioObjectStore implements ObjectStore {
         }
     }
 
+    /**
+     * Deletes the object identified by the key when it exists.
+     *
+     * @param key the object key to delete
+     * @throws IOException if deleting the object fails
+     */
     @Override
     public void deleteIfPresent(String key) throws IOException {
         Optional<String> parsed = ObjectKeyValidator.parse(key);
@@ -107,6 +142,15 @@ public class MinioObjectStore implements ObjectStore {
         }
     }
 
+    /**
+     * Determines whether a local file has the same content as the stored object.
+     *
+     * @param key       the object key
+     * @param localFile the local file to compare
+     * @return {@code true} if both objects exist and have matching size and SHA-256 content,
+     *         {@code false} otherwise
+     * @throws IOException if the object or local file cannot be compared
+     */
     public boolean hasMatchingContent(String key, Path localFile) throws IOException {
         if (localFile == null || !Files.isRegularFile(localFile) || !exists(key)) {
             return false;
@@ -135,6 +179,13 @@ public class MinioObjectStore implements ObjectStore {
         }
     }
 
+    /**
+     * Computes the SHA-256 digest of the supplied content as a lowercase hexadecimal string.
+     *
+     * @param content the content to digest
+     * @return the lowercase hexadecimal SHA-256 digest
+     * @throws IOException if the content cannot be read or SHA-256 is unavailable
+     */
     private static String sha256Hex(InputStream content) throws IOException {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -149,6 +200,12 @@ public class MinioObjectStore implements ObjectStore {
         }
     }
 
+    /**
+     * Determines whether an error indicates that an object is missing.
+     *
+     * @param exception the MinIO error to inspect
+     * @return {@code true} if the error code indicates a missing object, {@code false} otherwise
+     */
     private static boolean isMissingObject(ErrorResponseException exception) {
         if (exception.errorResponse() == null) {
             return false;
@@ -157,6 +214,13 @@ public class MinioObjectStore implements ObjectStore {
         return "NoSuchKey".equals(code) || "NoSuchObject".equals(code);
     }
 
+    /**
+     * Preserves an existing {@link IOException} or wraps another exception with the specified message.
+     *
+     * @param message   the message for the wrapped exception
+     * @param exception the exception to preserve or wrap
+     * @return the original {@link IOException}, or a new {@link IOException}
+     */
     private static IOException wrap(String message, Exception exception) {
         if (exception instanceof IOException ioException) {
             return ioException;

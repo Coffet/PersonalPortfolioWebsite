@@ -19,6 +19,7 @@ POLICY_NAME="portfolio-app"
 ALIAS="localportfolio"
 POLICY_RENDER=""
 
+# urlencode encodes a string for use in a URL and writes the result to standard output.
 urlencode() {
   local LC_ALL=C
   local i c
@@ -31,6 +32,7 @@ urlencode() {
   done
 }
 
+# cleanup removes temporary MinIO client environment variables and the rendered policy file.
 cleanup() {
   unset "MC_HOST_${ALIAS}" || true
   unset MC_INSECURE || true

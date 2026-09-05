@@ -12,10 +12,23 @@ public final class ObjectKeyValidator {
     private ObjectKeyValidator() {
     }
 
+    /**
+     * Validates an object key and returns its normalized value.
+     *
+     * @param key the object key to validate
+     * @return the normalized object key
+     * @throws IllegalArgumentException if the key is invalid
+     */
     public static String requireValid(String key) {
         return parse(key).orElseThrow(() -> new IllegalArgumentException("Invalid object key."));
     }
 
+    /**
+     * Parses and normalizes an object key when it meets the accepted format.
+     *
+     * @param key the object key to validate and normalize
+     * @return the normalized key when valid, or an empty optional otherwise
+     */
     public static Optional<String> parse(String key) {
         if (!StringUtils.hasText(key)) {
             return Optional.empty();
