@@ -277,7 +277,7 @@ Default is still `storage/uploads`. You can develop forever without MinIO.
 
 To try the addon on this PC:
 
-1. Run MinIO on `127.0.0.1:9000` (binary or Docker). Do not publish 9000.
+1. Run MinIO with **HTTPS** on `127.0.0.1:9000` (binary or Docker). Do not publish 9000. HTTP is rejected even on localhost. If the cert is self-signed, set `portfolio.storage.s3.trust-cert` to that certificate file.
 2. Put endpoint, bucket, and keys in gitignored `application-local.properties` (see the example file). Set `portfolio.storage.s3.enabled=true`.
 3. Restart Java. Upload one image in `/cmsmgmnt`. Confirm it on `/gallery`, `/`, or `/blog`.
 4. Set `portfolio.storage.s3.migrate=true`, restart once, then set it back to `false`. Logs say how many objects copied. Disk files stay.

@@ -33,6 +33,7 @@ urlencode() {
 
 cleanup() {
   unset "MC_HOST_${ALIAS}" || true
+  unset MC_INSECURE || true
   if [ -n "$POLICY_RENDER" ]; then
     rm -f "$POLICY_RENDER"
   fi
@@ -97,7 +98,8 @@ sed "s/__BUCKET__/${BUCKET}/g" "$SCRIPT_DIR/minio-app-policy.json" > "$POLICY_RE
 
 encoded_user="$(urlencode "$MINIO_ROOT_USER")"
 encoded_pass="$(urlencode "$MINIO_ROOT_PASSWORD")"
-export "MC_HOST_${ALIAS}=http://${encoded_user}:${encoded_pass}@127.0.0.1:9000"
+export MC_INSECURE=1
+export "MC_HOST_${ALIAS}=https://${encoded_user}:${encoded_pass}@127.0.0.1:9000"
 
 "$MC" mb --ignore-existing "${ALIAS}/${BUCKET}"
 if ! "$MC" admin user info "$ALIAS" "$APP_USER" >/dev/null 2>&1; then
@@ -112,4 +114,5 @@ echo "Bucket ${BUCKET} and user ${APP_USER} are ready."
 echo "Set portfolio to that user from $APP_ENV — not MINIO_ROOT_USER / MINIO_ROOT_PASSWORD."
 echo "PORTFOLIO_STORAGE_S3_ACCESS_KEY=${APP_USER}"
 echo "PORTFOLIO_STORAGE_S3_BUCKET=${BUCKET}"
-echo "Set PORTFOLIO_STORAGE_S3_ENDPOINT to this host's MinIO URL. Java accepts HTTPS, or HTTP only to 127.0.0.1/localhost."
+echo "Set PORTFOLIO_STORAGE_S3_ENDPOINT to https://127.0.0.1:9000"
+echo "Set PORTFOLIO_STORAGE_S3_TRUST_CERT to /etc/minio/certs/public.crt for this self-signed cert."

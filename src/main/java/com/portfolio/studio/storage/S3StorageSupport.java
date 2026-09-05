@@ -35,17 +35,8 @@ public final class S3StorageSupport {
         if ("https".equalsIgnoreCase(endpoint.getScheme())) {
             return endpoint;
         }
-        if ("http".equalsIgnoreCase(endpoint.getScheme()) && isLoopback(endpoint.getHost())) {
-            return endpoint;
-        }
         throw new IllegalStateException(
-            "portfolio.storage.s3.endpoint must use HTTPS, or HTTP only to 127.0.0.1/localhost."
+            "portfolio.storage.s3.endpoint must use HTTPS when credentials are configured."
         );
-    }
-
-    static boolean isLoopback(String host) {
-        return "127.0.0.1".equals(host)
-            || "localhost".equalsIgnoreCase(host)
-            || "::1".equals(host);
     }
 }

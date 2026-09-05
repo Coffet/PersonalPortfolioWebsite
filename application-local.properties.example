@@ -7,7 +7,8 @@ portfolio.seed.owner.password=local-password
 # Optional MinIO (off unless enabled AND endpoint/bucket/keys are set).
 # New uploads then go to MinIO only. Public URLs stay /uploads/...
 # portfolio.storage.s3.enabled=true
-# portfolio.storage.s3.endpoint=http://127.0.0.1:9000
+# portfolio.storage.s3.endpoint=https://127.0.0.1:9000
+# portfolio.storage.s3.trust-cert=
 # portfolio.storage.s3.access-key=
 # portfolio.storage.s3.secret-key=
 # portfolio.storage.s3.bucket=portfolio-uploads

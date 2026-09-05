@@ -44,6 +44,7 @@ public class PortfolioProperties {
             private String secretKey = "";
             private String bucket = "";
             private String region = "us-east-1";
+            private String trustCert = "";
             private boolean migrate;
             private boolean deleteLocalAfterVerify;
 
@@ -93,6 +94,14 @@ public class PortfolioProperties {
 
             public void setRegion(String region) {
                 this.region = region;
+            }
+
+            public String getTrustCert() {
+                return trustCert;
+            }
+
+            public void setTrustCert(String trustCert) {
+                this.trustCert = trustCert;
             }
 
             public boolean isMigrate() {
