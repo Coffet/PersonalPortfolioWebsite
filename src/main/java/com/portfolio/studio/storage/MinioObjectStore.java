@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
@@ -17,11 +16,6 @@ import io.minio.RemoveObjectArgs;
 import io.minio.StatObjectArgs;
 import io.minio.StatObjectResponse;
 import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
 import io.minio.MinioClient;
 import org.springframework.util.StringUtils;
 
@@ -125,11 +119,12 @@ public class MinioObjectStore implements ObjectStore {
             if (stat.size() != Files.size(localFile)) {
                 return false;
             }
-            String etag = normalizeEtag(stat.etag());
-            if (etag != null && !etag.contains("-")) {
-                return etag.equalsIgnoreCase(md5Hex(localFile));
+            try (GetObjectResponse remote = minioClient.getObject(
+                    GetObjectArgs.builder().bucket(bucket).object(valid).build()
+                );
+                InputStream local = Files.newInputStream(localFile)) {
+                return sha256Hex(local).equalsIgnoreCase(sha256Hex(remote));
             }
-            return sha256Hex(localFile).equalsIgnoreCase(sha256Hex(valid));
         } catch (ErrorResponseException exception) {
             if (isMissingObject(exception)) {
                 return false;
@@ -140,35 +135,17 @@ public class MinioObjectStore implements ObjectStore {
         }
     }
 
-    private static String normalizeEtag(String etag) {
-        if (!StringUtils.hasText(etag)) {
-            return null;
-        }
-        return etag.replace("\"", "").trim();
-    }
-
-    private static String md5Hex(Path localFile) throws IOException {
-        return digestHex("MD5", Files.readAllBytes(localFile));
-    }
-
-    private String sha256Hex(String key) throws Exception {
-        try (GetObjectResponse response = minioClient.getObject(
-            GetObjectArgs.builder().bucket(bucket).object(key).build()
-        )) {
-            return digestHex("SHA-256", response.readAllBytes());
-        }
-    }
-
-    private static String sha256Hex(Path localFile) throws IOException {
-        return digestHex("SHA-256", Files.readAllBytes(localFile));
-    }
-
-    private static String digestHex(String algorithm, byte[] content) throws IOException {
+    private static String sha256Hex(InputStream content) throws IOException {
         try {
-            MessageDigest digest = MessageDigest.getInstance(algorithm);
-            return HexFormat.of().formatHex(digest.digest(content));
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = content.read(buffer)) != -1) {
+                digest.update(buffer, 0, read);
+            }
+            return HexFormat.of().formatHex(digest.digest());
         } catch (NoSuchAlgorithmException exception) {
-            throw new IOException("Missing digest " + algorithm, exception);
+            throw new IOException("Missing digest SHA-256", exception);
         }
     }
 
@@ -183,16 +160,6 @@ public class MinioObjectStore implements ObjectStore {
     private static IOException wrap(String message, Exception exception) {
         if (exception instanceof IOException ioException) {
             return ioException;
-        }
-        if (exception instanceof InvalidKeyException
-            || exception instanceof NoSuchAlgorithmException
-            || exception instanceof InsufficientDataException
-            || exception instanceof InternalException
-            || exception instanceof InvalidResponseException
-            || exception instanceof ServerException
-            || exception instanceof XmlParserException
-            || exception instanceof ErrorResponseException) {
-            return new IOException(message, exception);
         }
         return new IOException(message, exception);
     }

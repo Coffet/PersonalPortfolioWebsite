@@ -70,9 +70,8 @@ public class StorageConfig {
                 return;
             } catch (Exception exception) {
                 last = exception;
-                if (attempt == 8) {
-                    break;
-                }
+            }
+            if (attempt < 8) {
                 try {
                     Thread.sleep(delayMs);
                 } catch (InterruptedException interrupted) {

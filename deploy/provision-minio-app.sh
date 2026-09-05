@@ -17,6 +17,27 @@ BUCKET="${MINIO_APP_BUCKET:-portfolio-uploads}"
 APP_USER="${MINIO_APP_USER:-portfolio-app}"
 POLICY_NAME="portfolio-app"
 ALIAS="localportfolio"
+POLICY_RENDER=""
+
+urlencode() {
+  local LC_ALL=C
+  local i c
+  for ((i = 0; i < ${#1}; i++)); do
+    c="${1:i:1}"
+    case "$c" in
+      [a-zA-Z0-9.~_-]) printf '%s' "$c" ;;
+      *) printf '%%%02X' "'$c" ;;
+    esac
+  done
+}
+
+cleanup() {
+  unset "MC_HOST_${ALIAS}" || true
+  if [ -n "$POLICY_RENDER" ]; then
+    rm -f "$POLICY_RENDER"
+  fi
+}
+trap cleanup EXIT
 
 if [ ! -x "$MC" ]; then
   echo "Missing $MC. Run deploy/bootstrap-minio.sh first." >&2
@@ -66,14 +87,25 @@ else
   fi
 fi
 
-"$MC" alias set "$ALIAS" http://127.0.0.1:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null
+if [[ ! "$BUCKET" =~ ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$ ]]; then
+  echo "MINIO_APP_BUCKET must be a valid S3 bucket name." >&2
+  exit 1
+fi
+
+POLICY_RENDER="$(mktemp)"
+sed "s/__BUCKET__/${BUCKET}/g" "$SCRIPT_DIR/minio-app-policy.json" > "$POLICY_RENDER"
+
+encoded_user="$(urlencode "$MINIO_ROOT_USER")"
+encoded_pass="$(urlencode "$MINIO_ROOT_PASSWORD")"
+export "MC_HOST_${ALIAS}=http://${encoded_user}:${encoded_pass}@127.0.0.1:9000"
+
 "$MC" mb --ignore-existing "${ALIAS}/${BUCKET}"
 if ! "$MC" admin user info "$ALIAS" "$APP_USER" >/dev/null 2>&1; then
   "$MC" admin user add "$ALIAS" "$APP_USER" "$APP_PASSWORD"
 fi
-"$MC" admin policy create "$ALIAS" "$POLICY_NAME" "$SCRIPT_DIR/minio-app-policy.json" >/dev/null 2>&1 || true
+"$MC" admin policy remove "$ALIAS" "$POLICY_NAME" >/dev/null 2>&1 || true
+"$MC" admin policy create "$ALIAS" "$POLICY_NAME" "$POLICY_RENDER"
 "$MC" admin policy attach "$ALIAS" "$POLICY_NAME" --user "$APP_USER" >/dev/null
-"$MC" alias remove "$ALIAS" >/dev/null
 
 echo
 echo "Bucket ${BUCKET} and user ${APP_USER} are ready."

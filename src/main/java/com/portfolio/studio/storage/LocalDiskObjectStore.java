@@ -55,11 +55,7 @@ public class LocalDiskObjectStore implements ObjectStore {
         if (filePath == null) {
             return;
         }
-        try {
-            Files.deleteIfExists(filePath);
-        } catch (IOException ignored) {
-            // A missing file should not block content deletion.
-        }
+        Files.deleteIfExists(filePath);
     }
 
     public List<String> listKeys() throws IOException {
