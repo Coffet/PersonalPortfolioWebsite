@@ -227,7 +227,7 @@ PersonalPortfolioWebsite/
     └── test/java/
 ```
 
-> **Annotation:** `deploy/portfolio.service` in git is a template. The **live** unit on coft.moe is edited on the box. They can differ.
+> **Annotation:** `deploy/portfolio.service` in git is a template. The **live** unit on website is edited on the box. They can differ.
 
 ### B. The VPS (what visitors hit)
 
