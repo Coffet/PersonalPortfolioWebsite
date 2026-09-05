@@ -482,6 +482,8 @@ Or in IntelliJ: run `com.portfolio.studio.PortfolioStudioApplication`. Working d
 
 Wait until the log says the app started (Tomcat on 8080). Then open a browser:
 
+| Highly recommmend using Java IDE (inteliJ, netbeans, eclipse) because these has embedded environment which can let you configure variables and preview database entries).
+
 
 | Page        | URL                                                                                  |
 | ----------- | ------------------------------------------------------------------------------------ |
