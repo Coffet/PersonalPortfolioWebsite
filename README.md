@@ -133,6 +133,9 @@ If copying a file and typing a password feels like extra work: that is the point
 > **root vs deploy.**  
 > `root` owns `/etc` (nginx, TLS, systemd). `deploy` owns `/home/deploy/portfolio-app` (WAR, SQLite, uploads). Java runs as `deploy`.
 
+> **Use Java IDE if you can**
+> Highly recommmend using Java IDE (inteliJ, netbeans, eclipse) because these has embedded environment which can let you configure variables and preview database entries which would be way easier for dev work).
+
 ### If you screwed up
 
 
@@ -481,8 +484,6 @@ chmod +x mvnw
 Or in IntelliJ: run `com.portfolio.studio.PortfolioStudioApplication`. Working directory = **project root** (the folder with `pom.xml`).
 
 Wait until the log says the app started (Tomcat on 8080). Then open a browser:
-
-| Highly recommmend using Java IDE (inteliJ, netbeans, eclipse) because these has embedded environment which can let you configure variables and preview database entries).
 
 
 | Page        | URL                                                                                  |
