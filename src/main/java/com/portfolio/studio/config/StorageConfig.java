@@ -15,11 +15,10 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import com.portfolio.studio.storage.LocalDiskObjectStore;
+import com.portfolio.studio.storage.MinioBucketSupport;
 import com.portfolio.studio.storage.MinioObjectStore;
 import com.portfolio.studio.storage.S3FullyConfiguredCondition;
 import com.portfolio.studio.storage.S3StorageSupport;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -48,7 +47,10 @@ public class StorageConfig {
     }
 
     /**
-     * Creates and initializes the configured MinIO client.
+     * Creates the configured MinIO client.
+     *
+     * <p>If the bucket cannot be verified because MinIO is unreachable, the client is still
+     * returned so the app can start and fall back to local disk uploads.</p>
      *
      * @param portfolioProperties configuration containing the S3 endpoint, credentials, bucket, and optional TLS settings
      * @return the configured MinIO client
@@ -69,7 +71,7 @@ public class StorageConfig {
             builder.region(s3.getRegion().trim());
         }
         MinioClient client = builder.build();
-        ensureBucket(client, s3.getBucket().trim());
+        MinioBucketSupport.ensureBucket(client, s3.getBucket().trim());
         return client;
     }
 
@@ -124,35 +126,4 @@ public class StorageConfig {
         }
     }
 
-    /**
-     * Ensures that the configured MinIO bucket exists, retrying transient failures.
-     *
-     * @param bucket the name of the bucket to verify or create
-     * @throws IllegalStateException if the operation is interrupted or all attempts fail
-     */
-    private static void ensureBucket(MinioClient client, String bucket) {
-        Exception last = null;
-        long delayMs = 500L;
-        for (int attempt = 1; attempt <= 8; attempt++) {
-            try {
-                boolean found = client.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
-                if (!found) {
-                    client.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
-                }
-                return;
-            } catch (Exception exception) {
-                last = exception;
-            }
-            if (attempt < 8) {
-                try {
-                    Thread.sleep(delayMs);
-                } catch (InterruptedException interrupted) {
-                    Thread.currentThread().interrupt();
-                    throw new IllegalStateException("Interrupted while waiting for MinIO.", interrupted);
-                }
-                delayMs = Math.min(delayMs * 2, 4000L);
-            }
-        }
-        throw new IllegalStateException("Unable to reach MinIO or create the configured bucket.", last);
-    }
 }

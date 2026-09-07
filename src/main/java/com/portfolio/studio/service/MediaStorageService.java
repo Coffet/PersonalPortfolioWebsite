@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 import com.portfolio.studio.storage.LocalDiskObjectStore;
 import com.portfolio.studio.storage.MinioObjectStore;
 import com.portfolio.studio.storage.ObjectKeyValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class MediaStorageService {
 
+    private static final Logger log = LoggerFactory.getLogger(MediaStorageService.class);
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("png", "jpg", "jpeg", "webp", "gif");
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
         "image/png",
@@ -47,6 +50,9 @@ public class MediaStorageService {
     /**
      * Stores a validated image upload in the specified folder.
      *
+     * <p>When MinIO is configured it is tried first. A connection or I/O failure writes the same
+     * key to local disk so the public {@code /uploads/...} path stays valid.</p>
+     *
      * @param file   the image file to store
      * @param folder the destination folder
      * @return       the public storage path and original filename
@@ -71,12 +77,17 @@ public class MediaStorageService {
         String storedFilename = UUID.randomUUID() + "." + extension;
         String key = ObjectKeyValidator.requireValid(folder + "/" + storedFilename);
 
-        try (InputStream inputStream = file.getInputStream()) {
-            if (minioObjectStore != null) {
+        if (minioObjectStore != null) {
+            try (InputStream inputStream = file.getInputStream()) {
                 minioObjectStore.put(key, inputStream, file.getSize(), contentType);
-            } else {
-                localDiskObjectStore.put(key, inputStream, file.getSize(), contentType);
+                return new StoredFile("/uploads/" + key, originalFilename);
+            } catch (IOException exception) {
+                log.warn("MinIO put failed for {}; storing on local disk instead.", key, exception);
             }
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            localDiskObjectStore.put(key, inputStream, file.getSize(), contentType);
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to store image file.", exception);
         }
@@ -101,7 +112,11 @@ public class MediaStorageService {
         }
         try {
             if (minioObjectStore != null) {
-                minioObjectStore.deleteIfPresent(key.get());
+                try {
+                    minioObjectStore.deleteIfPresent(key.get());
+                } catch (IOException exception) {
+                    log.warn("MinIO delete failed for {}; deleting local copy if present.", key.get(), exception);
+                }
             }
             localDiskObjectStore.deleteIfPresent(key.get());
         } catch (IOException exception) {

@@ -279,7 +279,7 @@ To try the addon on this PC:
 
 1. Run MinIO with **HTTPS** on `127.0.0.1:9000` (binary or Docker). Do not publish 9000. HTTP is rejected even on localhost. If the cert is self-signed, set `portfolio.storage.s3.trust-cert` to that certificate file.
 2. Put endpoint, bucket, and keys in gitignored `application-local.properties` (see the example file). Set `portfolio.storage.s3.enabled=true`.
-3. Restart Java. Upload one image in `/cmsmgmnt`. Confirm it on `/gallery`, `/`, or `/blog`.
+3. Restart Java. Upload one image in `/cmsmgmnt`. Confirm it on `/gallery`, `/`, or `/blog`. If MinIO is down, that upload still succeeds on local disk under the same `/uploads/...` path.
 4. Set `portfolio.storage.s3.migrate=true`, restart once, then set it back to `false`. Logs say how many objects copied. Disk files stay.
 5. To prove Java is reading MinIO, briefly rename `storage/uploads` (or point `upload-root` at an empty folder) and reload those pages.
 6. Restore the original `storage/uploads` directory and remove any temporary `portfolio.storage.upload-root` override so Java sees the real files again. Only then set `portfolio.storage.s3.delete-local-after-verify=true`, restart once, then set it back to `false`. The delete pass only scans the configured upload root.

@@ -10,6 +10,8 @@ import com.portfolio.studio.storage.LocalDiskObjectStore;
 import com.portfolio.studio.storage.MinioObjectStore;
 import com.portfolio.studio.storage.ObjectKeyValidator;
 import com.portfolio.studio.storage.ObjectStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.CacheControl;
@@ -22,6 +24,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class UploadController {
+
+    private static final Logger log = LoggerFactory.getLogger(UploadController.class);
 
     private final LocalDiskObjectStore localDiskObjectStore;
     private final MinioObjectStore minioObjectStore;
@@ -43,6 +47,9 @@ public class UploadController {
     /**
      * Serves a validated uploaded object from the configured object stores.
      *
+     * <p>Local disk is tried first. MinIO is used only on a disk miss. A MinIO I/O failure
+     * is treated as a miss so objects already on disk still serve during an outage.</p>
+     *
      * @param request the HTTP request containing the uploaded object's path
      * @return the object stream with its content metadata, or a not-found response when the path or object is unavailable
      * @throws IOException if the object stream cannot be accessed
@@ -56,7 +63,11 @@ public class UploadController {
 
         Optional<ObjectStore.StoredObject> stored = localDiskObjectStore.get(key.get());
         if (stored.isEmpty() && minioObjectStore != null) {
-            stored = minioObjectStore.get(key.get());
+            try {
+                stored = minioObjectStore.get(key.get());
+            } catch (IOException exception) {
+                log.warn("MinIO read failed for {}; serving from local disk only.", key.get(), exception);
+            }
         }
         if (stored.isEmpty()) {
             return ResponseEntity.notFound().build();

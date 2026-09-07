@@ -13,7 +13,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mock.web.MockMultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -63,15 +62,17 @@ class MediaStorageServiceTests {
     }
 
     @Test
-    void storeFailsClearlyWhenMinioPutThrows() throws IOException {
+    void storeFallsBackToDiskWhenMinioPutThrows() throws IOException {
         MinioObjectStore minioObjectStore = mock(MinioObjectStore.class);
         doThrow(new IOException("minio down")).when(minioObjectStore).put(anyString(), any(), anyLong(), anyString());
         MediaStorageService service = new MediaStorageService(localDiskObjectStore, provider(minioObjectStore));
 
-        assertThatThrownBy(() -> service.store(png("shot.png"), "gallery"))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("Unable to store image file");
-        assertThat(localDiskObjectStore.listKeys()).isEmpty();
+        MediaStorageService.StoredFile stored = service.store(png("shot.png"), "gallery");
+
+        assertThat(stored.publicPath()).startsWith("/uploads/gallery/");
+        String key = stored.publicPath().substring("/uploads/".length());
+        verify(minioObjectStore).put(anyString(), any(), anyLong(), anyString());
+        assertThat(Files.isRegularFile(tempDir.resolve(key))).isTrue();
     }
 
     @Test
@@ -89,7 +90,7 @@ class MediaStorageServiceTests {
     }
 
     @Test
-    void deleteFailsWhenMinioDeleteThrows() throws IOException {
+    void deleteRemovesLocalCopyWhenMinioDeleteThrows() throws IOException {
         MinioObjectStore minioObjectStore = mock(MinioObjectStore.class);
         doThrow(new IOException("minio delete failed")).when(minioObjectStore).deleteIfPresent("gallery/sample.png");
         MediaStorageService service = new MediaStorageService(localDiskObjectStore, provider(minioObjectStore));
@@ -97,10 +98,9 @@ class MediaStorageServiceTests {
         Files.createDirectories(diskFile.getParent());
         Files.write(diskFile, PIXEL_PNG);
 
-        assertThatThrownBy(() -> service.deleteIfPresent("/uploads/gallery/sample.png"))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("Unable to delete image file");
-        assertThat(Files.exists(diskFile)).isTrue();
+        service.deleteIfPresent("/uploads/gallery/sample.png");
+
+        assertThat(Files.exists(diskFile)).isFalse();
     }
 
     private static MockMultipartFile png(String filename) {

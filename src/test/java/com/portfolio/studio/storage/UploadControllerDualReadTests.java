@@ -74,6 +74,15 @@ class UploadControllerDualReadTests {
     }
 
     @Test
+    void returnsNotFoundWhenMinioReadFailsAndDiskMisses() throws IOException {
+        when(minioObjectStore.get("gallery/missing.png")).thenThrow(new IOException("minio down"));
+
+        ResponseEntity<?> response = controller.getUpload(request("/uploads/gallery/missing.png"));
+
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
+    }
+
+    @Test
     void rejectsTraversalAsNotFound() throws IOException {
         ResponseEntity<?> response = controller.getUpload(request("/uploads/../secret.png"));
 

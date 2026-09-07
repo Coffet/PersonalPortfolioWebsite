@@ -1024,7 +1024,8 @@ Off by default. Clone, test, and host on disk with no extra service and no extra
 
 When it is on:
 
-- New CMS uploads go to MinIO only. If MinIO is down, the upload fails. There is no silent write to disk.
+- New CMS uploads prefer MinIO. If MinIO is unreachable at upload time, Java writes the same object to local disk under the same key. SQLite still stores `/uploads/...`.
+- If MinIO is unreachable at startup, Java logs a warning and keeps running on local disk instead of refusing to start. When MinIO is back, new uploads go to MinIO again. Existing local files can be copied with `migrate`.
 - Public URLs stay `/uploads/...`. Java serves them (disk first, then MinIO).
 - MinIO listens on **this machine only** (`127.0.0.1:9000`). nginx does not proxy it. Do not `ufw allow 9000`.
 - Java requires an **HTTPS** endpoint. HTTP is rejected, including `127.0.0.1`. Self-signed MinIO: set `trust-cert` to the server certificate.
@@ -1209,13 +1210,13 @@ You are not on `http://localhost:8080` from `PortfolioStudioApplication`.
 Five failures → ~15 minute lock. Wait, or clear `locked_until` in SQLite on a machine you own.
 
 **MinIO: Java starts, uploads still land on disk**  
-`enabled` is false, or endpoint / bucket / keys are blank. All four must be set. Local file is `application-local.properties`. VPS: `systemctl cat portfolio`.
+`enabled` is false, or endpoint / bucket / keys are blank — all four must be set. Local file is `application-local.properties`. VPS: `systemctl cat portfolio`. If those are set and the log says MinIO is unreachable, the local-disk fallback is working. Start MinIO, then use `migrate` if you want those disk files copied.
 
 **MinIO: Java dies on start with “not fully configured”**  
 `migrate` or `delete-local-after-verify` is true, but MinIO is not fully set. Turn the flag off, or finish endpoint / bucket / keys.
 
 **MinIO: upload fails after I enabled it**  
-MinIO is down, or Java has the wrong user. VPS: `systemctl status minio`. Use the **app** user from `/etc/minio-app.env`, not `MINIO_ROOT_*`.
+Local disk also failed, or the image was rejected. MinIO being down alone no longer fails the save. VPS: `systemctl status minio`. Use the **app** user from `/etc/minio-app.env`, not `MINIO_ROOT_*`.
 
 **MinIO: I turned on delete and nothing was removed**  
 You still have `storage/uploads` renamed, or a temp `upload-root`. Restore the real folder first. Delete only removes a file when MinIO has matching content.
