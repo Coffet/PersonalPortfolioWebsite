@@ -68,7 +68,8 @@ public class UploadController {
             try {
                 stored = minioObjectStore.get(key.get());
             } catch (IOException exception) {
-                log.warn("MinIO read failed for {}.", key.get(), exception);
+                String safeKey = key.get().replace('\r', '_').replace('\n', '_');
+                log.warn("MinIO read failed for {}.", safeKey, exception);
                 return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
             }
         }
