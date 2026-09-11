@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,12 +48,13 @@ public class UploadController {
     /**
      * Serves a validated uploaded object from the configured object stores.
      *
-     * <p>Local disk is tried first. MinIO is used only on a disk miss. A MinIO I/O failure
-     * is treated as a miss so objects already on disk still serve during an outage.</p>
+     * <p>Local disk is tried first. MinIO is used only on a disk miss. A missing object is
+     * 404. A MinIO I/O failure after a disk miss is 503 so clients can retry.</p>
      *
      * @param request the HTTP request containing the uploaded object's path
-     * @return the object stream with its content metadata, or a not-found response when the path or object is unavailable
-     * @throws IOException if the object stream cannot be accessed
+     * @return the object stream with its content metadata, a not-found response when the object is
+     *         absent, or a service-unavailable response when MinIO cannot be read
+     * @throws IOException if the local object stream cannot be accessed
      */
     @GetMapping("/uploads/**")
     public ResponseEntity<InputStreamResource> getUpload(HttpServletRequest request) throws IOException {
@@ -66,7 +68,8 @@ public class UploadController {
             try {
                 stored = minioObjectStore.get(key.get());
             } catch (IOException exception) {
-                log.warn("MinIO read failed for {}; serving from local disk only.", key.get(), exception);
+                log.warn("MinIO read failed for {}.", key.get(), exception);
+                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
             }
         }
         if (stored.isEmpty()) {

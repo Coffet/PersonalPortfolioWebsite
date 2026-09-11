@@ -112,11 +112,7 @@ public class MediaStorageService {
         }
         try {
             if (minioObjectStore != null) {
-                try {
-                    minioObjectStore.deleteIfPresent(key.get());
-                } catch (IOException exception) {
-                    log.warn("MinIO delete failed for {}; deleting local copy if present.", key.get(), exception);
-                }
+                minioObjectStore.deleteIfPresent(key.get());
             }
             localDiskObjectStore.deleteIfPresent(key.get());
         } catch (IOException exception) {
