@@ -3,20 +3,18 @@ package com.portfolio.studio.service;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import com.portfolio.studio.storage.LocalDiskObjectStore;
-import com.portfolio.studio.storage.MinioObjectStore;
-import com.portfolio.studio.storage.ObjectKeyValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
+import com.portfolio.studio.config.PortfolioProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class MediaStorageService {
 
-    private static final Logger log = LoggerFactory.getLogger(MediaStorageService.class);
     private static final Set<String> ALLOWED_EXTENSIONS = Set.of("png", "jpg", "jpeg", "webp", "gif");
     private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
         "image/png",
@@ -33,32 +30,12 @@ public class MediaStorageService {
         "image/gif"
     );
 
-    private final LocalDiskObjectStore localDiskObjectStore;
-    private final MinioObjectStore minioObjectStore;
+    private final Path uploadRoot;
 
-    /**
-     * Initializes the media storage service with local storage and an optional MinIO store.
-     */
-    public MediaStorageService(
-        LocalDiskObjectStore localDiskObjectStore,
-        ObjectProvider<MinioObjectStore> minioObjectStoreProvider
-    ) {
-        this.localDiskObjectStore = localDiskObjectStore;
-        this.minioObjectStore = minioObjectStoreProvider.getIfAvailable();
+    public MediaStorageService(PortfolioProperties portfolioProperties) {
+        this.uploadRoot = Paths.get(portfolioProperties.getStorage().getUploadRoot()).toAbsolutePath().normalize();
     }
 
-    /**
-     * Stores a validated image upload in the specified folder.
-     *
-     * <p>When MinIO is configured it is tried first. A connection or I/O failure writes the same
-     * key to local disk so the public {@code /uploads/...} path stays valid.</p>
-     *
-     * @param file   the image file to store
-     * @param folder the destination folder
-     * @return       the public storage path and original filename
-     * @throws IllegalArgumentException if the file is missing, empty, or is not a supported image
-     * @throws IllegalStateException    if the image cannot be stored
-     */
     public StoredFile store(MultipartFile file, String folder) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Please choose an image to upload.");
@@ -74,49 +51,39 @@ public class MediaStorageService {
 
         validateImage(file);
 
-        String storedFilename = UUID.randomUUID() + "." + extension;
-        String key = ObjectKeyValidator.requireValid(folder + "/" + storedFilename);
-
-        if (minioObjectStore != null) {
-            try (InputStream inputStream = file.getInputStream()) {
-                minioObjectStore.put(key, inputStream, file.getSize(), contentType);
-                return new StoredFile("/uploads/" + key, originalFilename);
-            } catch (IOException exception) {
-                log.warn("MinIO put failed for {}; storing on local disk instead.", key, exception);
+        try {
+            Path targetFolder = uploadRoot.resolve(folder).normalize();
+            Files.createDirectories(targetFolder);
+            String storedFilename = UUID.randomUUID() + "." + extension;
+            Path storedPath = targetFolder.resolve(storedFilename).normalize();
+            if (!storedPath.startsWith(targetFolder)) {
+                throw new IllegalArgumentException("Invalid upload target.");
             }
-        }
 
-        try (InputStream inputStream = file.getInputStream()) {
-            localDiskObjectStore.put(key, inputStream, file.getSize(), contentType);
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, storedPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            String publicPath = "/uploads/" + folder + "/" + storedFilename;
+            return new StoredFile(publicPath, originalFilename);
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to store image file.", exception);
         }
-
-        return new StoredFile("/uploads/" + key, originalFilename);
     }
 
-    /**
-     * Deletes the stored image identified by a public uploads path when present.
-     *
-     * @param publicPath the public path of the stored image
-     * @throws IllegalStateException if the image cannot be deleted
-     */
     public void deleteIfPresent(String publicPath) {
         if (!StringUtils.hasText(publicPath) || !publicPath.startsWith("/uploads/")) {
             return;
         }
 
-        Optional<String> key = ObjectKeyValidator.parse(publicPath.substring("/uploads/".length()));
-        if (key.isEmpty()) {
-            return;
-        }
         try {
-            if (minioObjectStore != null) {
-                minioObjectStore.deleteIfPresent(key.get());
+            String relative = publicPath.substring("/uploads/".length()).replace("/", java.io.File.separator);
+            Path filePath = uploadRoot.resolve(relative).normalize();
+            if (filePath.startsWith(uploadRoot)) {
+                Files.deleteIfExists(filePath);
             }
-            localDiskObjectStore.deleteIfPresent(key.get());
-        } catch (IOException exception) {
-            throw new IllegalStateException("Unable to delete image file.", exception);
+        } catch (IOException ignored) {
+            // A missing file should not block content deletion.
         }
     }
 

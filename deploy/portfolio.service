@@ -1,6 +1,6 @@
 [Unit]
 Description=Portfolio Studio
-After=network.target minio.service
+After=network.target
 
 [Service]
 User=deploy
