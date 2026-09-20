@@ -40,7 +40,7 @@
                             </span>
                             <span class="social-name">Github</span>
                             <span class="social-user">@Coffet</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span>
                         </a>
 
                         <a class="social-card" href="https://discordapp.com/users/971666916525621258" target="_blank" rel="noopener noreferrer">
@@ -49,7 +49,7 @@
                             </span>
                             <span class="social-name">Discord</span>
                             <span class="social-user">@thekccw</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span>
                         </a>
 
                         <a class="social-card" href="https://x.com/coftdo" target="_blank" rel="noopener noreferrer">
@@ -58,7 +58,7 @@
                             </span>
                             <span class="social-name">X</span>
                             <span class="social-user">@coftdo</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span>
                         </a>
 
                         <a class="social-card" href="mailto:KennyCCW@protonmail.com">
@@ -67,7 +67,7 @@
                             </span>
                             <span class="social-name">Email</span>
                             <span class="social-user">KennyCCW@protonmail.com</span>
-                            <span class="social-visit">Visit <span aria-hidden="true">??/span></span>
+                            <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span>
                         </a>
                     </div>
                 </div>
