@@ -1,0 +1,15 @@
+[Unit]
+Description=MinIO object storage for portfolio uploads
+After=network.target
+
+[Service]
+User=minio-user
+Group=minio-user
+EnvironmentFile=-/etc/minio.env
+ExecStart=/usr/local/bin/minio server /var/lib/minio --certs-dir /etc/minio/certs --address 127.0.0.1:9000 --console-address 127.0.0.1:9001
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
