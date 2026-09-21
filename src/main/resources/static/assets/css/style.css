@@ -629,7 +629,7 @@ body.has-settled-header #nav-links {
 }
 
 .social-card:hover .social-visit {
-    color: var(--text);
+    color: var(--accent);
     transform: translateX(5px);
 }
 
