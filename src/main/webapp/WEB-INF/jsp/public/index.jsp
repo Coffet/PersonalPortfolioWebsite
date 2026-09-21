@@ -42,7 +42,7 @@
                             <span class="social-user">@Coffet</span>
                             <!-- <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span> -->
                         
-                            <span class="social-visit">Visit > </span>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span> </span>
 
                         </a>
 
@@ -54,7 +54,7 @@
                             <span class="social-user">@thekccw</span>
 <!-- <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span> -->
                         
-                            <span class="social-visit">Visit > </span>                        </a>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span> </span>                        </a>
 
                         <a class="social-card" href="https://x.com/coftdo" target="_blank" rel="noopener noreferrer">
                             <span class="social-icon" aria-hidden="true">
@@ -64,7 +64,7 @@
                             <span class="social-user">@coftdo</span>
 <!-- <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span> -->
                         
-                            <span class="social-visit">Visit > </span>                        </a>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span> </span>                        </a>
 
                         <a class="social-card" href="mailto:KennyCCW@protonmail.com">
                             <span class="social-icon" aria-hidden="true">
@@ -74,7 +74,7 @@
                             <span class="social-user">KennyCCW@protonmail.com</span>
 <!-- <span class="social-visit">Visit <span aria-hidden="true">&gt;</span></span> -->
                         
-                            <span class="social-visit">Visit > </span>                        </a>
+                            <span class="social-visit">Visit <span aria-hidden="true">›</span> </span>                        </a>
                     </div>
                 </div>
             </div>
