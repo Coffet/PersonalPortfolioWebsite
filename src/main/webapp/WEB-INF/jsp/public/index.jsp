@@ -5,7 +5,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="preload" href="${ctx}/assets/images/logo.webp" as="image" type="image/webp">
-    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=18">
+    <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=20">
 </head>
 <body>
     <%@ include file="/WEB-INF/jsp/layout/public-header.jspf" %>
@@ -174,6 +174,6 @@
     <script id="work-projects-data" type="application/json"><c:out value="${workProjectsJson}" escapeXml="false" /></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="${ctx}/assets/js/script.js?v=4" defer></script>
+    <script src="${ctx}/assets/js/script.js?v=6" defer></script>
 </body>
 </html>
