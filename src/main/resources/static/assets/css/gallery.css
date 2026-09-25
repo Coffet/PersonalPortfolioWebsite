@@ -612,6 +612,99 @@ body.has-settled-header .page-shell {
     margin: 0 0 1rem;
 }
 
+/* Rich text produced by the CMS editor (headings, lists, quotes, code). */
+.detail-richtext > :last-child {
+    margin-bottom: 0;
+}
+
+.detail-richtext h2,
+.detail-richtext h3 {
+    margin: 1.9rem 0 0.7rem;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.detail-richtext h2 {
+    font-size: clamp(1.4rem, 1.25rem + 0.7vw, 1.85rem);
+}
+
+.detail-richtext h3 {
+    font-size: clamp(1.15rem, 1.05rem + 0.45vw, 1.4rem);
+}
+
+.detail-richtext ul,
+.detail-richtext ol {
+    margin: 0 0 1rem;
+    padding-left: 1.3rem;
+}
+
+.detail-richtext li {
+    margin-bottom: 0.4rem;
+}
+
+.detail-richtext li::marker {
+    color: var(--accent);
+}
+
+.detail-richtext blockquote {
+    margin: 1.3rem 0;
+    padding: 4px 0 4px 18px;
+    border-left: 2px solid var(--accent);
+    color: var(--text);
+    font-style: italic;
+}
+
+.detail-richtext a {
+    color: var(--accent-strong);
+    border-bottom: 1px solid rgba(131, 217, 196, 0.4);
+}
+
+.detail-richtext strong {
+    color: var(--text);
+}
+
+.detail-richtext code {
+    padding: 2px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #101010;
+    color: var(--accent-strong);
+    font-size: 0.92em;
+}
+
+.detail-richtext pre {
+    margin: 1.2rem 0;
+    padding: 16px;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #101010;
+}
+
+.detail-richtext pre code {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.detail-richtext hr {
+    height: 1px;
+    margin: 2rem 0;
+    border: 0;
+    background: var(--line);
+}
+
+.detail-richtext img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin: 1.2rem 0;
+    border-radius: 10px;
+}
+
 .detail-gallery {
     display: grid;
     justify-items: start;

@@ -95,7 +95,7 @@ class CmsTomcatMultipartSaveTests {
         MultipartBody multipart = new MultipartBody();
         multipart.addField("_csrf", saveCsrf);
         multipart.addField("id", "0");
-        multipart.addField("title", "Tomcat part-count draft");
+        multipart.addField("title", "Tomcat part-count draft \u2014 Caf\u00e9 \u2713");
         multipart.addField("summary", "Enough fields to exceed Tomcat's default of 10 parts.");
         multipart.addField("narrative", "Saved through the real embedded Tomcat parser.");
         multipart.addEmptyFile("cardImageFile");
@@ -123,6 +123,10 @@ class CmsTomcatMultipartSaveTests {
         assertThat(saveResponse.statusCode()).isEqualTo(302);
         assertThat(saveResponse.headers().firstValue("Location").orElse(""))
             .contains("/cmsmgmnt/projects");
+
+        // Multipart form fields must round-trip as UTF-8, not ISO-8859-1 mojibake.
+        HttpResponse<String> listPage = get(client, "/cmsmgmnt/projects");
+        assertThat(listPage.body()).contains("Tomcat part-count draft \u2014 Caf\u00e9 \u2713");
     }
 
     private HttpResponse<String> get(HttpClient client, String path) throws Exception {

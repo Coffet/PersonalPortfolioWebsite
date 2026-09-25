@@ -1,0 +1,66 @@
+<%--
+  Public-site preview for a gallery entry, rendered inside the CMS preview modal.
+  Expects an `entry` (GalleryEntry) in scope. Mirrors
+  /WEB-INF/jsp/public/gallery-detail.jsp and the tile from public/gallery.jsp.
+--%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<div class="pv-detail">
+    <section class="page-intro">
+        <div class="detail-meta">
+            <c:forEach items="${entry.tags}" var="tag">
+                <span class="gallery-card__tag"><c:out value="${tag}"/></span>
+            </c:forEach>
+            <span>${empty entry.publishedAt ? 'Draft' : fn:substring(entry.publishedAt, 0, 10)}</span>
+        </div>
+        <h1 class="detail-title"><c:out value="${entry.title}"/></h1>
+        <c:if test="${not empty entry.introText}">
+            <p class="detail-copy"><c:out value="${entry.introText}"/></p>
+        </c:if>
+    </section>
+
+    <c:if test="${not empty entry.body}">
+        <section class="detail-richtext">
+            <p><c:out value="${entry.body}"/></p>
+        </section>
+    </c:if>
+
+    <c:if test="${not empty entry.media}">
+        <div class="gallery-stage">
+            <c:forEach items="${entry.media}" var="media" varStatus="mediaStatus">
+                <img class="gallery-stage__img"
+                     src="${ctx}${media.filePath}"
+                     alt="<c:out value='${empty media.altText ? entry.title : media.altText}'/>"
+                     <c:if test="${not mediaStatus.first}">hidden</c:if>>
+            </c:forEach>
+            <c:if test="${fn:length(entry.media) > 1}">
+                <button type="button" class="gallery-stage__nav gallery-stage__nav--prev" aria-label="Previous image">
+                    <span aria-hidden="true">&lsaquo;</span>
+                </button>
+                <button type="button" class="gallery-stage__nav gallery-stage__nav--next" aria-label="Next image">
+                    <span aria-hidden="true">&rsaquo;</span>
+                </button>
+                <div class="gallery-stage__count">1 / ${fn:length(entry.media)}</div>
+            </c:if>
+        </div>
+    </c:if>
+</div>
+
+<div class="pv-card" data-pv-view="card" hidden>
+    <div class="gallery-mosaic">
+        <article class="gallery-tile">
+            <c:if test="${not empty entry.media}">
+                <button type="button" class="gallery-tile__frame" aria-label="View pictures for <c:out value='${entry.title}'/>">
+                    <img src="${ctx}${entry.media[0].filePath}"
+                         alt="<c:out value='${empty entry.media[0].altText ? entry.title : entry.media[0].altText}'/>">
+                </button>
+            </c:if>
+            <div class="gallery-tile__body">
+                <h2 class="gallery-tile__title"><c:out value="${entry.title}"/></h2>
+                <c:if test="${not empty entry.introText}">
+                    <p class="gallery-tile__text"><c:out value="${entry.introText}"/></p>
+                </c:if>
+            </div>
+        </article>
+    </div>
+</div>

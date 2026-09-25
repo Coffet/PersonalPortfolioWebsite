@@ -1,5 +1,7 @@
-    </main>
+        </main>
+    </div>
 </div>
 <%@ include file="/WEB-INF/jsp/layout/desk-tabs.jspf" %>
+<%@ include file="/WEB-INF/jsp/layout/studio-overlays.jspf" %>
 <%@ include file="/WEB-INF/jsp/layout/studio-toast.jspf" %>
-<script src="${ctx}/assets/js/cms.js?v=13" defer></script>
+<script src="${ctx}/assets/js/cms.js?v=14" defer></script>

@@ -1,44 +1,80 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<aside class="studio-sidebar" id="desk-nav">
-    <div class="studio-brand">
-        <p class="studio-brand__eyebrow">Private desk</p>
-        <p class="studio-brand__copy">Signed in as ${studioUsername}</p>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<c:set var="navCounts" value="${not empty counts}" />
+<aside class="rail" id="desk-nav" aria-label="Desk navigation">
+    <div class="rail__brand">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <span class="rail__brand-name">Studio</span>
     </div>
 
-    <nav class="studio-nav" aria-label="Desk navigation">
-        <a href="${ctx}/cmsmgmnt/dashboard" class="${activeNav eq 'dashboard' ? 'is-active' : ''}"${activeNav eq 'dashboard' ? ' aria-current="page"' : ''}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/></svg>
-            Dashboard
-        </a>
-        <a href="${ctx}/cmsmgmnt/projects" class="${activeNav eq 'projects' ? 'is-active' : ''}"${activeNav eq 'projects' ? ' aria-current="page"' : ''}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M8 9h8M8 13h5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
-            Projects
-        </a>
-        <a href="${ctx}/cmsmgmnt/gallery" class="${activeNav eq 'gallery' ? 'is-active' : ''}"${activeNav eq 'gallery' ? ' aria-current="page"' : ''}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.75"/></svg>
-            Gallery
-        </a>
-        <a href="${ctx}/cmsmgmnt/blog" class="${activeNav eq 'blog' ? 'is-active' : ''}"${activeNav eq 'blog' ? ' aria-current="page"' : ''}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h9a3 3 0 0 1 3 3v11H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M9 9h8M9 13h6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
-            Blog
-        </a>
-        <a href="${ctx}/cmsmgmnt/media" class="${activeNav eq 'media' ? 'is-active' : ''}"${activeNav eq 'media' ? ' aria-current="page"' : ''}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="m8 15 2.5-3 2 2.2L16 11l4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>
-            Media
-        </a>
-    </nav>
+    <div class="rail__group">
+        <p class="rail__label">Workspace</p>
+        <nav class="rail__nav" aria-label="Sections">
+            <a class="nav-item ${activeNav eq 'dashboard' ? 'is-active' : ''}" href="${ctx}/cmsmgmnt/dashboard"${activeNav eq 'dashboard' ? ' aria-current="page"' : ''}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                <span class="nav-item__text">Dashboard</span>
+            </a>
+            <a class="nav-item ${activeNav eq 'projects' ? 'is-active' : ''}" href="${ctx}/cmsmgmnt/projects"${activeNav eq 'projects' ? ' aria-current="page"' : ''}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <span class="nav-item__text">Projects</span>
+                <c:if test="${navCounts}"><span class="nav-item__badge">${counts.projects}</span></c:if>
+            </a>
+            <a class="nav-item ${activeNav eq 'gallery' ? 'is-active' : ''}" href="${ctx}/cmsmgmnt/gallery"${activeNav eq 'gallery' ? ' aria-current="page"' : ''}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+                <span class="nav-item__text">Gallery</span>
+                <c:if test="${navCounts}"><span class="nav-item__badge">${counts.galleryEntries}</span></c:if>
+            </a>
+            <a class="nav-item ${activeNav eq 'blog' ? 'is-active' : ''}" href="${ctx}/cmsmgmnt/blog"${activeNav eq 'blog' ? ' aria-current="page"' : ''}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h9a3 3 0 0 1 3 3v11H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h8M9 13h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <span class="nav-item__text">Blog</span>
+                <c:if test="${navCounts}"><span class="nav-item__badge">${counts.blogPosts}</span></c:if>
+            </a>
+            <a class="nav-item ${activeNav eq 'media' ? 'is-active' : ''}" href="${ctx}/cmsmgmnt/media"${activeNav eq 'media' ? ' aria-current="page"' : ''}>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m8 15 2.5-3 2 2.2L16 11l4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>
+                <span class="nav-item__text">Media</span>
+            </a>
+        </nav>
+    </div>
 
-    <div class="studio-nav studio-nav--footer">
-        <a href="${ctx}/gallery" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M10 14 20 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            View public site
+    <div class="rail__group">
+        <p class="rail__label">Create</p>
+        <nav class="rail__nav" aria-label="Create">
+            <a class="nav-item" href="${ctx}/cmsmgmnt/projects/new">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <span class="nav-item__text">New project</span>
+            </a>
+            <a class="nav-item" href="${ctx}/cmsmgmnt/gallery/new">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <span class="nav-item__text">New gallery entry</span>
+            </a>
+            <a class="nav-item" href="${ctx}/cmsmgmnt/blog/new">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                <span class="nav-item__text">New blog note</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="rail__spacer"></div>
+
+    <div class="rail__footer">
+        <a class="nav-item" href="${ctx}/" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M10 14 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="nav-item__text">View public site</span>
         </a>
-        <form action="${ctx}/cmsmgmnt/logout" method="post">
+        <form action="${ctx}/cmsmgmnt/logout" method="post" data-logout-form>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-            <button type="submit">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 7V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-2M4 12h11M7 8l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Sign out
+            <button class="nav-item" type="submit">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 7V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-2M4 12h11M7 8l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="nav-item__text">Sign out</span>
             </button>
         </form>
+
+        <div class="rail__user">
+            <span class="rail__avatar" aria-hidden="true">${empty studioUsername ? 'O' : fn:substring(studioUsername, 0, 1)}</span>
+            <span class="rail__user-copy">
+                <strong><c:out value="${empty studioUsername ? 'Owner' : studioUsername}"/></strong>
+                <span>Owner</span>
+            </span>
+        </div>
     </div>
 </aside>

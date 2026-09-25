@@ -8,50 +8,111 @@
 <body>
     <%@ include file="/WEB-INF/jsp/layout/desk-shell-open.jspf" %>
 
-            <header class="studio-header">
-                <div>
+            <header class="page-head">
+                <div class="page-head__copy">
+                    <p class="eyebrow">Content</p>
                     <h1>Blog</h1>
-                    <p>Notes and process writing for the public blog.</p>
+                    <p>Notes and process writing. Preview shows the reader's view before you publish.</p>
                 </div>
-                <div class="studio-actions">
-                    <a class="button" href="${ctx}/cmsmgmnt/blog/new">New note</a>
+                <div class="page-actions">
+                    <a class="btn" href="${ctx}/cmsmgmnt/blog/new">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        New note
+                    </a>
                 </div>
             </header>
 
-            <c:choose>
-                <c:when test="${empty posts}">
-                    <p class="empty-state">No posts yet. Write one and publish it to the public Blog page.</p>
-                </c:when>
-                <c:otherwise>
-                    <div class="work-list">
-                        <c:forEach items="${posts}" var="post">
-                            <article class="work-item">
-                                <div class="work-item__media">
-                                    <c:if test="${not empty post.coverImagePath}">
-                                        <img src="${ctx}${post.coverImagePath}" alt="${post.title}" width="112" height="80" loading="lazy">
-                                    </c:if>
-                                </div>
-                                <div class="work-item__copy">
-                                    <h2>${post.title}</h2>
-                                    <p>
-                                        <span class="chip ${post.published ? 'chip--live' : 'chip--draft'}">${post.published ? 'Live' : 'Draft'}</span>
-                                    </p>
-                                </div>
-                                <div class="studio-actions">
-                                    <c:if test="${post.published}">
-                                        <a class="button-ghost" href="${ctx}/blog/${post.id}" target="_blank" rel="noopener noreferrer">View live</a>
-                                    </c:if>
-                                    <a class="button-ghost" href="${ctx}/cmsmgmnt/blog/${post.id}/edit">Edit</a>
-                                    <form action="${ctx}/cmsmgmnt/blog/${post.id}/delete" method="post">
-                                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                                        <button class="button-danger" type="submit" onclick="return confirm('Delete this post?')">Delete</button>
-                                    </form>
-                                </div>
-                            </article>
-                        </c:forEach>
+            <div data-filter-scope>
+                <div class="toolbar">
+                    <label class="search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                        <span class="visually-hidden">Search notes</span>
+                        <input type="search" data-filter-search placeholder="Search notes&hellip;" autocomplete="off">
+                    </label>
+                    <div class="segmented" role="group" aria-label="Filter by state">
+                        <button type="button" data-filter-status="all" aria-pressed="true">All</button>
+                        <button type="button" data-filter-status="live" aria-pressed="false">Live</button>
+                        <button type="button" data-filter-status="draft" aria-pressed="false">Drafts</button>
                     </div>
-                </c:otherwise>
-            </c:choose>
+                    <p class="toolbar__count" data-filter-count></p>
+                </div>
+
+                <c:choose>
+                    <c:when test="${empty posts}">
+                        <div class="empty">
+                            <span class="empty__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M6 5h9a3 3 0 0 1 3 3v11H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h8M9 13h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                            </span>
+                            <strong>No notes yet</strong>
+                            <p>Write one and publish it. It appears on the public blog as a quiet reading list.</p>
+                            <a class="btn" href="${ctx}/cmsmgmnt/blog/new">Write the first note</a>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="entries">
+                            <c:forEach items="${posts}" var="post">
+                                <article class="entry" data-row data-status="${post.published ? 'live' : 'draft'}"
+                                         data-search="<c:out value='${post.title} ${post.excerpt}'/>">
+                                    <div class="entry__thumb ${empty post.coverImagePath ? 'entry__thumb--empty' : ''}">
+                                        <c:choose>
+                                            <c:when test="${not empty post.coverImagePath}">
+                                                <img src="${ctx}${post.coverImagePath}" alt="" width="92" height="68" loading="lazy">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h9a3 3 0 0 1 3 3v11H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h8M9 13h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                    <div class="entry__copy">
+                                        <h2 class="entry__title"><c:out value="${post.title}"/></h2>
+                                        <p class="entry__meta">
+                                            <span class="chip ${post.published ? 'chip--live' : 'chip--draft'}">${post.published ? 'Live' : 'Draft'}</span>
+                                            <span><c:out value="${post.excerpt}"/></span>
+                                        </p>
+                                    </div>
+                                    <div class="entry__actions">
+                                        <button class="icon-btn" type="button"
+                                                data-preview-open="blog-${post.id}"
+                                                data-preview-name="<c:out value='${post.title}'/>"
+                                                data-preview-state="Blog &middot; ${post.published ? 'live' : 'draft'}"
+                                                <c:if test="${post.published}">data-preview-live="/blog/${post.id}"</c:if>
+                                                title="Preview as it looks on the public site"
+                                                aria-label="Preview <c:out value='${post.title}'/>">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+                                        </button>
+                                        <c:if test="${post.published}">
+                                            <a class="icon-btn" href="${ctx}/blog/${post.id}" target="_blank" rel="noopener noreferrer" title="Open the live page" aria-label="Open the live page for <c:out value='${post.title}'/>">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M10 14 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </a>
+                                        </c:if>
+                                        <a class="btn-ghost btn--sm" href="${ctx}/cmsmgmnt/blog/${post.id}/edit">Edit</a>
+                                        <form action="${ctx}/cmsmgmnt/blog/${post.id}/delete" method="post"
+                                              data-confirm="&ldquo;<c:out value='${post.title}'/>&rdquo; will be removed from the desk and the public site."
+                                              data-confirm-title="Delete this note?">
+                                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+                                            <button class="icon-btn icon-btn--danger" type="submit" title="Delete" aria-label="Delete <c:out value='${post.title}'/>">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2M8 7l.8 12h6.4L16 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </article>
+                            </c:forEach>
+                        </div>
+                        <div class="empty" data-filter-empty hidden>
+                            <strong>Nothing matches that</strong>
+                            <p>Try another word, or switch the filter back to All.</p>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+            <div class="preview-store" hidden aria-hidden="true">
+                <c:forEach items="${posts}" var="post">
+                    <template data-preview-key="blog-${post.id}">
+                        <%@ include file="/WEB-INF/jsp/studio/preview/blog-preview.jspf" %>
+                    </template>
+                </c:forEach>
+            </div>
 
     <%@ include file="/WEB-INF/jsp/layout/desk-shell-close.jspf" %>
 </body>

@@ -1,0 +1,69 @@
+<%--
+  Public-site preview for a project, rendered inside the CMS preview modal.
+  Expects a `project` (Project) in scope. Mirrors /WEB-INF/jsp/public/work-detail.jsp.
+--%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<div class="pv-detail">
+    <article class="work-case">
+        <header class="work-case__intro">
+            <p class="work-case__kicker"><c:out value="${project.yearLabel}"/></p>
+            <h1 class="work-case__title"><c:out value="${project.title}"/></h1>
+            <c:if test="${not empty project.summary}">
+                <p class="work-case__lede"><c:out value="${project.summary}"/></p>
+            </c:if>
+        </header>
+
+        <c:if test="${not empty project.media}">
+            <div class="work-case__stage">
+                <div class="gallery-stage">
+                    <c:forEach items="${project.media}" var="media" varStatus="mediaStatus">
+                        <img class="gallery-stage__img"
+                             src="${ctx}${media.filePath}"
+                             alt="<c:out value='${empty media.altText ? project.title : media.altText}'/>"
+                             <c:if test="${not mediaStatus.first}">hidden</c:if>>
+                    </c:forEach>
+                    <c:if test="${fn:length(project.media) > 1}">
+                        <button type="button" class="gallery-stage__nav gallery-stage__nav--prev" aria-label="Previous image">
+                            <span aria-hidden="true">&lsaquo;</span>
+                        </button>
+                        <button type="button" class="gallery-stage__nav gallery-stage__nav--next" aria-label="Next image">
+                            <span aria-hidden="true">&rsaquo;</span>
+                        </button>
+                        <div class="gallery-stage__count">1 / ${fn:length(project.media)}</div>
+                    </c:if>
+                </div>
+            </div>
+        </c:if>
+
+        <div class="work-case__layout${empty project.narrative ? ' work-case__layout--solo' : ''}">
+            <c:if test="${not empty project.narrative}">
+                <section class="work-case__story">
+                    <p><c:out value="${project.narrative}"/></p>
+                </section>
+            </c:if>
+            <aside class="work-case__facts">
+                <c:if test="${not empty project.role}">
+                    <div>
+                        <h2>Role</h2>
+                        <p><c:out value="${project.role}"/></p>
+                    </div>
+                </c:if>
+                <c:if test="${not empty project.tools}">
+                    <div>
+                        <h2>Tools</h2>
+                        <p><c:out value="${project.tools}"/></p>
+                    </div>
+                </c:if>
+                <c:if test="${not empty project.externalLink}">
+                    <div>
+                        <h2>Visit</h2>
+                        <a class="work-case__link" href="${project.externalLink}" target="_blank" rel="noopener noreferrer">
+                            <c:out value="${empty project.linkLabel ? 'Visit project' : project.linkLabel}"/>
+                        </a>
+                    </div>
+                </c:if>
+            </aside>
+        </div>
+    </article>
+</div>

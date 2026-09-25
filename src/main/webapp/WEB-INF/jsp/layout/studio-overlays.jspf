@@ -1,0 +1,152 @@
+<%--
+  Desk overlays: content preview, delete confirmation, command palette.
+  Native <dialog> elements keep focus trapping, Escape handling and stacking
+  (top layer) correct without any inline script.
+--%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+
+<dialog class="modal modal--preview" id="cms-preview" aria-labelledby="cms-preview-title">
+    <div class="modal__head">
+        <div class="modal__titles">
+            <h2 id="cms-preview-title" data-preview-title>Preview</h2>
+            <p data-preview-sub></p>
+        </div>
+        <div class="modal__tools">
+            <div class="preview-tabs" data-preview-tabs role="tablist" aria-label="Preview style" hidden>
+                <button type="button" role="tab" aria-selected="true" data-view-set="detail">Detail</button>
+                <button type="button" role="tab" aria-selected="false" data-view-set="card">Card</button>
+            </div>
+            <div class="preview-tabs" role="group" aria-label="Preview width">
+                <button type="button" aria-pressed="true" data-device-set="desktop">
+                    <span class="visually-hidden">Desktop width</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="12" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 20h8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                </button>
+                <button type="button" aria-pressed="false" data-device-set="tablet">
+                    <span class="visually-hidden">Tablet width</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M11 18h2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                </button>
+                <button type="button" aria-pressed="false" data-device-set="phone">
+                    <span class="visually-hidden">Phone width</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M11 18.4h2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                </button>
+            </div>
+            <a class="btn-ghost btn--sm" data-preview-link target="_blank" rel="noopener noreferrer" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M10 14 20 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Open live
+            </a>
+            <button type="button" class="modal__close" data-preview-close aria-label="Close preview">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal__body">
+        <div class="preview-frame" data-preview-frame data-device="desktop">
+            <div class="cms-preview" data-preview-mount></div>
+        </div>
+    </div>
+</dialog>
+
+<dialog class="modal modal--sm" id="cms-confirm" aria-labelledby="cms-confirm-title">
+    <div class="modal__head">
+        <div class="modal__titles">
+            <h2 id="cms-confirm-title" data-confirm-title>Delete this item?</h2>
+        </div>
+        <div class="modal__tools">
+            <button type="button" class="modal__close" data-confirm-cancel aria-label="Cancel">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="modal__body modal__body--pad">
+        <p data-confirm-text>This cannot be undone.</p>
+    </div>
+    <div class="modal__foot">
+        <button type="button" class="btn-ghost" data-confirm-cancel>Cancel</button>
+        <button type="button" class="btn-danger" data-confirm-ok>Delete</button>
+    </div>
+</dialog>
+
+<dialog class="modal palette" id="cms-palette" aria-labelledby="cms-palette-title">
+    <div class="modal__head">
+        <h2 class="visually-hidden" id="cms-palette-title">Jump to a page or action</h2>
+        <input class="palette__input" type="text" data-palette-input aria-label="Jump to a page or action"
+               placeholder="Jump to a page or action&hellip;" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="modal__body">
+        <ul class="palette__list" data-palette-list>
+            <li data-palette-text="dashboard overview home drafts">
+                <a href="${ctx}/cmsmgmnt/dashboard">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                    Dashboard
+                    <small>Drafts and activity</small>
+                </a>
+            </li>
+            <li data-palette-text="projects work homepage cards">
+                <a href="${ctx}/cmsmgmnt/projects">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 9h8M8 13h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    Projects
+                    <small>Case studies</small>
+                </a>
+            </li>
+            <li data-palette-text="gallery images visuals">
+                <a href="${ctx}/cmsmgmnt/gallery">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="14" width="7" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+                    Gallery
+                    <small>Entries</small>
+                </a>
+            </li>
+            <li data-palette-text="blog notes posts writing">
+                <a href="${ctx}/cmsmgmnt/blog">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h9a3 3 0 0 1 3 3v11H8a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M9 9h8M9 13h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    Blog
+                    <small>Notes</small>
+                </a>
+            </li>
+            <li data-palette-text="media library uploads images files">
+                <a href="${ctx}/cmsmgmnt/media">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m8 15 2.5-3 2 2.2L16 11l4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>
+                    Media
+                    <small>Every upload</small>
+                </a>
+            </li>
+            <li data-palette-text="new project create">
+                <a href="${ctx}/cmsmgmnt/projects/new">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    New project
+                    <small>Create</small>
+                </a>
+            </li>
+            <li data-palette-text="new gallery entry create">
+                <a href="${ctx}/cmsmgmnt/gallery/new">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    New gallery entry
+                    <small>Create</small>
+                </a>
+            </li>
+            <li data-palette-text="new note write blog create">
+                <a href="${ctx}/cmsmgmnt/blog/new">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    New blog note
+                    <small>Write</small>
+                </a>
+            </li>
+            <li data-palette-text="public site open view website">
+                <a href="${ctx}/" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M10 14 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Open public site
+                    <small>New tab</small>
+                </a>
+            </li>
+            <li data-palette-text="sign out logout leave">
+                <button type="button" data-palette-logout>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 7V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-2M4 12h11M7 8l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Sign out
+                    <small>End session</small>
+                </button>
+            </li>
+        </ul>
+        <p class="palette__empty" data-palette-empty hidden>Nothing matched that. Try &ldquo;gallery&rdquo; or &ldquo;new&rdquo;.</p>
+    </div>
+</dialog>

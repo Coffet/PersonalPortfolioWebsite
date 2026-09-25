@@ -1,0 +1,54 @@
+<%--
+  Public-site preview for a blog note, rendered inside the CMS preview modal.
+  Expects a `post` (BlogPost) in scope. Mirrors /WEB-INF/jsp/public/blog-detail.jsp
+  and the blog card from /WEB-INF/jsp/public/blog.jsp.
+--%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<div class="pv-detail">
+    <section class="page-intro">
+        <div class="detail-meta">
+            <span>Blog</span>
+            <span>${empty post.publishedAt ? 'Draft' : fn:substring(post.publishedAt, 0, 10)}</span>
+        </div>
+        <h1 class="detail-title"><c:out value="${post.title}"/></h1>
+        <c:if test="${not empty post.excerpt}">
+            <p class="detail-copy"><c:out value="${post.excerpt}"/></p>
+        </c:if>
+    </section>
+
+    <c:if test="${not empty post.coverImagePath}">
+        <div class="detail-hero">
+            <img src="${ctx}${post.coverImagePath}" alt="<c:out value='${post.title}'/>">
+        </div>
+    </c:if>
+
+    <section class="detail-richtext">
+        <c:choose>
+            <c:when test="${empty post.body}">
+                <p class="muted">This note has no body yet.</p>
+            </c:when>
+            <c:otherwise>
+                <c:out value="${post.body}" escapeXml="false"/>
+            </c:otherwise>
+        </c:choose>
+    </section>
+</div>
+
+<div class="pv-card" data-pv-view="card" hidden>
+    <div class="blog-grid">
+        <article class="blog-card">
+            <c:if test="${not empty post.coverImagePath}">
+                <div class="blog-card__media">
+                    <img src="${ctx}${post.coverImagePath}" alt="<c:out value='${post.title}'/>">
+                </div>
+            </c:if>
+            <div class="blog-card__meta">
+                <span>Blog</span>
+                <span>${empty post.publishedAt ? 'Draft' : fn:substring(post.publishedAt, 0, 10)}</span>
+            </div>
+            <h2 class="blog-card__title"><c:out value="${post.title}"/></h2>
+            <p class="blog-card__text"><c:out value="${post.excerpt}"/></p>
+        </article>
+    </div>
+</div>

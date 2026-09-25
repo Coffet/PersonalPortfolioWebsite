@@ -1,25 +1,36 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <a class="skip-link" href="#desk-main">Skip to content</a>
-<div class="studio-layout">
+<div class="app">
     <%@ include file="/WEB-INF/jsp/layout/studio-sidebar.jspf" %>
-    <main id="desk-main" class="studio-main">
-        <div class="desk-top">
-            <p class="desk-place" aria-live="polite">
-                <span class="desk-place__prefix">You are now at:</span>
-                <span class="desk-place__name">${empty cmsPlace ? pageTitle : cmsPlace}</span>
-            </p>
-            <details class="desk-account">
-                <summary aria-label="Account menu">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.75"/><path d="M5.5 19.2a6.8 6.8 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
-                    <span class="desk-account__label">Account</span>
-                </summary>
-                <div class="desk-account__panel">
-                    <p>Signed in as ${studioUsername}</p>
-                    <a href="${ctx}/gallery" target="_blank" rel="noopener noreferrer">View public site</a>
-                    <form action="${ctx}/cmsmgmnt/logout" method="post">
-                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                        <button type="submit">Sign out</button>
-                    </form>
-                </div>
-            </details>
-        </div>
+    <div class="rail-scrim" aria-hidden="true"></div>
+
+    <div class="main">
+        <header class="topbar">
+            <button class="rail-toggle" type="button" data-rail-toggle aria-expanded="false" aria-controls="desk-nav">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <span class="visually-hidden">Toggle navigation</span>
+            </button>
+
+            <nav class="crumbs" aria-label="Breadcrumb">
+                <span>Desk</span>
+                <span class="crumbs__sep" aria-hidden="true">/</span>
+                <strong>${empty cmsPlace ? pageTitle : cmsPlace}</strong>
+            </nav>
+
+            <div class="topbar__spacer"></div>
+
+            <div class="topbar__actions">
+                <button class="cmd-trigger" type="button" data-palette-open>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                    <span>Jump to&hellip;</span>
+                    <kbd>Ctrl K</kbd>
+                </button>
+                <a class="btn-ghost btn--sm" href="${ctx}/" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6v6M10 14 20 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Site
+                </a>
+            </div>
+        </header>
+
+        <main id="desk-main" class="main__body">

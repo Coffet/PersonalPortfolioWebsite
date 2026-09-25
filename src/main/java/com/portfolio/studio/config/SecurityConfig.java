@@ -102,7 +102,9 @@ public class SecurityConfig {
     @Bean
     public FilterRegistrationBean<MultipartFilter> multipartFilter() {
         FilterRegistrationBean<MultipartFilter> registration = new FilterRegistrationBean<>(new MultipartFilter());
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        // Run after Spring Boot's CharacterEncodingFilter (also HIGHEST_PRECEDENCE)
+        // so multipart form fields are decoded as UTF-8, not ISO-8859-1.
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
         return registration;
     }
 

@@ -6,7 +6,7 @@
 <head>
     <%@ include file="/WEB-INF/jsp/layout/public-head.jspf" %>
     <link rel="stylesheet" href="${ctx}/assets/css/style.css?v=18">
-    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=44">
+    <link rel="stylesheet" href="${ctx}/assets/css/gallery.css?v=45">
 </head>
 <body class="has-settled-header">
     <c:set var="headerSettled" value="true" />
@@ -39,7 +39,11 @@
             </c:if>
 
             <section class="detail-richtext">
-                <p>${post.body}</p>
+                <%-- Body is authored in the CMS rich editor and sanitised to a safe
+                     subset (p, br, h2, h3, ul, ol, li, blockquote, a, strong, em,
+                     u, s, code, pre, hr, img). Plain text from before the editor
+                     still renders as before. --%>
+                <c:out value="${post.body}" escapeXml="false"/>
             </section>
         </div>
     </main>
