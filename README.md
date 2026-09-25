@@ -1,12 +1,9 @@
-
-
-
-
 <div align="center">
 
 <img src="src/main/resources/static/assets/images/logo.webp" alt="Coft" width="56">
 
 # Portfolio
+
 Personal site. Quiet CMS. One WAR behind nginx.
 
 [coft.moe](https://coft.moe) · [Apache-2.0](LICENSE) · [GitHub](https://github.com/Coffet/PersonalPortfolioWebsite)
@@ -28,12 +25,6 @@ Personal site. Quiet CMS. One WAR behind nginx.
 <img alt="Deploy" src="https://img.shields.io/badge/Deploy-manual%20WAR-111111?style=flat-square">
 
 </div>
-  
-
-
-
-
-
 
 Visitors see work, gallery, and blog. The owner edits that at `**/cmsmgmnt**` — never `/admin`. Public pages are JSP. Content is SQLite. Images are files on disk. GitHub is source. The live site is one WAR behind nginx.
 
@@ -78,11 +69,10 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 
 
 | You want to…                                   | Go here                                                                                           |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Run it on your PC for development              | [Run locally (dev work)](#run-locally-dev-work) then `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` |
-| **Make a new VPS** and host the site           | [Make the VPS and host](#make-the-vps-and-host) (start at step 1)                                 |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Run it on your PC for development               | [Run locally (dev work)](#run-locally-dev-work) then `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` |
+| **Make a new VPS** and host the site            | [Make the VPS and host](#make-the-vps-and-host) (start at step 1)                                 |
 | The VPS already exists — only ship a new build | [If you already have a server](#if-you-already-have-a-server)                                     |
-
 
 You can develop forever without a server. A VPS is only for putting [a domain](https://coft.moe) (or your domain) on the public internet.
 
@@ -99,11 +89,10 @@ So this project has **no default owner password in git**. Not in this README. No
 You set **your own**:
 
 
-| Where you work | Where you set the first login                             | In git?         |
-| -------------- | --------------------------------------------------------- | --------------- |
+| Where you work | Where you set the first login                             | In git?          |
+| -------------- | --------------------------------------------------------- | ---------------- |
 | Your PC (dev)  | `application-local.properties` (copy the `.example`)      | No — gitignored |
 | The VPS (live) | `Environment=` in `/etc/systemd/system/portfolio.service` | No — never      |
-
 
 After the first start, login is a BCrypt hash inside SQLite (`cms_users`). The seed values are ignored. Changing git, the example file, or the systemd unit later does **not** change an existing user.
 
@@ -115,22 +104,22 @@ If copying a file and typing a password feels like extra work: that is the point
 
 ## Read this first
 
-> `**git push` does not update the website.**  
+> `**git push` does not update the website.**
 > GitHub holds source. Visitors see whatever WAR is running. After you push: package a WAR, copy that one file, restart Java.
 
-> **You can run the whole site on localhost for dev.**  
+> **You can run the whole site on localhost for dev.**
 > JDK 17 + `.\mvnw.cmd spring-boot:run`. No VPS required. Details: [Run locally](#run-locally-dev-work) and `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)`.
 
-> **Do not put CMS credentials in git.**  
+> **Do not put CMS credentials in git.**
 > Not a dummy. Not “just for local.” Public repo means public login if you do.
 
-> **Do not `git pull` into a web root.**  
+> **Do not `git pull` into a web root.**
 > This is a Maven tree. `/var/www` would publish source, not a homepage.
 
-> **Do not delete `portfolio.db` to refresh code.**  
+> **Do not delete `portfolio.db` to refresh code.**
 > Replacing the WAR keeps SQLite and uploads. Deleting the database wipes the CMS.
 
-> **root vs deploy.**  
+> **root vs deploy.**
 > `root` owns `/etc` (nginx, TLS, systemd). `deploy` owns `/home/deploy/portfolio-app` (WAR, SQLite, uploads). Java runs as `deploy`.
 
 > **Use Java IDE if you can.**
@@ -139,21 +128,20 @@ If copying a file and typing a password feels like extra work: that is the point
 ### If you screwed up
 
 
-| What you did                                             | What happens                                                                                                                                                                                                               | How to recover                                                                                                                                                                                                                                         |
-| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Only `git push`, no WAR                                  | Live site **unchanged**. You did not break production. You also did not ship.                                                                                                                                              | [Make the WAR](#make-the-war), [scp + restart](#if-you-already-have-a-server).                                                                                                                                                                         |
-| Shipped a bad WAR                                        | Site 502, wrong pages, or Java crash. Visitors see the broken build.                                                                                                                                                       | Keep `portfolio.war.bak` if you have one. Copy it back to `portfolio.war`, `chown deploy:deploy`, `systemctl restart portfolio`. Or scp a known-good WAR from the PC. Logs: `journalctl -u portfolio -n 80`.                                           |
-| Committed a CMS password                                 | The pair is **public** (git history too). Strangers can try `/cmsmgmnt/sign-in`. Scanners will flag it.                                                                                                                    | Treat it as leaked. **Do not use it on the VPS.** Remove it from HEAD, set a **new** owner password in SQLite / re-seed only if you understand you are replacing that user. History still has the old pair unless you rewrite git (optional, painful). |
-| Used the git/example pair as the live login              | Anyone who read the repo can sign in as owner.                                                                                                                                                                             | Change the live password **now** (hash in `cms_users`, or delete that row and re-seed with a unique pair **before** restart). Never reuse the example.                                                                                                 |
-| `git pull` into `/var/www` (or nginx `root` = this repo) | Homepage is `pom.xml` / source, not the site. 403/404/raw Java. CMS and public pages gone from that vhost.                                                                                                                 | Point nginx back at the Java proxy (`proxy_pass http://127.0.0.1:8080`). Do **not** use this tree as document root. `nginx -t` then reload. The WAR + SQLite are still under `/home/deploy/portfolio-app` if you did not delete them.                  |
-| Deleted `portfolio.db` (or `portfolio.db-*`)             | **All CMS content is gone** on that machine: users, projects, gallery, blog. Uploads on disk may remain as orphan files. Seed may recreate **only** the owner, and only if env/local file is set and `cms_users` is empty. | Restore a backup of `storage/database/` if you have one. If not, the content is gone. Recreate pages in the CMS. Do not delete the DB to “refresh code” again.                                                                                         |
-| Ran Java as **root**                                     | Files under `storage/` may become `root:root`. Next start as `deploy` → permission errors, uploads fail, 500s.                                                                                                             | `chown -R deploy:deploy /home/deploy/portfolio-app`. Unit must stay `User=deploy`. Restart.                                                                                                                                                            |
-| Edited nginx/TLS/systemd as **deploy**                   | Permission denied, or a half-written file. Site 502/526.                                                                                                                                                                   | SSH as **root** for `/etc`. `deploy` only for the app dir. `nginx -t`, `systemctl cat portfolio`.                                                                                                                                                      |
-| Opened port **8080** on ufw                              | Tomcat is on the public internet. People can skip nginx.                                                                                                                                                                   | `ufw delete allow 8080/tcp` (or `ufw status` and remove it). Java stays on `127.0.0.1:8080`.                                                                                                                                                           |
-| Started Java with empty DB and no seed                   | CMS has **no owner**. Sign-in always fails.                                                                                                                                                                                | Set local file or systemd `Environment=`, then restart while `cms_users` is still empty. [CMS](#cms).                                                                                                                                                  |
-| Left `server_name coft.moe` on your own domain           | Wrong host, cert mismatch, 526, or another site’s name in nginx.                                                                                                                                                           | Edit nginx + cert names. [Origin TLS](#origin-tls-mandatory-domain) and [nginx site](#nginx-site-what-to-edit).                                                                                                                                        |
-| Cloudflare **Full (strict)** + self-signed origin        | **526**. Site looks dead in the browser. Java may still be fine on the box.                                                                                                                                                | Cloudflare SSL → **Full**, or install Let's Encrypt / Origin CA. `curl -sI http://127.0.0.1:8080/` on the server to see if Java is up.                                                                                                                 |
-
+| What you did                                             | What happens                                                                                                                                                                                                               | How to recover                                                                                                                                                                                                                                        |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Only`git push`, no WAR                                   | Live site**unchanged**. You did not break production. You also did not ship.                                                                                                                                               | [Make the WAR](#make-the-war), [scp + restart](#if-you-already-have-a-server).                                                                                                                                                                        |
+| Shipped a bad WAR                                        | Site 502, wrong pages, or Java crash. Visitors see the broken build.                                                                                                                                                       | Keep`portfolio.war.bak` if you have one. Copy it back to `portfolio.war`, `chown deploy:deploy`, `systemctl restart portfolio`. Or scp a known-good WAR from the PC. Logs: `journalctl -u portfolio -n 80`.                                           |
+| Committed a CMS password                                 | The pair is**public** (git history too). Strangers can try `/cmsmgmnt/sign-in`. Scanners will flag it.                                                                                                                     | Treat it as leaked.**Do not use it on the VPS.** Remove it from HEAD, set a **new** owner password in SQLite / re-seed only if you understand you are replacing that user. History still has the old pair unless you rewrite git (optional, painful). |
+| Used the git/example pair as the live login              | Anyone who read the repo can sign in as owner.                                                                                                                                                                             | Change the live password**now** (hash in `cms_users`, or delete that row and re-seed with a unique pair **before** restart). Never reuse the example.                                                                                                 |
+| `git pull` into `/var/www` (or nginx `root` = this repo) | Homepage is`pom.xml` / source, not the site. 403/404/raw Java. CMS and public pages gone from that vhost.                                                                                                                  | Point nginx back at the Java proxy (`proxy_pass http://127.0.0.1:8080`). Do **not** use this tree as document root. `nginx -t` then reload. The WAR + SQLite are still under `/home/deploy/portfolio-app` if you did not delete them.                 |
+| Deleted`portfolio.db` (or `portfolio.db-*`)              | **All CMS content is gone** on that machine: users, projects, gallery, blog. Uploads on disk may remain as orphan files. Seed may recreate **only** the owner, and only if env/local file is set and `cms_users` is empty. | Restore a backup of`storage/database/` if you have one. If not, the content is gone. Recreate pages in the CMS. Do not delete the DB to “refresh code” again.                                                                                       |
+| Ran Java as**root**                                      | Files under`storage/` may become `root:root`. Next start as `deploy` → permission errors, uploads fail, 500s.                                                                                                             | `chown -R deploy:deploy /home/deploy/portfolio-app`. Unit must stay `User=deploy`. Restart.                                                                                                                                                           |
+| Edited nginx/TLS/systemd as**deploy**                    | Permission denied, or a half-written file. Site 502/526.                                                                                                                                                                   | SSH as**root** for `/etc`. `deploy` only for the app dir. `nginx -t`, `systemctl cat portfolio`.                                                                                                                                                      |
+| Opened port**8080** on ufw                               | Tomcat is on the public internet. People can skip nginx.                                                                                                                                                                   | `ufw delete allow 8080/tcp` (or `ufw status` and remove it). Java stays on `127.0.0.1:8080`.                                                                                                                                                          |
+| Started Java with empty DB and no seed                   | CMS has**no owner**. Sign-in always fails.                                                                                                                                                                                 | Set local file or systemd`Environment=`, then restart while `cms_users` is still empty. [CMS](#cms).                                                                                                                                                  |
+| Left`server_name coft.moe` on your own domain            | Wrong host, cert mismatch, 526, or another site’s name in nginx.                                                                                                                                                          | Edit nginx + cert names.[Origin TLS](#origin-tls-mandatory-domain) and [nginx site](#nginx-site-what-to-edit).                                                                                                                                        |
+| Cloudflare**Full (strict)** + self-signed origin         | **526**. Site looks dead in the browser. Java may still be fine on the box.                                                                                                                                                | Cloudflare SSL →**Full**, or install Let's Encrypt / Origin CA. `curl -sI http://127.0.0.1:8080/` on the server to see if Java is up.                                                                                                                |
 
 Screwing up **git** is usually cheap (the live WAR is separate). Screwing up **SQLite** or **shipping a password** is not. If the box is 502, check Java first (`systemctl status portfolio`), then nginx (`nginx -t`), then Cloudflare.
 
@@ -169,7 +157,6 @@ This repo is public so people can **read the code**. It is not wired to ship eve
 | What changes | GitHub source                     | The live site            |
 | When         | Whenever you commit               | When you decide          |
 | Risk         | A bad commit is just a bad commit | A bad WAR is a down site |
-
 
 Automatic deploy on `main` would mean every merge can take [the site](https://coft.moe) down before anyone has looked at it. One owner, irregular releases: **I choose when it goes live.**
 
@@ -234,22 +221,21 @@ PersonalPortfolioWebsite/
 You **make** this machine in [Make the VPS and host](#make-the-vps-and-host). After bootstrap it looks like this:
 
 
-| Piece         | Path                                                                                             | Who          |
-| ------------- | ------------------------------------------------------------------------------------------------ | ------------ |
-| SSH           | `ssh root@YOUR_SERVER_IP`                                                                        | you, as root |
-| App user      | `deploy` (`sudo -u deploy -i` from root)                                                         | deploy       |
-| App directory | `/home/deploy/portfolio-app`                                                                     | deploy       |
-| Live program  | `/home/deploy/portfolio-app/portfolio.war`                                                       | deploy       |
-| SQLite        | `/home/deploy/portfolio-app/storage/database/portfolio.db`                                       | deploy       |
-| Uploads       | `/home/deploy/portfolio-app/storage/uploads/`                                                    | deploy       |
-| systemd       | `/etc/systemd/system/portfolio.service`                                                          | root         |
+| Piece         | Path                                                                                              | Who          |
+| ------------- | ------------------------------------------------------------------------------------------------- | ------------ |
+| SSH           | `ssh root@YOUR_SERVER_IP`                                                                         | you, as root |
+| App user      | `deploy` (`sudo -u deploy -i` from root)                                                          | deploy       |
+| App directory | `/home/deploy/portfolio-app`                                                                      | deploy       |
+| Live program  | `/home/deploy/portfolio-app/portfolio.war`                                                        | deploy       |
+| SQLite        | `/home/deploy/portfolio-app/storage/database/portfolio.db`                                        | deploy       |
+| Uploads       | `/home/deploy/portfolio-app/storage/uploads/`                                                     | deploy       |
+| systemd       | `/etc/systemd/system/portfolio.service`                                                           | root         |
 | Java start    | `java -Xms256m -Xmx768m -jar …/portfolio.war`                                                    | deploy       |
-| Host env      | `Environment=` **inside that unit** on this live box                                             | root         |
-| nginx         | `/etc/nginx/sites-available/portfolio`                                                           | root         |
-| TLS           | `/etc/ssl/cf/YOUR_DOMAIN.pem` + `.key` (this host: `coft.moe`)                                   | root         |
+| Host env      | `Environment=` **inside that unit** on this live box                                              | root         |
+| nginx         | `/etc/nginx/sites-available/portfolio`                                                            | root         |
+| TLS           | `/etc/ssl/cf/YOUR_DOMAIN.pem` + `.key` (this host: `coft.moe`)                                    | root         |
 | Let's Encrypt | **optional** — `/etc/letsencrypt/live/YOUR_DOMAIN/` if you chose it. This live box does **not**. | root         |
-| Firewall      | `22`, `80`, `443` only. Do **not** open `8080`.                                                  | root         |
-
+| Firewall      | `22`, `80`, `443` only. Do **not** open `8080`.                                                   | root         |
 
 ```bash
 ssh root@YOUR_SERVER_IP
@@ -260,7 +246,7 @@ sudo -u deploy -i
 cd /home/deploy/portfolio-app
 ```
 
-**root** = the machine (nginx, TLS, systemd, `/etc`).  
+**root** = the machine (nginx, TLS, systemd, `/etc`).
 **deploy** = the website (WAR, database, uploads). Java runs as `deploy`.
 
 ```
@@ -290,8 +276,6 @@ flowchart LR
   War --> Jsp["JSP"]
 ```
 
-
-
 - Public pages **read**. They do not write the database or the upload folder.
 - CMS **writes**. Images on disk. Rows in SQLite.
 - Flyway creates tables on first start (`V1__init_schema.sql`).
@@ -307,18 +291,17 @@ What is in the repo — not a wish list.
 
 | Layer     | What                                     | Where                           |
 | --------- | ---------------------------------------- | ------------------------------- |
-| Language  | Java **17**                              | `pom.xml`                       |
-| Framework | Spring Boot **3.5.3**                    | parent POM                      |
+| Language  | Java**17**                               | `pom.xml`                       |
+| Framework | Spring Boot**3.5.3**                     | parent POM                      |
 | Build     | Maven wrapper                            | `mvnw` / `mvnw.cmd`             |
-| Package   | Executable WAR named `portfolio`         | `pom.xml` `finalName`           |
+| Package   | Executable WAR named`portfolio`          | `pom.xml` `finalName`           |
 | HTTP      | Embedded Tomcat                          | `spring-boot-starter-web`       |
 | Views     | JSP + JSTL 3.0                           | `webapp/WEB-INF/jsp`            |
 | Security  | Spring Security, BCrypt, cookie, lockout | `SecurityConfig`                |
 | Database  | SQLite + Flyway, Hikari pool size 1      | `storage/database/portfolio.db` |
 | CSS       | Plain CSS (no Sass, no Tailwind)         | `static/assets/css`             |
 | JS        | Vanilla + GSAP 3.12.5 on home (cdnjs)    | public JSPs                     |
-| Edge      | Cloudflare → nginx → `127.0.0.1:8080`    | VPS                             |
-
+| Edge      | Cloudflare → nginx →`127.0.0.1:8080`   | VPS                             |
 
 No React. No SPA. Uploads: 10 MB per file, 50 MB per request. Login lock: 5 failures, 15 minutes.
 
@@ -338,7 +321,6 @@ No React. No SPA. Uploads: 10 MB per file, 50 MB per request. Login lock: 5 fail
 | GET    | `/blog`         | Blog index    |
 | GET    | `/blog/{id}`    | One post      |
 
-
 ### CMS (default prefix: `/cmsmgmnt`)
 
 The desk is **not** linked from the public header. You type the URL (or bookmark it).
@@ -348,12 +330,11 @@ The desk is **not** linked from the public header. You type the URL (or bookmark
 | -------- | ----------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------- |
 | Sign-in  | `/cmsmgmnt/sign-in`     | [http://localhost:8080/cmsmgmnt/sign-in](http://localhost:8080/cmsmgmnt/sign-in)     | `https://YOUR_DOMAIN/cmsmgmnt/sign-in`   |
 | Desk     | `/cmsmgmnt/dashboard`   | [http://localhost:8080/cmsmgmnt/dashboard](http://localhost:8080/cmsmgmnt/dashboard) | `https://YOUR_DOMAIN/cmsmgmnt/dashboard` |
-| Projects | `/cmsmgmnt/projects`    | …                                                                                    | …                                        |
-| Gallery  | `/cmsmgmnt/gallery`     | …                                                                                    | …                                        |
-| Blog     | `/cmsmgmnt/blog`        | …                                                                                    | …                                        |
-| Media    | `/cmsmgmnt/media`       | …                                                                                    | …                                        |
+| Projects | `/cmsmgmnt/projects`    | …                                                                                   | …                                       |
+| Gallery  | `/cmsmgmnt/gallery`     | …                                                                                   | …                                       |
+| Blog     | `/cmsmgmnt/blog`        | …                                                                                   | …                                       |
+| Media    | `/cmsmgmnt/media`       | …                                                                                   | …                                       |
 | Sign out | `POST /cmsmgmnt/logout` | form in the desk                                                                     | same                                     |
-
 
 On coft.moe that is `https://coft.moe/cmsmgmnt/sign-in`.
 
@@ -387,11 +368,10 @@ The string `cmsmgmnt` is hardcoded in several places. Change **all** of them or 
 | Place                                                                                              | What to change                                                                                                                                           |
 | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/main/java/com/portfolio/studio/config/SecurityConfig.java`                                    | `permitAll` for sign-in, `hasRole("OWNER")` matcher, `loginPage`, `loginProcessingUrl`, `logoutUrl`, `logoutSuccessUrl`, and the two `sendRedirect` URLs |
-| `src/main/java/com/portfolio/studio/controller/StudioController.java`                              | Every `@GetMapping` / `@PostMapping` and every `redirect:/cmsmgmnt/...`                                                                                  |
+| `src/main/java/com/portfolio/studio/controller/StudioController.java`                              | Every`@GetMapping` / `@PostMapping` and every `redirect:/cmsmgmnt/...`                                                                                   |
 | `src/main/webapp/WEB-INF/jsp/studio/**`                                                            | `href`, `action`, `<c:url>` values                                                                                                                       |
 | `src/main/webapp/WEB-INF/jsp/layout/studio-sidebar.jspf`, `desk-tabs.jspf`, `desk-shell-open.jspf` | Nav and logout                                                                                                                                           |
-| `src/test/java/**`                                                                                 | Test URLs that start with `/cmsmgmnt`                                                                                                                    |
-
+| `src/test/java/**`                                                                                 | Test URLs that start with`/cmsmgmnt`                                                                                                                     |
 
 In a clone, search the whole project:
 
@@ -468,6 +448,19 @@ git status
 
 > **Annotation:** Seed runs **once**. If `cms_users` is already filled, this file is ignored. If you started the app with no file, the log warns and nobody can sign in until you add the file and start again on an empty `cms_users` (or you accept wiping `storage/database/*.db`).
 
+#### Quick start with the local tester
+
+The committed `.example` already ships a ready-made **dev-only tester**, so you can skip typing your own pair and start immediately:
+
+```properties
+portfolio.seed.owner.username=local-dev
+portfolio.seed.owner.password=local-password
+```
+
+Copy the example without editing, then sign in at `/cmsmgmnt/sign-in` with `local-dev` / `local-password`.
+
+> This pair exists only for your PC. Never reuse it on the VPS — the live site reads its owner from the systemd `Environment=`, not from this file.
+
 ### 3. Start for development
 
 ```powershell
@@ -493,7 +486,6 @@ Wait until the log says the app started (Tomcat on 8080). Then open a browser:
 | Blog        | [http://localhost:8080/blog](http://localhost:8080/blog)                             |
 | CMS sign-in | [http://localhost:8080/cmsmgmnt/sign-in](http://localhost:8080/cmsmgmnt/sign-in)     |
 | CMS desk    | [http://localhost:8080/cmsmgmnt/dashboard](http://localhost:8080/cmsmgmnt/dashboard) |
-
 
 Empty gallery/work/blog is normal. Add them in the CMS while signed in with **your** pair.
 
@@ -552,11 +544,10 @@ ExecStart=/usr/bin/java -Xms256m -Xmx768m -jar /home/deploy/portfolio-app/portfo
 ```
 
 
-| Flag       | Meaning                                         |
-| ---------- | ----------------------------------------------- |
-| `-Xms256m` | Start the heap at **256 MB** of RAM             |
-| `-Xmx768m` | Do not let the heap grow past **768 MB** of RAM |
-
+| Flag       | Meaning                                        |
+| ---------- | ---------------------------------------------- |
+| `-Xms256m` | Start the heap at**256 MB** of RAM             |
+| `-Xmx768m` | Do not let the heap grow past**768 MB** of RAM |
 
 The heap is the pool Java uses for objects (pages, sessions, uploads in memory). Capping it keeps a small Linode (1–2 GB total RAM) from being eaten by one WAR. Ubuntu, nginx, and SQLite still need RAM **outside** that 768 MB, which is why the plan should be at least 1 GB.
 
@@ -720,8 +711,10 @@ Use this if you want a real certificate on the VPS (browsers trust it even with 
 1. DNS **A** record for your domain already points at `YOUR_SERVER_IP`.
 2. Firewall already allows **80** and **443**.
 3. If Cloudflare is **orange-cloud (proxied)**, HTTP-01 often hits Cloudflare instead of your nginx. Either:
-  - set the record to **DNS only (grey)** until the cert is issued, then proxy again, or
-  - skip Let's Encrypt and use a [Cloudflare Origin CA](https://developers.cloudflare.com/ssl/origin-configuration/origin-ca/) cert in `/etc/ssl/cf/` (Full strict, no certbot).
+
+- set the record to **DNS only (grey)** until the cert is issued, then proxy again, or
+- skip Let's Encrypt and use a [Cloudflare Origin CA](https://developers.cloudflare.com/ssl/origin-configuration/origin-ca/) cert in `/etc/ssl/cf/` (Full strict, no certbot).
+
 4. As root:
 
 ```bash
@@ -922,7 +915,7 @@ curl -sI http://127.0.0.1:8080/ | head
 
 You need `active` and HTTP `200`. If not: `journalctl -u portfolio -n 80 --no-pager`.
 
-Then in a browser (Ctrl+F5): `https://your-domain/`. 
+Then in a browser (Ctrl+F5): `https://your-domain/`.
 
 You should be able to see the website template that you can modify.
 
@@ -940,8 +933,7 @@ Sign in to the CMS with the pair **you** put in the unit, not anything from this
 | Host env       | `systemctl cat portfolio` or `nano /etc/systemd/system/portfolio.service`             |
 | WAR + database | `sudo -u deploy -i` then `cd /home/deploy/portfolio-app`                              |
 | Logs           | `journalctl -u portfolio -n 80 --no-pager`                                            |
-| Certbot        | There isn’t one. Stop looking.                                                        |
-
+| Certbot        | There isn’t one. Stop looking.                                                       |
 
 Cloudflare SSL stays **Full** while the origin cert is self-signed. After Let's Encrypt or a Cloudflare Origin CA cert in `/etc/ssl/cf/`, **Full (strict)** is OK.
 
@@ -994,9 +986,8 @@ systemctl cat portfolio
 
 | Git template                          | Live coft.moe                   |
 | ------------------------------------- | ------------------------------- |
-| `EnvironmentFile=-/etc/portfolio.env` | Unit uses `Environment=` lines  |
+| `EnvironmentFile=-/etc/portfolio.env` | Unit uses`Environment=` lines   |
 | `/etc/portfolio.env`                  | **Does not exist** on this host |
-
 
 That is on purpose: one file to read. `systemctl cat` shows secrets. Do not paste them into chat or into git.
 
@@ -1028,82 +1019,81 @@ From first clone to a public site:
 ## What you should not do
 
 
-| Don't                                                               | Why                                                                                                          |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Use the example / sample / “local-dev” pair on the VPS              | This is the whole point of the painful setup. Git is public.                                                 |
-| Put a password in `application.properties` and push                 | Scanners find it. Strangers try it on the live CMS.                                                          |
-| Commit `.env`, `application-local.properties`, `portfolio.db`, keys | Secrets and data.                                                                                            |
-| `git pull` into `/var/www`                                          | Publishes a Maven tree. Site dies.                                                                           |
-| Open port `8080` on ufw                                             | Java is loopback-only.                                                                                       |
-| Leave bootstrap `change-me` as the live CMS password                | Same as shipping a default login.                                                                            |
-| Assume `/etc/portfolio.env` exists on coft.moe                      | It does not. Env is in the unit.                                                                             |
-| Start Java on an empty DB with no seed                              | No owner.                                                                                                    |
-| Delete `portfolio.db*` to “refresh code”                            | Wipes the CMS. Replace the WAR.                                                                              |
-| Paste passwords into chat or into this README                       | Password manager.                                                                                            |
-| Expect every `git push` to update the site                          | It does not. You upload the WAR.                                                                             |
-| Leave `server_name coft.moe` if that is not your domain             | nginx and the cert must use **your** name. Mandatory.                                                        |
-| Assume this box uses Let's Encrypt                                  | coft.moe does not (`/etc/ssl/cf/`). You may install certbot; see [Origin TLS](#origin-tls-mandatory-domain). |
-| Run the WAR as root                                                 | Ownership will fight `deploy`.                                                                               |
-| Copy local-dev passwords onto the server                            | Two different logins on purpose.                                                                             |
-| Point nginx at the git clone                                        | The clone is source. The site is the WAR.                                                                    |
-
+| Don't                                                              | Why                                                                                                          |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Use the example / sample / “local-dev” pair on the VPS           | This is the whole point of the painful setup. Git is public.                                                 |
+| Put a password in`application.properties` and push                 | Scanners find it. Strangers try it on the live CMS.                                                          |
+| Commit`.env`, `application-local.properties`, `portfolio.db`, keys | Secrets and data.                                                                                            |
+| `git pull` into `/var/www`                                         | Publishes a Maven tree. Site dies.                                                                           |
+| Open port`8080` on ufw                                             | Java is loopback-only.                                                                                       |
+| Leave bootstrap`change-me` as the live CMS password                | Same as shipping a default login.                                                                            |
+| Assume`/etc/portfolio.env` exists on coft.moe                      | It does not. Env is in the unit.                                                                             |
+| Start Java on an empty DB with no seed                             | No owner.                                                                                                    |
+| Delete`portfolio.db*` to “refresh code”                          | Wipes the CMS. Replace the WAR.                                                                              |
+| Paste passwords into chat or into this README                      | Password manager.                                                                                            |
+| Expect every`git push` to update the site                          | It does not. You upload the WAR.                                                                             |
+| Leave`server_name coft.moe` if that is not your domain             | nginx and the cert must use**your** name. Mandatory.                                                         |
+| Assume this box uses Let's Encrypt                                 | coft.moe does not (`/etc/ssl/cf/`). You may install certbot; see [Origin TLS](#origin-tls-mandatory-domain). |
+| Run the WAR as root                                                | Ownership will fight`deploy`.                                                                                |
+| Copy local-dev passwords onto the server                           | Two different logins on purpose.                                                                             |
+| Point nginx at the git clone                                       | The clone is source. The site is the WAR.                                                                    |
 
 ---
 
 ## Troubleshooting
 
-**Local: cannot sign in / no owner**  
+**Local: cannot sign in / no owner**
 Missing `application-local.properties`, IntelliJ working directory is not the repo root, or `cms_users` already has another user. Log: seed warning. SQLite: `storage/database/portfolio.db`.
 
-**I cannot find the CMS on the public site**  
+**I cannot find the CMS on the public site**
 It is not in the header. Open `/cmsmgmnt/sign-in` yourself ([CMS](#cms)). `/admin` is not it.
 
-**Local: I want to run for dev every day**  
+**Local: I want to run for dev every day**
 That is [Run locally](#run-locally-dev-work). You never need to scp until you want the **public** site to change. See also `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)`.
 
-**Old password still works after I changed env**  
+**Old password still works after I changed env**
 Seed is ignored once `cms_users` has a row. Expected. Change the hash or wipe the DB only if you can lose data.
 
-**I used a pair that was once in git**  
+**I used a pair that was once in git**
 Treat it as public. Do not use it on the VPS. Rotate if it was ever live.
 
-**Pushed to GitHub, site unchanged**  
+**Pushed to GitHub, site unchanged**
 Expected. Package, scp, restart.
 
-**Empty gallery locally**  
+**Empty gallery locally**
 Normal. Use the CMS. Production content is not in git.
 
-`git status` **shows** `application-local.properties`  
+`git status` **shows** `application-local.properties`
 Do not `git add` it.
 
-**Port 8080 in use on the PC**  
+**Port 8080 in use on the PC**
 Another Java is running. Stop it.
 
-**SSH** `Permission denied`  
+**SSH** `Permission denied`
 Wrong user (use `root` unless you set up keys for `deploy`), wrong IP, or vendor firewall blocking 22.
 
-**Bootstrap script died / `java` missing / no `portfolio.service`**  
+**Bootstrap script died / `java` missing / no `portfolio.service`**
 Do not keep re-running a broken script blindly. Finish [4b manual setup](#4b-manual-setup-if-bootstrap-did-not-work): packages, `deploy` user, certs, nginx, unit, ufw. Then `java -version`, `nginx -t`, `id deploy`.
 
-**502 from Cloudflare**  
+**502 from Cloudflare**
 Java down or nginx not proxying. `systemctl status portfolio`, `nginx -t`.
 
-**526 from Cloudflare**  
+**526 from Cloudflare**
 Full (strict) + self-signed origin. Switch to **Full**, or put Let's Encrypt / a Cloudflare Origin CA cert on the origin ([Origin TLS](#origin-tls-mandatory-domain)).
 
-**502 right after scp**  
+**502 right after scp**
 Wait, then `journalctl -u portfolio -n 80`. WAR owner must be `deploy`.
 
-**Java dies with** `OutOfMemoryError` **or the box freezes**  
+**Java dies with** `OutOfMemoryError` **or the box freezes**
 Heap is `-Xmx768m`. Do not raise it on a 1 GB Linode without upgrading the plan. Check `journalctl -u portfolio` and `free -h`.
 
-**Certbot not found**  
+**Certbot not found**
 Normal on **this** live box. Origin files are under `/etc/ssl/cf/`. If you **want** Let's Encrypt, install it — [Origin TLS](#origin-tls-mandatory-domain). Do not leave `server_name` as `coft.moe` unless that is your domain.
 
-**No CSS locally**  
+**No CSS locally**
 You are not on `http://localhost:8080` from `PortfolioStudioApplication`.
 
-**Locked out of CMS**  
+**Locked out of CMS**
 Five failures → ~15 minute lock. Wait, or clear `locked_until` in SQLite on a machine you own.
 
 ---
