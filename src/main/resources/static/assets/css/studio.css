@@ -244,6 +244,7 @@ svg {
     width: var(--logo-width);
     height: calc(var(--logo-width) * 0.416);
     flex-shrink: 0;
+    transform: translateY(-0.5px);
     background: url("../images/logo.webp") center / calc(var(--logo-width) / 0.625) auto no-repeat;
     mix-blend-mode: screen;
 }
@@ -253,10 +254,12 @@ svg {
     color: var(--text-soft);
     font-size: 0.78rem;
     font-weight: 600;
+    line-height: 1;
     letter-spacing: 0.24em;
     text-transform: uppercase;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transform: translateY(0.5px);
 }
 
 .rail__group {
@@ -297,6 +300,7 @@ svg {
 }
 
 .nav-item svg {
+    display: block;
     width: 20px;
     height: 20px;
     opacity: 0.85;
@@ -304,9 +308,11 @@ svg {
 
 .nav-item__text {
     min-width: 0;
+    line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transform: translateY(0.5px);
 }
 
 .nav-item__badge {
