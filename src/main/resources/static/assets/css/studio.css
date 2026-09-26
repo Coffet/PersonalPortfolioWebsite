@@ -228,12 +228,30 @@ svg {
 }
 
 .rail__brand {
+    /* Full-bleed header pinned above the scrollable nav: only the rail groups
+       scroll while the brand stays put. Negative top/side margins cancel the
+       rail's own padding so the bar covers the rail's top edge and full width. */
+    position: sticky;
+    top: -18px;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
     min-width: 0;
-    padding: 8px 8px 14px;
+    margin: -18px -14px 14px;
+    padding: 20px 14px 20px;
+    background: var(--bg-rail);
+}
+
+/* In the collapsed rail there is no room for the wordmark — show only the
+   centred logo so it stays crisp and unclipped. */
+.app.is-collapsed .rail__brand {
+    gap: 0;
+}
+
+.app.is-collapsed .rail__brand-name {
+    display: none;
 }
 
 /* The supplied logo is a white wordmark on an opaque black square with a lot
@@ -244,13 +262,18 @@ svg {
     width: var(--logo-width);
     height: calc(var(--logo-width) * 0.416);
     flex-shrink: 0;
-    transform: translateY(-0.5px);
+    /* The cropped wordmark ink sits ~0.6px above the element box, so the logo
+       is nudged down half a pixel to share the label's optical centre. The
+       rail is sticky, so this static offset is unaffected by scrolling. */
+    transform: translateY(0.5px);
     background: url("../images/logo.webp") center / calc(var(--logo-width) / 0.625) auto no-repeat;
     mix-blend-mode: screen;
 }
 
 .rail__brand-name {
     overflow: hidden;
+    border-top-width: 5px;
+    padding-top: 5px;
     color: var(--text-soft);
     font-size: 0.78rem;
     font-weight: 600;
@@ -259,7 +282,6 @@ svg {
     text-transform: uppercase;
     text-overflow: ellipsis;
     white-space: nowrap;
-    transform: translateY(0.5px);
 }
 
 .rail__group {
@@ -504,9 +526,35 @@ svg {
     transition: border-color var(--fast), background var(--fast), color var(--fast);
 }
 
+/* Optical pass: a label's optical centre (its cap height) sits ~0.4px below the
+   box centre, and the lens reads a further half pixel high because its handle
+   hangs under the circle. The icons absorb that difference — the words are
+   never nudged, so they keep sharing the breadcrumb's baseline. */
 .cmd-trigger svg {
     width: 18px;
     height: 18px;
+    transform: translateY(0.25px);
+}
+
+.cmd-trigger > span,
+.cmd-trigger > kbd,
+.palette__label {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    transform: translateY(0.25px);
+}
+
+/* Topbar controls use explicit label elements, not anonymous text flex items.
+   Their icon, label, and shortcut all receive the same optical adjustment. */
+.topbar__actions .btn-ghost > svg,
+.topbar__actions .btn-ghost > span {
+    align-self: center;
+    transform: translateY(0.25px);
+}
+
+.topbar__actions .btn-ghost > span {
+    padding-top: 2px;
 }
 
 .cmd-trigger kbd {
@@ -687,6 +735,11 @@ svg {
     gap: 10px;
 }
 
+/* The page-head "Jump to" duplicates the topbar's command trigger — hide it. */
+.page-actions [data-palette-open] {
+    display: none;
+}
+
 /* ------------------------------------------------------------- buttons */
 .btn,
 .btn-ghost,
@@ -713,6 +766,19 @@ svg {
 .btn-subtle svg {
     width: 17px;
     height: 17px;
+}
+
+/* the page-head "Jump to" opens the same palette as the topbar trigger, so its
+   lens gets the same half-pixel optical drop */
+.page-actions .btn-ghost svg {
+    transform: translateY(0.25px);
+}
+
+.page-actions .btn-ghost > span {
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    transform: translateY(0.25px);
 }
 
 .btn {
@@ -947,7 +1013,11 @@ svg {
     font-size: 0.86rem;
 }
 
+/* A column so an empty state can stretch to the panel's full height (see
+   `.panel__body > .empty`), which keeps side-by-side panels the same height. */
 .panel__body {
+    display: flex;
+    flex-direction: column;
     flex: 1 1 auto;
     min-height: 0;
     padding: 16px 20px 20px;
@@ -1274,14 +1344,26 @@ svg {
 
 /* empty states */
 .empty {
-    display: grid;
-    justify-items: center;
+    --empty-pad: clamp(36px, 7vw, 72px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* icon, title, copy and CTA share one axis */
+    justify-content: center;  /* and the stack sits mid-height once the box stretches */
     gap: 12px;
-    padding: clamp(36px, 7vw, 72px) 24px;
+    /* Optical pass: the copy's half-leading is invisible, so a plain centred
+       stack reads a hair high. Two extra pixels of bottom padding drop the
+       stack so the *ink* (icon tile edge to last line) is what looks centred. */
+    padding: calc(var(--empty-pad) - 2px) 24px calc(var(--empty-pad) + 2px);
     border: 1px dashed var(--line-strong);
     border-radius: var(--radius-xl);
     background: var(--surface-1);
     text-align: center;
+}
+
+/* Inside a panel the empty state takes the whole body, so two panels sharing a
+   row render empty states of exactly the same height whatever the copy length. */
+.panel__body > .empty {
+    flex: 1 1 auto;
 }
 
 .empty__icon {
@@ -2296,12 +2378,25 @@ body.is-composer .main__body {
     width: 18px;
     height: 18px;
     color: var(--text-muted);
+    /* the label box centres on font metrics, which reads ~0.4px low next to the
+       icon's ink, so the icon takes the drop and every row looks level */
+    transform: translateY(0.25px);
+}
+
+.palette__label {
+    line-height: 1;
+    padding-top: 2px;
 }
 
 .palette__list small {
     margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
     color: var(--text-dim);
     font-size: 0.78rem;
+    line-height: 1;
+    transform: translateY(0.25px);
 }
 
 .palette__list .is-active,

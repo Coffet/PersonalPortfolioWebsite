@@ -9,5 +9,5 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Nata+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${ctx}/assets/css/studio.css?v=30">
+<link rel="stylesheet" href="${ctx}/assets/css/studio.css?v=43">
 <link rel="stylesheet" href="${ctx}/assets/css/studio-preview.css?v=1">
