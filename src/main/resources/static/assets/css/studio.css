@@ -1932,19 +1932,16 @@ body.is-composer .main__body {
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
     background: var(--surface-1);
-    overflow: hidden;
 }
 
 .editor__toolbar {
-    position: sticky;
-    top: var(--topbar);
-    z-index: 5;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 3px;
     padding: 8px 10px;
     border-bottom: 1px solid var(--line);
+    border-radius: calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px) 0 0;
     background: var(--surface-2);
 }
 
@@ -1999,10 +1996,14 @@ body.is-composer .main__body {
 }
 
 .editor__surface {
-    min-height: min(52vh, 560px);
+    min-height: min(36vh, 360px);
+    max-height: min(68vh, 720px);
     max-width: 74ch;
     padding: 22px clamp(16px, 2.4vw, 26px) 40px;
-    color: var(--text-soft);
+    overflow-y: auto;
+    background: var(--surface-1);
+    color: var(--text);
+    caret-color: var(--accent-bright);
     font-size: 1.02rem;
     line-height: 1.75;
     outline: none;
@@ -2021,12 +2022,17 @@ body.is-composer .main__body {
 
 .editor__surface h2,
 .editor__surface h3 {
-    margin: 1.8rem 0 0.7rem;
+    margin: 1.1rem 0 0.5rem;
     color: var(--text);
     font-family: var(--font-display);
     font-weight: 600;
     line-height: 1.15;
     letter-spacing: -0.02em;
+}
+
+.editor__surface > h2:first-child,
+.editor__surface > h3:first-child {
+    margin-top: 0;
 }
 
 .editor__surface h2 {
@@ -2102,6 +2108,11 @@ body.is-composer .main__body {
     border-radius: 10px;
 }
 
+.editor__surface img.is-selected {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 2px;
+}
+
 .editor__foot {
     display: flex;
     flex-wrap: wrap;
@@ -2110,6 +2121,7 @@ body.is-composer .main__body {
     gap: 10px;
     padding: 9px 14px;
     border-top: 1px solid var(--line);
+    border-radius: 0 0 calc(var(--radius-lg) - 1px) calc(var(--radius-lg) - 1px);
     background: var(--surface-2);
     color: var(--text-dim);
     font-size: 0.8rem;

@@ -1363,6 +1363,10 @@
             surface.contentEditable = "true";
             surface.spellcheck = true;
 
+            const fileInput = qs("[data-editor-file]", editor);
+            const csrfInput = form ? qs('input[name="_csrf"]', form) : null;
+            const csrfToken = csrfInput ? csrfInput.value : "";
+
             const seed = input.value || "";
             const hasMarkup = /<\/?[a-z][\s\S]*>/i.test(seed);
             if (hasMarkup) {
@@ -1404,10 +1408,12 @@
             };
 
             const countWords = () => {
-                const text = surface.textContent.replace(/\s+/g, " ").trim();
-                const words = text ? text.split(" ").length : 0;
+                // Count each non-whitespace character as one unit. This reads the
+                // same for Latin, digits, symbols and CJK (Chinese/Japanese)
+                // text, where a "word" is a single character.
+                const count = surface.textContent.replace(/\s+/g, "").length;
                 if (counter) {
-                    counter.textContent = words + (words === 1 ? " word" : " words");
+                    counter.textContent = count + (count === 1 ? " character" : " characters");
                 }
             };
 
@@ -1427,6 +1433,107 @@
                 }
                 paintToolbar();
                 sync();
+            };
+
+            const uploadImage = async (file) => {
+                if (!file || !/^image\//.test(file.type)) {
+                    return null;
+                }
+                const data = new FormData();
+                data.append("file", file);
+                let response;
+                try {
+                    response = await fetch(withCtx("/cmsmgmnt/media/upload"), {
+                        method: "POST",
+                        headers: csrfToken ? { "X-CSRF-TOKEN": csrfToken } : {},
+                        body: data
+                    });
+                } catch (error) {
+                    window.alert("Could not reach the server to upload the image.");
+                    return null;
+                }
+                if (!response.ok) {
+                    let message = "Image upload failed.";
+                    try {
+                        const payload = await response.json();
+                        message = payload && payload.error ? payload.error : message;
+                    } catch (error) {
+                        /* non-JSON error response */
+                    }
+                    window.alert(message);
+                    return null;
+                }
+                const payload = await response.json();
+                return payload && payload.url ? payload.url : null;
+            };
+
+            const insertImageMarkup = (src) => {
+                const safe = String(src || "").replace(/"/g, "&quot;");
+                const markup = '<p><img src="' + safe + '" alt=""></p>';
+                restoreSelection();
+                let inserted = false;
+                try {
+                    inserted = document.execCommand("insertHTML", false, markup);
+                } catch (error) {
+                    inserted = false;
+                }
+                if (!inserted) {
+                    surface.insertAdjacentHTML("beforeend", markup);
+                }
+                sync();
+            };
+
+            const handleImageFiles = async (files) => {
+                for (const file of Array.from(files || [])) {
+                    if (!/^image\//.test(file.type)) {
+                        continue;
+                    }
+                    const url = await uploadImage(file);
+                    if (url) {
+                        insertImageMarkup(url);
+                    }
+                }
+            };
+
+            let selectedImage = null;
+
+            const clearImageSelection = () => {
+                if (selectedImage) {
+                    selectedImage.classList.remove("is-selected");
+                    selectedImage = null;
+                }
+            };
+
+            const selectImage = (image) => {
+                clearImageSelection();
+                selectedImage = image;
+                image.classList.add("is-selected");
+            };
+
+            let savedRange = null;
+
+            const saveSelection = () => {
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount) {
+                    const range = selection.getRangeAt(0);
+                    if (surface.contains(range.commonAncestorContainer)) {
+                        savedRange = range.cloneRange();
+                    }
+                }
+            };
+
+            const restoreSelection = () => {
+                surface.focus();
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                if (savedRange && surface.contains(savedRange.commonAncestorContainer)) {
+                    selection.addRange(savedRange.cloneRange());
+                } else {
+                    const range = document.createRange();
+                    range.selectNodeContents(surface);
+                    range.collapse(false);
+                    selection.addRange(range);
+                }
             };
 
             const nearestBlock = () => {
@@ -1475,12 +1582,26 @@
                 if (command === "formatBlock") {
                     const current = nearestBlock();
                     const wanted = (value || "").toUpperCase();
+                    if (!current) {
+                        // The caret is on a bare text node (no <p> wrapper), which
+                        // happens on the first line of a fresh editor. Wrap it in a
+                        // paragraph first so the heading replaces that block instead
+                        // of inserting an empty line above the text.
+                        document.execCommand("formatBlock", false, "P");
+                    }
                     exec("formatBlock", current === wanted ? "P" : wanted);
                     return;
                 }
 
                 if (command === "removeFormat") {
                     exec("removeFormat");
+                    return;
+                }
+
+                if (command === "insertImage") {
+                    if (fileInput) {
+                        fileInput.click();
+                    }
                     return;
                 }
 
@@ -1492,8 +1613,14 @@
                 exec(command, value);
             });
 
-            on(surface, "keyup", paintToolbar);
-            on(surface, "mouseup", paintToolbar);
+            on(surface, "keyup", () => {
+                saveSelection();
+                paintToolbar();
+            });
+            on(surface, "mouseup", () => {
+                saveSelection();
+                paintToolbar();
+            });
             on(surface, "input", () => {
                 // Keep the hidden field (and therefore the preview + the posted
                 // value) in step with the surface on every keystroke.
@@ -1501,9 +1628,21 @@
                 paintToolbar();
                 sync();
             });
-            on(surface, "blur", sync);
+            on(surface, "blur", () => {
+                saveSelection();
+                clearImageSelection();
+                sync();
+            });
 
             on(surface, "paste", (event) => {
+                const clipFiles = event.clipboardData ? Array.from(event.clipboardData.files || []) : [];
+                const imageFiles = clipFiles.filter((file) => /^image\//.test(file.type));
+                if (imageFiles.length) {
+                    event.preventDefault();
+                    handleImageFiles(imageFiles);
+                    return;
+                }
+
                 event.preventDefault();
                 const html = event.clipboardData ? event.clipboardData.getData("text/html") : "";
                 const text = event.clipboardData ? event.clipboardData.getData("text/plain") : "";
@@ -1516,7 +1655,33 @@
                 sync();
             });
 
-            on(surface, "drop", (event) => event.preventDefault());
+            on(fileInput, "change", (event) => {
+                handleImageFiles(event.target.files);
+                event.target.value = "";
+            });
+
+            on(surface, "drop", (event) => {
+                event.preventDefault();
+                const dropped = event.dataTransfer ? event.dataTransfer.files : null;
+                handleImageFiles(dropped);
+            });
+
+            on(surface, "dblclick", (event) => {
+                const image = event.target.closest("img");
+                if (!image) {
+                    return;
+                }
+                event.preventDefault();
+                selectImage(image);
+            });
+
+            on(surface, "click", (event) => {
+                const image = event.target.closest("img");
+                if (!image) {
+                    // Clicked empty space in the editor — deselect.
+                    clearImageSelection();
+                }
+            });
 
             on(form, "submit", () => sync());
 
@@ -1539,6 +1704,16 @@
                             form.submit();
                         }
                     }
+                }
+            });
+
+            on(surface, "keydown", (event) => {
+                if ((event.key === "Delete" || event.key === "Backspace") && selectedImage) {
+                    event.preventDefault();
+                    selectedImage.remove();
+                    clearImageSelection();
+                    paintToolbar();
+                    sync();
                 }
             });
 

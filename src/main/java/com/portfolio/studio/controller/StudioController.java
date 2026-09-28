@@ -1,22 +1,29 @@
 package com.portfolio.studio.controller;
 
+import java.util.Map;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import com.portfolio.studio.model.BlogPost;
 import com.portfolio.studio.model.GalleryEntry;
 import com.portfolio.studio.model.Project;
+import com.portfolio.studio.service.MediaStorageService;
 import com.portfolio.studio.service.PortfolioService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -24,9 +31,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class StudioController {
 
     private final PortfolioService portfolioService;
+    private final MediaStorageService mediaStorageService;
 
-    public StudioController(PortfolioService portfolioService) {
+    public StudioController(PortfolioService portfolioService, MediaStorageService mediaStorageService) {
         this.portfolioService = portfolioService;
+        this.mediaStorageService = mediaStorageService;
     }
 
     @GetMapping("/cmsmgmnt/sign-in")
@@ -234,6 +243,22 @@ public class StudioController {
         portfolioService.deleteBlogPost(id);
         flashDeleted(redirectAttributes, "Blog post deleted.");
         return "redirect:/cmsmgmnt/blog";
+    }
+
+    @PostMapping("/cmsmgmnt/media/upload")
+    public ResponseEntity<Map<String, String>> uploadInlineImage(@RequestParam("file") MultipartFile file) {
+        try {
+            MediaStorageService.StoredFile stored = mediaStorageService.store(file, "blog");
+            return ResponseEntity.ok(Map.of("url", stored.publicPath()));
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            return ResponseEntity.badRequest().body(Map.of("error", exception.getMessage()));
+        }
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, String>> handleMaxUpload(MaxUploadSizeExceededException exception) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+            .body(Map.of("error", "Image is too large to upload."));
     }
 
     @GetMapping("/cmsmgmnt/media")

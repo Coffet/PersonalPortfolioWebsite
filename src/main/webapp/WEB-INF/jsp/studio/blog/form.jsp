@@ -104,6 +104,10 @@
                                 <span class="visually-hidden">Clear formatting</span>
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h9M11 6 8 18M6 18h7M15 12l5 6M20 12l-5 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
                             </button>
+                            <button class="tb" type="button" data-cmd="insertImage" title="Insert image">
+                                <span class="visually-hidden">Insert image</span>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="8.5" cy="9" r="1.4" fill="currentColor"/><path d="m4 17 4.5-4.5 3 3L15 12l5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+                            </button>
                             <span class="tb-divider" aria-hidden="true"></span>
                             <button class="tb" type="button" data-cmd="undo" title="Undo">
                                 <span class="visually-hidden">Undo</span>
@@ -119,9 +123,10 @@
                              aria-label="Note body" data-placeholder="Write the note &mdash; headings, lists, quotes and links are all supported."></div>
 
                         <textarea class="visually-hidden" id="body" name="body" data-editor-input hidden>${post.body}</textarea>
+                        <input class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-editor-file hidden>
 
                         <div class="editor__foot">
-                            <span data-editor-count>0 words</span>
+                            <span data-editor-count>0 characters</span>
                             <span>Paste from anywhere &mdash; formatting is cleaned to match the site. <kbd>Ctrl</kbd> + <kbd>S</kbd> saves.</span>
                         </div>
                     </div>
