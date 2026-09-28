@@ -27,5 +27,12 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
             .addResourceLocations(location)
             .setCacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePublic().immutable());
+
+        // The CV lives outside the WAR (storage/cv) so it can be replaced without a rebuild.
+        // Served at the root so the URL is just domain/Chow_Cheuk_Wai_CV_AcaCert.pdf.
+        Path cvRoot = Paths.get(portfolioProperties.getStorage().getCvRoot()).toAbsolutePath().normalize();
+        registry.addResourceHandler("/Chow_Cheuk_Wai_CV_AcaCert.pdf")
+            .addResourceLocations(cvRoot.toUri().toString())
+            .setCacheControl(CacheControl.noCache());
     }
 }

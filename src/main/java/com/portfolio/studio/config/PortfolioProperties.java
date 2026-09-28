@@ -23,6 +23,7 @@ public class PortfolioProperties {
 
     public static class Storage {
         private String uploadRoot = "storage/uploads";
+        private String cvRoot = "storage/cv";
 
         public String getUploadRoot() {
             return uploadRoot;
@@ -30,6 +31,14 @@ public class PortfolioProperties {
 
         public void setUploadRoot(String uploadRoot) {
             this.uploadRoot = uploadRoot;
+        }
+
+        public String getCvRoot() {
+            return cvRoot;
+        }
+
+        public void setCvRoot(String cvRoot) {
+            this.cvRoot = cvRoot;
         }
     }
 

@@ -124,7 +124,9 @@
                 <a href="https://github.com/Coffet" target="_blank" rel="noopener noreferrer">GitHub</a>
                 <a href="${ctx}/blog">Blog</a>
                 <a href="${ctx}/gallery">Gallery</a>
-                <a href="${ctx}/cv.pdf">CV</a>
+                <!-- <a href="${ctx}/cv.pdf">CV</a> -->
+                <a href="${ctx}/Chow_Cheuk_Wai_CV_AcaCert.pdf">CV</a>
+
             </nav>
         </div>
         <div class="footer-rule"></div>

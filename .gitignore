@@ -41,5 +41,7 @@ storage/uploads/*
 !storage/uploads/projects/.gitkeep
 !storage/uploads/gallery/.gitkeep
 !storage/uploads/blog/.gitkeep
+storage/cv/*
+!storage/cv/.gitkeep
 spring-init.zip
 .tmp-spring-init/
