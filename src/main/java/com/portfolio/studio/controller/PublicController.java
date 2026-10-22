@@ -2,14 +2,13 @@ package com.portfolio.studio.controller;
 
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.studio.model.GalleryEntry;
 import com.portfolio.studio.service.PortfolioService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import tools.jackson.databind.ObjectMapper;
 
 @Controller
 public class PublicController {
@@ -23,7 +22,7 @@ public class PublicController {
     }
 
     @GetMapping("/")
-    public String home(Model model) throws JsonProcessingException {
+    public String home(Model model) {
         model.addAttribute("pageTitle", "Portfolio");
         model.addAttribute("workProjectsJson", objectMapper.writeValueAsString(portfolioService.buildWorkProjectsMap()));
         model.addAttribute("galleryEntries", portfolioService.listPublishedGalleryEntries());

@@ -16,7 +16,7 @@ Personal site. Quiet CMS. One WAR behind nginx.
 <br>
 
 <img alt="Java 17" src="https://img.shields.io/badge/Java-17-ED8B00?style=flat-square&logo=openjdk&logoColor=white">
-<img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-3.5-6DB33F?style=flat-square&logo=springboot&logoColor=white">
+<img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F?style=flat-square&logo=springboot&logoColor=white">
 <img alt="Maven" src="https://img.shields.io/badge/Maven-wrapper-C71A36?style=flat-square&logo=apachemaven&logoColor=white">
 <img alt="JSP" src="https://img.shields.io/badge/JSP-JSTL-F80000?style=flat-square&logo=apachetomcat&logoColor=white">
 <img alt="SQLite" src="https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite&logoColor=white">
@@ -292,10 +292,10 @@ What is in the repo — not a wish list.
 | Layer     | What                                     | Where                           |
 | --------- | ---------------------------------------- | ------------------------------- |
 | Language  | Java**17**                               | `pom.xml`                       |
-| Framework | Spring Boot**3.5.3**                     | parent POM                      |
+| Framework | Spring Boot**4.1.1**                     | parent POM                      |
 | Build     | Maven wrapper                            | `mvnw` / `mvnw.cmd`             |
 | Package   | Executable WAR named`portfolio`          | `pom.xml` `finalName`           |
-| HTTP      | Embedded Tomcat                          | `spring-boot-starter-web`       |
+| HTTP      | Embedded Tomcat                          | `spring-boot-starter-webmvc`    |
 | Views     | JSP + JSTL 3.0                           | `webapp/WEB-INF/jsp`            |
 | Security  | Spring Security, BCrypt, cookie, lockout | `SecurityConfig`                |
 | Database  | SQLite + Flyway, Hikari pool size 1      | `storage/database/portfolio.db` |

@@ -142,7 +142,7 @@ Walk these so you know what you are running.
 
 | # | File | Confirm |
 |---|---|---|
-| 1 | `pom.xml` | Java 17, Spring Boot 3.5, war, SQLite, Jasper, JSTL. No React. |
+| 1 | `pom.xml` | Java 17, Spring Boot 4.1, war, SQLite, Jasper, JSTL. No React. |
 | 2 | `application.properties` | Port 8080, SQLite path, upload root, optional import of `./application-local.properties`. |
 | 3 | `application-local.properties.example` | Two keys. Placeholders only. |
 | 4 | `.gitignore` | Local properties, `storage/database/*.db`, uploads, `.env`. |
