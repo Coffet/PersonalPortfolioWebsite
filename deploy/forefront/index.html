@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<title>coft</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='7' fill='%233eb297'/%3E%3C/svg%3E">
+<style>
+:root {
+    --bg: #000000;
+    --text: #f2f2f2;
+    --soft: #9b9b9b;
+    --faint: #6e6e6e;
+
+    --font: "Instrument Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --edge-x: clamp(24px, 6vw, 56px);
+    --edge-y: clamp(26px, 4vw, 52px);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: var(--edge-y) var(--edge-x);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* ---------- logo ---------- */
+
+.mark {
+    --logo-h: 21px;
+    position: relative;
+    display: block;
+    width: calc(var(--logo-h) * 124 / 52);
+    height: var(--logo-h);
+    overflow: hidden;
+    margin-bottom: clamp(40px, 9vh, 72px);
+}
+
+/* logo.webp is a 200x200 canvas; crop to the wordmark (38,73 → 162,125). */
+.mark img {
+    position: absolute;
+    top: calc(var(--logo-h) * -73 / 52);
+    left: calc(var(--logo-h) * -38 / 52);
+    height: calc(var(--logo-h) * 200 / 52);
+    width: auto;
+    max-width: none;
+    mix-blend-mode: screen;
+}
+
+/* ---------- statement ---------- */
+
+.page {
+    width: min(100%, 42rem);
+    display: grid;
+    justify-items: center;
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 1.5rem + 4vw, 3.6rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+}
+
+.note {
+    margin: clamp(16px, 2.4vh, 20px) 0 0;
+    max-width: 28rem;
+    color: var(--soft);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+}
+
+/* ---------- actions ---------- */
+
+.links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    margin: clamp(26px, 5vh, 40px) 0 0;
+}
+
+.link {
+    color: var(--soft);
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s var(--ease);
+}
+
+.link:hover { color: var(--text); }
+
+.link[aria-busy="true"] {
+    color: var(--faint);
+    cursor: progress;
+}
+
+:focus-visible {
+    outline: 1px solid var(--soft);
+    outline-offset: 4px;
+}
+
+/* ---------- entrance ---------- */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise 0.6s var(--ease) forwards;
+}
+
+.reveal:nth-child(2) { animation-delay: 0.06s; }
+.reveal:nth-child(3) { animation-delay: 0.12s; }
+.reveal:nth-child(4) { animation-delay: 0.18s; }
+
+@keyframes rise {
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        animation: none;
+    }
+    * { transition-duration: 0.001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<main class="page">
+
+    <a class="mark reveal" href="/" aria-label="coft — home">
+        <img src="assets/images/logo.webp" alt="coft" width="50" height="21" decoding="async">
+    </a>
+
+    <h1 class="reveal">Back in a moment</h1>
+
+    <p class="note reveal">
+        The site is under maintenance right now. Nothing you did caused this, and nothing was lost.
+    </p>
+
+    <p class="links reveal">
+        <a class="link" id="recheck" href="/">Check again</a>
+        <a class="link" id="contact" href="mailto:blaze459077@gmail.com">Email</a>
+    </p>
+
+</main>
+
+<script>
+/* Behaviour only. Copy lives in the markup above. */
+window.FOREFRONT = {
+    probeUrl: "/",
+    retrySeconds: 45,
+    autoCheck: true
+};
+</script>
+
+<script>
+(function () {
+    "use strict";
+
+    var config = window.FOREFRONT || {};
+    var checkEl = document.getElementById("recheck");
+    var probeUrl = config.probeUrl || "/";
+    var retrySeconds = Number(config.retrySeconds);
+    if (!isFinite(retrySeconds) || retrySeconds < 10) {
+        retrySeconds = 45;
+    }
+
+    var remaining = retrySeconds;
+    var timer = null;
+    var resetLabel = null;
+    var checking = false;
+    var back = false;
+
+    function setLabel(text) {
+        if (resetLabel !== null) {
+            clearTimeout(resetLabel);
+            resetLabel = null;
+        }
+        checkEl.textContent = text;
+    }
+
+    function setIdle() {
+        if (back) {
+            return;
+        }
+        checkEl.removeAttribute("aria-busy");
+        checkEl.removeAttribute("aria-disabled");
+        setLabel("Check again");
+    }
+
+    function stopTimer() {
+        if (timer !== null) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    function arm(seconds) {
+        stopTimer();
+        remaining = Math.max(0, Math.round(seconds));
+        if (!config.autoCheck || back) {
+            return;
+        }
+        timer = setInterval(function () {
+            remaining -= 1;
+            if (remaining <= 0) {
+                stopTimer();
+                check(false);
+            }
+        }, 1000);
+    }
+
+    function nextDelay() {
+        return Math.max(10, Math.round(retrySeconds * (0.85 + Math.random() * 0.3)));
+    }
+
+    function isUp(response) {
+        if (!response || !response.ok || response.status === 503) {
+            return false;
+        }
+        return (response.headers.get("content-type") || "").indexOf("text/html") !== -1;
+    }
+
+    function reloadAllowed() {
+        var key = "forefront:reloads";
+        try {
+            var now = Date.now();
+            var record = JSON.parse(sessionStorage.getItem(key) || "null");
+            if (!record || now - record.t > 10 * 60 * 1000) {
+                record = { t: now, n: 0 };
+            }
+            if (record.n >= 4) {
+                return false;
+            }
+            record.n += 1;
+            sessionStorage.setItem(key, JSON.stringify(record));
+            return true;
+        } catch (error) {
+            return true;
+        }
+    }
+
+    function celebrate() {
+        back = true;
+        stopTimer();
+        checking = false;
+        checkEl.removeAttribute("aria-busy");
+        checkEl.removeAttribute("aria-disabled");
+
+        if (reloadAllowed()) {
+            setLabel("Reloading…");
+            window.setTimeout(function () {
+                location.reload();
+            }, 900);
+        } else {
+            setLabel("Open the site");
+        }
+    }
+
+    function check(manual) {
+        if (checking) {
+            return;
+        }
+        if (back) {
+            location.href = "/";
+            return;
+        }
+        stopTimer();
+        checking = true;
+        checkEl.setAttribute("aria-busy", "true");
+        checkEl.setAttribute("aria-disabled", "true");
+        setLabel("Checking…");
+
+        var controller = typeof AbortController === "function" ? new AbortController() : null;
+        var cancel = controller ? window.setTimeout(function () { controller.abort(); }, 8000) : null;
+
+        fetch(probeUrl, {
+            method: "GET",
+            cache: "no-store",
+            credentials: "omit",
+            redirect: "follow",
+            headers: { "X-Forefront-Check": "1" },
+            signal: controller ? controller.signal : undefined
+        }).then(function (response) {
+            if (cancel !== null) {
+                clearTimeout(cancel);
+            }
+            if (isUp(response)) {
+                celebrate();
+                return;
+            }
+            checking = false;
+            setIdle();
+            if (manual) {
+                setLabel("Not yet");
+                resetLabel = window.setTimeout(setIdle, 2400);
+            }
+            arm(nextDelay());
+        }).catch(function () {
+            if (cancel !== null) {
+                clearTimeout(cancel);
+            }
+            checking = false;
+            setIdle();
+            if (manual) {
+                setLabel(navigator.onLine === false ? "Offline" : "Not yet");
+                resetLabel = window.setTimeout(setIdle, 2400);
+            }
+            arm(nextDelay());
+        });
+    }
+
+    arm(config.autoCheck === false ? 0 : retrySeconds);
+
+    checkEl.addEventListener("click", function (event) {
+        if (back) {
+            return;
+        }
+        event.preventDefault();
+        check(true);
+    });
+
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            stopTimer();
+        } else if (!back && !checking) {
+            arm(Math.min(remaining || retrySeconds, retrySeconds));
+        }
+    });
+}());
+</script>
+</body>
+</html>
