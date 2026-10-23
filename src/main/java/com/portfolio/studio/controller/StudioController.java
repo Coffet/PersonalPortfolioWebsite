@@ -27,7 +27,24 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@Controller
+
+// All request mappings share the common parent path 
+// `/cmsmgmnt`vscode-spring-boot(EXTRACT_REQUEST_MAPPING_PARENT_PATH)
+
+// This script is made on spring boot framework version 3.x
+// Since Spring Boot 3.x uses Jakarta EE 9+, 
+// all imports are from `jakarta.*` packages instead of `javax.*`
+
+// I have updated the version to 4.x, you dont have to care about the 
+// field HttpStatus.PAYLOAD_TOO_LARGE is deprecated since version 7.0
+// its not really that big of a deal for now, as it only affects the handling of large file uploads.
+
+// Plus, why do i have to care about this deprecation warning right now?
+// I only update because that damn CVE! 
+// AND I AM USING THAT VERSION BECAUSE I ONLY HAVE THAT ON MY COMPUTER! 
+// So yeah, I am not going to bother with that deprecation warning for now.
+
+@Controller //NO NEED TO CHANGE THIS FOR NOW, 3.X PROBLEM 
 public class StudioController {
 
     private final PortfolioService portfolioService;
@@ -257,7 +274,7 @@ public class StudioController {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<Map<String, String>> handleMaxUpload(MaxUploadSizeExceededException exception) {
-        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE) //NO NEED TO CHANGE THIS FOR NOW, 3.X PROBLEM
             .body(Map.of("error", "Image is too large to upload."));
     }
 
