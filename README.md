@@ -56,7 +56,7 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 10. [Run locally (dev work)](#run-locally-dev-work)
 11. [Make the WAR](#make-the-war)
 12. [Make the VPS and host](#make-the-vps-and-host) (bootstrap **or** [manual install](#4b-manual-setup-if-bootstrap-did-not-work))
-13. [If you already have a server](#if-you-already-have-a-server)
+13. [If you already have a server](#if-you-already-have-a-server) ([maintenance mode](#temporarily-serve-forefront-while-java-is-stopped))
 14. [Host env on this VPS](#host-env-on-this-vps)
 15. [What you should do](#what-you-should-do)
 16. [What you should not do](#what-you-should-not-do)
@@ -73,6 +73,7 @@ CMS  (/cmsmgmnt)     CRUD + image upload
 | Run it on your PC for development               | [Run locally (dev work)](#run-locally-dev-work) then `[docs/LOCAL_CHECK.md](docs/LOCAL_CHECK.md)` |
 | **Make a new VPS** and host the site            | [Make the VPS and host](#make-the-vps-and-host) (start at step 1)                                 |
 | The VPS already exists — only ship a new build | [If you already have a server](#if-you-already-have-a-server)                                     |
+| Stop Java for an update / show a held page     | [docs/MAINTENANCE.md](docs/MAINTENANCE.md) (one-command toggle)                                   |
 
 You can develop forever without a server. A VPS is only for putting [a domain](https://coft.moe) (or your domain) on the public internet.
 
@@ -181,10 +182,17 @@ PersonalPortfolioWebsite/
 ├── LICENSE / NOTICE                        Apache-2.0
 ├── README.md                               This file
 ├── docs/LOCAL_CHECK.md                     Dev inspect + click-through
+├── docs/MAINTENANCE.md                     Maintenance toggle, WAR swap, unpaid page
 ├── .github/workflows/deploy.yml            Optional; not the live go-live
 ├── deploy/                                 Scripts/examples for a VPS
 │   ├── bootstrap-server.sh                 Run once on a new Ubuntu box
 │   ├── nginx-site.example.conf             Reverse proxy → 127.0.0.1:8080
+│   ├── nginx-portfolio-proxy.conf          location / → Java app (mode: app)
+│   ├── nginx-portfolio-forefront.conf      location / → static page (mode: forefront)
+│   ├── nginx-portfolio-unpaid.conf         location / → "Off for now" (mode: unpaid)
+│   ├── set-nginx-mode.sh                   Installs as /usr/local/sbin/portfolio-site-mode
+│   ├── forefront/                          The static pages + logo it serves
+│   ├── cloudflare/                         Worker that answers when the box is gone
 │   ├── nginx-security-headers.conf
 │   ├── nginx-cache.conf
 │   ├── apache.htaccess                     Old static-site leftover; nginx is live
@@ -940,6 +948,7 @@ Sign in to the CMS with the pair **you** put in the unit, not anything from this
 | Host env       | `systemctl cat portfolio` or `nano /etc/systemd/system/portfolio.service`             |
 | WAR + database | `sudo -u deploy -i` then `cd /home/deploy/portfolio-app`                              |
 | Logs           | `journalctl -u portfolio -n 80 --no-pager`                                            |
+| Held pages     | `/var/www/forefront` + `/var/www/unpaid`; switch with [docs/MAINTENANCE.md](docs/MAINTENANCE.md) |
 | Certbot        | There isn’t one. Stop looking.                                                       |
 
 Cloudflare SSL stays **Full** while the origin cert is self-signed. After Let's Encrypt or a Cloudflare Origin CA cert in `/etc/ssl/cf/`, **Full (strict)** is OK.
@@ -954,15 +963,35 @@ The VPS is already bootstrapped. You are only replacing the program file. SQLite
 
 Nginx can serve the static page in `deploy/forefront/` without the WAR running. The mode switcher changes an Nginx snippet symlink, tests the config, and reloads nginx; if validation or reload fails, it restores the previous mode.
 
-For a server that already uses the nginx config from this repo, first copy the `deploy/` files to the server (or pull the repo into `/tmp/ppw`) and install the static page and snippets as root:
+The short version, once `/usr/local/sbin/portfolio-site-mode` is installed:
 
 ```bash
-install -d /var/www/forefront /etc/nginx/snippets
+sudo portfolio-site-mode forefront   # static page on; Java can be stopped
+sudo systemctl stop portfolio.service
+# ...update the JRE, swap the WAR, reboot the box...
+sudo systemctl start portfolio.service
+sudo portfolio-site-mode app         # proxy back to Java
+```
+
+**[docs/MAINTENANCE.md](docs/MAINTENANCE.md)** is the full runbook: the three
+modes (`app`, `forefront`, `unpaid`), the WAR swap with automatic rollback, how
+to check which page is live, and the Cloudflare worker that answers when the box
+itself is suspended.
+
+For a server that already uses the nginx config from this repo, first copy the `deploy/` files to the server (or pull the repo into `/tmp/ppw`) and install the static pages and snippets as root:
+
+```bash
+install -d /var/www/forefront /var/www/unpaid /etc/nginx/snippets
 cp -a /tmp/ppw/deploy/forefront/. /var/www/forefront/
 chown -R root:root /var/www/forefront
 chmod -R a+rX /var/www/forefront
+install -m 644 /tmp/ppw/deploy/forefront/unpaid.html /var/www/unpaid/index.html
+cp -a /tmp/ppw/deploy/forefront/assets /var/www/unpaid/
+chown -R root:root /var/www/unpaid
+chmod -R a+rX /var/www/unpaid
 install -m 644 /tmp/ppw/deploy/nginx-portfolio-proxy.conf /etc/nginx/snippets/portfolio-proxy.conf
 install -m 644 /tmp/ppw/deploy/nginx-portfolio-forefront.conf /etc/nginx/snippets/portfolio-forefront.conf
+install -m 644 /tmp/ppw/deploy/nginx-portfolio-unpaid.conf /etc/nginx/snippets/portfolio-unpaid.conf
 ```
 
 Edit `/etc/nginx/sites-available/portfolio`: in the HTTPS `server` block, replace the existing `location / { ... }` block with this line, at the same server-block level:
@@ -998,7 +1027,9 @@ curl -fsS http://127.0.0.1:8080/ >/dev/null
 sudo bash /usr/local/sbin/portfolio-site-mode app
 ```
 
-Use `sudo bash /usr/local/sbin/portfolio-site-mode app` to restore the app proxy; the switcher does not start or stop Java. Keep the existing TLS and security-header config in place throughout.
+Use `sudo bash /usr/local/sbin/portfolio-site-mode app` to restore the app proxy; the switcher does not start or stop Java. Keep the existing TLS and security-header config in place throughout. `portfolio-site-mode unpaid` serves the "Off for now" copy from `deploy/forefront/unpaid.html` instead.
+
+If you want the switch and the WAR swap in one place, see **[docs/MAINTENANCE.md](docs/MAINTENANCE.md)** (includes `deploy/remote-release.sh`, which keeps `portfolio.war.bak` and rolls back on a failed health check).
 
 On the **PC**:
 
