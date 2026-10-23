@@ -745,6 +745,14 @@ Then Cloudflare SSL/TLS can be **Full (strict)**.
 
 ```bash
 install -m 644 /tmp/ppw/deploy/nginx-security-headers.conf /etc/nginx/snippets/nginx-security-headers.conf
+install -m 644 /tmp/ppw/deploy/nginx-portfolio-proxy.conf /etc/nginx/snippets/portfolio-proxy.conf
+install -m 644 /tmp/ppw/deploy/nginx-portfolio-forefront.conf /etc/nginx/snippets/portfolio-forefront.conf
+ln -sfn /etc/nginx/snippets/portfolio-proxy.conf /etc/nginx/snippets/portfolio-location.conf
+install -d /var/www/forefront
+cp -a /tmp/ppw/deploy/forefront/. /var/www/forefront/
+chown -R root:root /var/www/forefront
+chmod -R a+rX /var/www/forefront
+install -m 755 /tmp/ppw/deploy/set-nginx-mode.sh /usr/local/sbin/portfolio-site-mode
 install -m 644 /tmp/ppw/deploy/nginx-site.example.conf /etc/nginx/sites-available/portfolio
 nano /etc/nginx/sites-available/portfolio
 ```
@@ -790,11 +798,10 @@ Replace `example.com` with **your** hostname. The two `ssl_certificate`* paths m
 
 ```nginx
     include /etc/nginx/snippets/nginx-security-headers.conf;
-    location / {
-        proxy_pass http://127.0.0.1:8080;
+    include /etc/nginx/snippets/portfolio-location.conf;
 ```
 
-Java is on loopback 8080. nginx is the public door. Leave that proxy line.
+The location include points at the app proxy by default; use `portfolio-site-mode forefront` during maintenance to serve the static page instead. Java is on loopback 8080. nginx is the public door.
 
 Save in nano: `Ctrl+O`, Enter, `Ctrl+X`.
 
@@ -942,6 +949,56 @@ Cloudflare SSL stays **Full** while the origin cert is self-signed. After Let's 
 ## If you already have a server
 
 The VPS is already bootstrapped. You are only replacing the program file. SQLite and uploads stay.
+
+### Temporarily serve Forefront while Java is stopped
+
+Nginx can serve the static page in `deploy/forefront/` without the WAR running. The mode switcher changes an Nginx snippet symlink, tests the config, and reloads nginx; if validation or reload fails, it restores the previous mode.
+
+For a server that already uses the nginx config from this repo, first copy the `deploy/` files to the server (or pull the repo into `/tmp/ppw`) and install the static page and snippets as root:
+
+```bash
+install -d /var/www/forefront /etc/nginx/snippets
+cp -a /tmp/ppw/deploy/forefront/. /var/www/forefront/
+chown -R root:root /var/www/forefront
+chmod -R a+rX /var/www/forefront
+install -m 644 /tmp/ppw/deploy/nginx-portfolio-proxy.conf /etc/nginx/snippets/portfolio-proxy.conf
+install -m 644 /tmp/ppw/deploy/nginx-portfolio-forefront.conf /etc/nginx/snippets/portfolio-forefront.conf
+```
+
+Edit `/etc/nginx/sites-available/portfolio`: in the HTTPS `server` block, replace the existing `location / { ... }` block with this line, at the same server-block level:
+
+```nginx
+include /etc/nginx/snippets/portfolio-location.conf;
+```
+
+Create the initial app-mode link and check/reload nginx:
+
+```bash
+ln -sfn /etc/nginx/snippets/portfolio-proxy.conf /etc/nginx/snippets/portfolio-location.conf
+nginx -t && systemctl reload nginx
+```
+
+Install the mode switcher, then switch to the static page before stopping Java and updating the JRE:
+
+```bash
+install -m 755 /tmp/ppw/deploy/set-nginx-mode.sh /usr/local/sbin/portfolio-site-mode
+sudo bash /usr/local/sbin/portfolio-site-mode forefront
+sudo systemctl stop portfolio.service
+sudo apt-get update
+apt-cache policy openjdk-17-jre-headless
+sudo apt-get install --only-upgrade openjdk-17-jre-headless
+java -version
+```
+
+If Ubuntu offers no applicable fixed update, leave the app stopped and use the vendor’s mitigation guidance. Once Java has been updated, start and verify the app, then switch public traffic back to it:
+
+```bash
+sudo systemctl start portfolio.service
+curl -fsS http://127.0.0.1:8080/ >/dev/null
+sudo bash /usr/local/sbin/portfolio-site-mode app
+```
+
+Use `sudo bash /usr/local/sbin/portfolio-site-mode app` to restore the app proxy; the switcher does not start or stop Java. Keep the existing TLS and security-header config in place throughout.
 
 On the **PC**:
 

@@ -25,6 +25,7 @@ mkdir -p \
   "$APP_DIR/storage/uploads/blog" \
   /home/deploy/.ssh \
   /etc/nginx/snippets \
+  /var/www/forefront \
   /etc/ssl/cf
 
 chmod 700 /home/deploy/.ssh
@@ -40,9 +41,15 @@ if [ ! -f /etc/ssl/cf/coft.moe.pem ]; then
 fi
 
 install -m 644 "$SCRIPT_DIR/nginx-security-headers.conf" /etc/nginx/snippets/nginx-security-headers.conf
+install -m 644 "$SCRIPT_DIR/nginx-portfolio-proxy.conf" /etc/nginx/snippets/portfolio-proxy.conf
+install -m 644 "$SCRIPT_DIR/nginx-portfolio-forefront.conf" /etc/nginx/snippets/portfolio-forefront.conf
+ln -sfn /etc/nginx/snippets/portfolio-proxy.conf /etc/nginx/snippets/portfolio-location.conf
 install -m 644 "$SCRIPT_DIR/nginx-site.example.conf" /etc/nginx/sites-available/portfolio
 install -m 644 "$SCRIPT_DIR/portfolio.service" /etc/systemd/system/portfolio.service
 install -m 440 "$SCRIPT_DIR/sudoers-deploy" /etc/sudoers.d/portfolio-deploy
+cp -a "$SCRIPT_DIR/forefront/." /var/www/forefront/
+chown -R root:root /var/www/forefront
+chmod -R a+rX /var/www/forefront
 visudo -c -f /etc/sudoers.d/portfolio-deploy
 
 if [ ! -f /etc/portfolio.env ]; then
