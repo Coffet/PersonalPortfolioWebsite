@@ -318,3 +318,6 @@ public class StudioController {
         redirectAttributes.addFlashAttribute("flashKind", kind);
     }
 }
+
+// reserved for potential future portfolio-related methods
+// may be S3 integration for media storage in the future
