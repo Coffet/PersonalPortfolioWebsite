@@ -2,22 +2,30 @@
 set -euo pipefail
 
 if [[ "$(id -u)" -ne 0 ]]; then
-  echo "Run as root: sudo bash deploy/set-nginx-mode.sh app|forefront"
+  echo "Run as root: sudo bash deploy/set-nginx-mode.sh app|forefront|unpaid"
   exit 1
 fi
 
-if [[ "$#" -ne 1 || ( "$1" != "app" && "$1" != "forefront" ) ]]; then
-  echo "Usage: sudo bash deploy/set-nginx-mode.sh app|forefront"
+if [[ "$#" -ne 1 || ( "$1" != "app" && "$1" != "forefront" && "$1" != "unpaid" ) ]]; then
+  echo "Usage: sudo bash deploy/set-nginx-mode.sh app|forefront|unpaid"
   exit 2
 fi
 
 SNIPPET_DIR="/etc/nginx/snippets"
 ACTIVE="$SNIPPET_DIR/portfolio-location.conf"
-TARGET="$SNIPPET_DIR/portfolio-$1.conf"
+
+# "app" is the plain reverse proxy; the snippet is named after its role, not the mode.
+case "$1" in
+  app)       MODE_FILE="proxy" ;;
+  forefront) MODE_FILE="forefront" ;;
+  unpaid)    MODE_FILE="unpaid" ;;
+esac
+
+TARGET="$SNIPPET_DIR/portfolio-$MODE_FILE.conf"
 TEMP="$ACTIVE.new.$$"
 
 if [[ ! -L "$ACTIVE" ]]; then
-  echo "$ACTIVE must be a symlink to portfolio-proxy.conf or portfolio-forefront.conf"
+  echo "$ACTIVE must be a symlink to portfolio-proxy.conf, portfolio-forefront.conf or portfolio-unpaid.conf"
   exit 1
 fi
 

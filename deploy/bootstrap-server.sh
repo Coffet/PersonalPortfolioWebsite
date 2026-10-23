@@ -26,6 +26,7 @@ mkdir -p \
   /home/deploy/.ssh \
   /etc/nginx/snippets \
   /var/www/forefront \
+  /var/www/unpaid \
   /etc/ssl/cf
 
 chmod 700 /home/deploy/.ssh
@@ -43,13 +44,19 @@ fi
 install -m 644 "$SCRIPT_DIR/nginx-security-headers.conf" /etc/nginx/snippets/nginx-security-headers.conf
 install -m 644 "$SCRIPT_DIR/nginx-portfolio-proxy.conf" /etc/nginx/snippets/portfolio-proxy.conf
 install -m 644 "$SCRIPT_DIR/nginx-portfolio-forefront.conf" /etc/nginx/snippets/portfolio-forefront.conf
+install -m 644 "$SCRIPT_DIR/nginx-portfolio-unpaid.conf" /etc/nginx/snippets/portfolio-unpaid.conf
 ln -sfn /etc/nginx/snippets/portfolio-proxy.conf /etc/nginx/snippets/portfolio-location.conf
+install -m 755 "$SCRIPT_DIR/set-nginx-mode.sh" /usr/local/sbin/portfolio-site-mode
 install -m 644 "$SCRIPT_DIR/nginx-site.example.conf" /etc/nginx/sites-available/portfolio
 install -m 644 "$SCRIPT_DIR/portfolio.service" /etc/systemd/system/portfolio.service
 install -m 440 "$SCRIPT_DIR/sudoers-deploy" /etc/sudoers.d/portfolio-deploy
 cp -a "$SCRIPT_DIR/forefront/." /var/www/forefront/
 chown -R root:root /var/www/forefront
 chmod -R a+rX /var/www/forefront
+install -m 644 "$SCRIPT_DIR/forefront/unpaid.html" /var/www/unpaid/index.html
+cp -a "$SCRIPT_DIR/forefront/assets" /var/www/unpaid/
+chown -R root:root /var/www/unpaid
+chmod -R a+rX /var/www/unpaid
 visudo -c -f /etc/sudoers.d/portfolio-deploy
 
 if [ ! -f /etc/portfolio.env ]; then
