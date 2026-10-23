@@ -745,6 +745,14 @@ Then Cloudflare SSL/TLS can be **Full (strict)**.
 
 ```bash
 install -m 644 /tmp/ppw/deploy/nginx-security-headers.conf /etc/nginx/snippets/nginx-security-headers.conf
+install -m 644 /tmp/ppw/deploy/nginx-portfolio-proxy.conf /etc/nginx/snippets/portfolio-proxy.conf
+install -m 644 /tmp/ppw/deploy/nginx-portfolio-forefront.conf /etc/nginx/snippets/portfolio-forefront.conf
+ln -sfn /etc/nginx/snippets/portfolio-proxy.conf /etc/nginx/snippets/portfolio-location.conf
+install -d /var/www/forefront
+cp -a /tmp/ppw/deploy/forefront/. /var/www/forefront/
+chown -R root:root /var/www/forefront
+chmod -R a+rX /var/www/forefront
+install -m 755 /tmp/ppw/deploy/set-nginx-mode.sh /usr/local/sbin/portfolio-site-mode
 install -m 644 /tmp/ppw/deploy/nginx-site.example.conf /etc/nginx/sites-available/portfolio
 nano /etc/nginx/sites-available/portfolio
 ```
@@ -790,11 +798,10 @@ Replace `example.com` with **your** hostname. The two `ssl_certificate`* paths m
 
 ```nginx
     include /etc/nginx/snippets/nginx-security-headers.conf;
-    location / {
-        proxy_pass http://127.0.0.1:8080;
+    include /etc/nginx/snippets/portfolio-location.conf;
 ```
 
-Java is on loopback 8080. nginx is the public door. Leave that proxy line.
+The location include points at the app proxy by default; use `portfolio-site-mode forefront` during maintenance to serve the static page instead. Java is on loopback 8080. nginx is the public door.
 
 Save in nano: `Ctrl+O`, Enter, `Ctrl+X`.
 
