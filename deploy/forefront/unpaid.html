@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<title>coft</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='7' fill='%233eb297'/%3E%3C/svg%3E">
+<style>
+:root {
+    --bg: #000000;
+    --text: #f2f2f2;
+    --soft: #9b9b9b;
+    --faint: #6e6e6e;
+
+    --font: "Instrument Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --edge-x: clamp(24px, 6vw, 56px);
+    --edge-y: clamp(26px, 4vw, 52px);
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: var(--edge-y) var(--edge-x);
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* ---------- logo ---------- */
+
+.mark {
+    display: block;
+    margin-bottom: clamp(40px, 9vh, 72px);
+}
+
+.mark img {
+    display: block;
+    height: 21px;
+    width: auto;
+}
+
+/* ---------- statement ---------- */
+
+.page {
+    width: min(100%, 42rem);
+    display: grid;
+    justify-items: center;
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 1.5rem + 4vw, 3.6rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+}
+
+.note {
+    margin: clamp(16px, 2.4vh, 20px) 0 0;
+    max-width: 28rem;
+    color: var(--soft);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    text-wrap: pretty;
+}
+
+/* ---------- actions ---------- */
+
+.links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    margin: clamp(26px, 5vh, 40px) 0 0;
+}
+
+.link {
+    color: var(--soft);
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s var(--ease);
+}
+
+.link:hover { color: var(--text); }
+
+.link[aria-busy="true"] {
+    color: var(--faint);
+    cursor: progress;
+}
+
+:focus-visible {
+    outline: 1px solid var(--soft);
+    outline-offset: 4px;
+}
+
+/* ---------- entrance ---------- */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise 0.6s var(--ease) forwards;
+}
+
+.reveal:nth-child(2) { animation-delay: 0.06s; }
+.reveal:nth-child(3) { animation-delay: 0.12s; }
+.reveal:nth-child(4) { animation-delay: 0.18s; }
+
+@keyframes rise {
+    to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+        animation: none;
+    }
+    * { transition-duration: 0.001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<main class="page">
+
+    <a class="mark reveal" href="/" aria-label="coft — home">
+        <img src="data:image/png;base64,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" alt="coft" width="124" height="52" decoding="async">
+    </a>
+
+    <h1 class="reveal">Off for now</h1>
+
+    <p class="note reveal">
+        This server's hosting bill is unpaid, so the site is switched off until it's settled.
+        Nothing you were looking at was lost.
+    </p>
+
+    <p class="links reveal">
+        <a class="link" id="recheck" href="/">Check again</a>
+        <a class="link" id="contact" href="mailto:blaze459077@gmail.com">Email</a>
+    </p>
+
+</main>
+
+<script>
+/* Behaviour only. Copy lives in the markup above. */
+window.FOREFRONT = {
+    probeUrl: "/",
+    retrySeconds: 45,
+    autoCheck: true
+};
+</script>
+
+<script>
+(function () {
+    "use strict";
+
+    var config = window.FOREFRONT || {};
+    var checkEl = document.getElementById("recheck");
+    var probeUrl = config.probeUrl || "/";
+    var retrySeconds = Number(config.retrySeconds);
+    if (!isFinite(retrySeconds) || retrySeconds < 10) {
+        retrySeconds = 45;
+    }
+
+    var remaining = retrySeconds;
+    var timer = null;
+    var resetLabel = null;
+    var checking = false;
+    var back = false;
+
+    function setLabel(text) {
+        if (resetLabel !== null) {
+            clearTimeout(resetLabel);
+            resetLabel = null;
+        }
+        checkEl.textContent = text;
+    }
+
+    function setIdle() {
+        if (back) {
+            return;
+        }
+        checkEl.removeAttribute("aria-busy");
+        checkEl.removeAttribute("aria-disabled");
+        setLabel("Check again");
+    }
+
+    function stopTimer() {
+        if (timer !== null) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    function arm(seconds) {
+        stopTimer();
+        remaining = Math.max(0, Math.round(seconds));
+        if (!config.autoCheck || back) {
+            return;
+        }
+        timer = setInterval(function () {
+            remaining -= 1;
+            if (remaining <= 0) {
+                stopTimer();
+                check(false);
+            }
+        }, 1000);
+    }
+
+    function nextDelay() {
+        return Math.max(10, Math.round(retrySeconds * (0.85 + Math.random() * 0.3)));
+    }
+
+    function isUp(response) {
+        if (!response || !response.ok || response.status === 503) {
+            return false;
+        }
+        return (response.headers.get("content-type") || "").indexOf("text/html") !== -1;
+    }
+
+    function reloadAllowed() {
+        var key = "forefront:reloads";
+        try {
+            var now = Date.now();
+            var record = JSON.parse(sessionStorage.getItem(key) || "null");
+            if (!record || now - record.t > 10 * 60 * 1000) {
+                record = { t: now, n: 0 };
+            }
+            if (record.n >= 4) {
+                return false;
+            }
+            record.n += 1;
+            sessionStorage.setItem(key, JSON.stringify(record));
+            return true;
+        } catch (error) {
+            return true;
+        }
+    }
+
+    function celebrate() {
+        back = true;
+        stopTimer();
+        checking = false;
+        checkEl.removeAttribute("aria-busy");
+        checkEl.removeAttribute("aria-disabled");
+
+        if (reloadAllowed()) {
+            setLabel("Reloading…");
+            window.setTimeout(function () {
+                location.reload();
+            }, 900);
+        } else {
+            setLabel("Open the site");
+        }
+    }
+
+    function check(manual) {
+        if (checking) {
+            return;
+        }
+        if (back) {
+            location.href = "/";
+            return;
+        }
+        stopTimer();
+        checking = true;
+        checkEl.setAttribute("aria-busy", "true");
+        checkEl.setAttribute("aria-disabled", "true");
+        setLabel("Checking…");
+
+        var controller = typeof AbortController === "function" ? new AbortController() : null;
+        var cancel = controller ? window.setTimeout(function () { controller.abort(); }, 8000) : null;
+
+        fetch(probeUrl, {
+            method: "GET",
+            cache: "no-store",
+            credentials: "omit",
+            redirect: "follow",
+            headers: { "X-Forefront-Check": "1" },
+            signal: controller ? controller.signal : undefined
+        }).then(function (response) {
+            if (cancel !== null) {
+                clearTimeout(cancel);
+            }
+            if (isUp(response)) {
+                celebrate();
+                return;
+            }
+            checking = false;
+            setIdle();
+            if (manual) {
+                setLabel("Not yet");
+                resetLabel = window.setTimeout(setIdle, 2400);
+            }
+            arm(nextDelay());
+        }).catch(function () {
+            if (cancel !== null) {
+                clearTimeout(cancel);
+            }
+            checking = false;
+            setIdle();
+            if (manual) {
+                setLabel(navigator.onLine === false ? "Offline" : "Not yet");
+                resetLabel = window.setTimeout(setIdle, 2400);
+            }
+            arm(nextDelay());
+        });
+    }
+
+    arm(config.autoCheck === false ? 0 : retrySeconds);
+
+    checkEl.addEventListener("click", function (event) {
+        if (back) {
+            return;
+        }
+        event.preventDefault();
+        check(true);
+    });
+
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            stopTimer();
+        } else if (!back && !checking) {
+            arm(Math.min(remaining || retrySeconds, retrySeconds));
+        }
+    });
+}());
+</script>
+</body>
+</html>
