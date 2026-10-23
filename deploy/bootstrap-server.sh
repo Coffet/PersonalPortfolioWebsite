@@ -54,6 +54,7 @@ cp -a "$SCRIPT_DIR/forefront/." /var/www/forefront/
 chown -R root:root /var/www/forefront
 chmod -R a+rX /var/www/forefront
 install -m 644 "$SCRIPT_DIR/forefront/unpaid.html" /var/www/unpaid/index.html
+install -m 644 "$SCRIPT_DIR/forefront/favicon.ico" /var/www/unpaid/favicon.ico
 cp -a "$SCRIPT_DIR/forefront/assets" /var/www/unpaid/
 chown -R root:root /var/www/unpaid
 chmod -R a+rX /var/www/unpaid
