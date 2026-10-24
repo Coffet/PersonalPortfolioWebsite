@@ -85,6 +85,14 @@ still be covered by `deploy/forefront/nginx-notice.conf` (flag file
 
 ## Gotchas
 
+- The notice pages (`deploy/forefront/index.html`, `unpaid.html`, and the copy
+  inside `deploy/cloudflare/unpaid-fallback-worker.js`) load Instrument Sans
+  from Google Fonts, so their CSP needs `https://fonts.googleapis.com` in
+  `style-src` and `https://fonts.gstatic.com` in `font-src`. The app-level CSP
+  in `nginx-security-headers.conf` already allows both; `portfolio-forefront.conf`
+  and `portfolio-unpaid.conf` declare their own headers and carry the same
+  allowances. If a font request is blocked the page still renders — it just falls
+  back to Segoe UI / the system sans.
 - `nginx -t` + `reload` is not instantaneous: a request issued in the same
   second can still hit an old worker. Probe twice before believing a result.
 - Never run `sed -i` over `/etc/nginx/snippets/portfolio-*.conf`: the glob
